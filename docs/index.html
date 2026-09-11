@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>L2B Vendor — Appium Automation</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #5c5c5c;
+      --line: #d9d9d9;
+      --bg: #f6f6f4;
+      --card: #ffffff;
+      --auto: #2d6a4f;
+      --auto-bg: #e8f5ee;
+      --pending: #6b6b6b;
+      --pending-bg: #ececec;
+      --accent: #1d4e89;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+    h1 { font-size: 1.6rem; font-weight: 650; margin: 0 0 8px; }
+    h2 { font-size: 1.1rem; font-weight: 650; margin: 40px 0 12px; }
+    p.lede, p.note { color: var(--muted); margin: 0 0 12px; max-width: 46em; }
+    ol.order {
+      margin: 0 0 20px;
+      padding: 16px 16px 16px 36px;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    ol.order li { margin: 4px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.95rem;
+      vertical-align: top;
+    }
+    th { font-weight: 600; background: #f0f0ee; }
+    tr:last-child td { border-bottom: 0; }
+    .status-automated { color: var(--auto); font-weight: 600; }
+    .status-progress { color: #8a6d1d; font-weight: 600; }
+    .status-not { color: var(--pending); }
+    .flow {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 16px;
+      overflow-x: auto;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .swatch {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border: 1px solid var(--line);
+    }
+    .swatch.auto { background: var(--auto-bg); border-color: var(--auto); }
+    .swatch.pending { background: var(--pending-bg); }
+    .env {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .env li {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .env li:last-child { border-bottom: 0; }
+    .env span { color: var(--muted); }
+    .cta {
+      display: inline-block;
+      margin-top: 28px;
+      padding: 12px 20px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 650;
+    }
+    .cta:hover { filter: brightness(0.95); }
+    @media (max-width: 420px) {
+      main { padding: 24px 14px 48px; }
+      .env li { flex-direction: column; gap: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>L2B Vendor — Appium Automation</h1>
+    <p class="lede">
+      Black-box UI suite for the Vendor QA APK (<code>com.l2b.app.qa</code>).
+      Tests run <strong>top to bottom in this order</strong>. Green boxes are already in Allure.
+      Grey boxes are next — they are not in the suite yet.
+    </p>
+
+    <h2>Test order</h2>
+    <ol class="order">
+      <li>Splash (cold launch → first stable UI)</li>
+      <li>Language selection (English + Get started)</li>
+      <li>Onboarding slide 1 (Skip / Next)</li>
+      <li>Onboarding slide 2 (Get started)</li>
+      <li>Sign up (phone, +91, terms, Get OTP visible)</li>
+      <li>OTP screen (open only — valid OTP is not submitted in this suite)</li>
+      <li>Home, then Calendar / Earning / Fleet / Profile &amp; settings — not started</li>
+    </ol>
+
+    <h2>Coverage</h2>
+    <!-- TODO: add a row per new module (OTP submit, Home, Fleet, Team, Account, Calendar, KYC, …) -->
+    <table>
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Splash</td>
+          <td class="status-automated">Automated</td>
+        </tr>
+        <tr>
+          <td>Language</td>
+          <td class="status-automated">Automated</td>
+        </tr>
+        <tr>
+          <td>Onboarding</td>
+          <td class="status-automated">Automated</td>
+        </tr>
+        <tr>
+          <td>Sign up</td>
+          <td class="status-automated">Automated</td>
+        </tr>
+        <tr>
+          <td>OTP (open screen)</td>
+          <td class="status-progress">In progress</td>
+        </tr>
+        <tr>
+          <td>Home</td>
+          <td class="status-not">Not started</td>
+        </tr>
+        <tr>
+          <td>Fleet</td>
+          <td class="status-not">Not started</td>
+        </tr>
+        <tr>
+          <td>Calendar</td>
+          <td class="status-not">Not started</td>
+        </tr>
+        <tr>
+          <td>Earning</td>
+          <td class="status-not">Not started</td>
+        </tr>
+        <tr>
+          <td>Profile / settings</td>
+          <td class="status-not">Not started</td>
+        </tr>
+        <tr>
+          <td>Team / Account (drawer)</td>
+          <td class="status-not">Not started</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>App flow</h2>
+    <p class="note">
+      Read left-to-right then down. First-launch is a straight line. After a valid OTP the app
+      lands on Home; Fleet, Calendar, Earning and settings hang off Home — they are not tested yet.
+    </p>
+    <div class="flow">
+      <!--
+        Extend this graph when a new module is automated:
+        add a node, an edge from the previous screen, classDef automated,
+        and a Coverage table row above.
+      -->
+      <pre class="mermaid">
+flowchart TB
+  subgraph launch["First launch — suite order"]
+    direction TB
+    Splash["1 Splash"] --> Language["2 Language"]
+    Language -->|"English, Get started"| O1["3 Onboarding slide 1"]
+    O1 -->|Next| O2["4 Onboarding slide 2"]
+    O1 -->|Skip| Signup
+    O2 -->|"Get started"| Signup["5 Sign up"]
+    Signup -->|"Get OTP"| OTP["6 OTP screen"]
+  end
+
+  subgraph loggedin["After login — not in suite yet"]
+    direction TB
+    Home["Home"]
+    Home --> Calendar["Calendar"]
+    Home --> Earning["Earning"]
+    Home --> Fleet["Fleet"]
+    Home --> Settings["Profile / settings"]
+    Settings --> Team["Team"]
+    Settings --> Account["Account"]
+  end
+
+  OTP -.->|"valid OTP — not automated"| Home
+
+  class Splash,Language,O1,O2,Signup automated
+  class OTP progress
+  class Home,Calendar,Earning,Fleet,Settings,Team,Account pending
+  classDef automated fill:#e8f5ee,stroke:#2d6a4f,color:#1b4332
+  classDef progress fill:#fff6d9,stroke:#8a6d1d,color:#5c4a12
+  classDef pending fill:#ececec,stroke:#8a8a8a,color:#5c5c5c
+      </pre>
+      <div class="legend">
+        <span><i class="swatch auto"></i>Automated (in Allure today)</span>
+        <span><i class="swatch pending"></i>Not started (Home, Fleet, settings, …)</span>
+      </div>
+    </div>
+
+    <h2>Environment</h2>
+    <ul class="env">
+      <li><span>Appium</span><strong>3.6.0</strong></li>
+      <li><span>Java</span><strong>17</strong></li>
+      <li><span>Automation</span><strong>UiAutomator2</strong></li>
+      <li><span>Android</span><strong>16</strong></li>
+      <li><span>Emulator</span><strong>Medium_Phone_API_36.1</strong></li>
+    </ul>
+
+    <a class="cta" href="./allure/">Open full Allure report</a>
+  </main>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", flowchart: { htmlLabels: true } });
+  </script>
+</body>
+</html>

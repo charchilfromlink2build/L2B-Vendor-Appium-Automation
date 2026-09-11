@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Locator not found",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*NoSuchElementException.*"
+  },
+  {
+    "name": "Wait timeout",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*TimeoutException.*"
+  },
+  {
+    "name": "Session setup failed",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*SessionNotCreatedException.*"
+  },
+  {
+    "name": "Stale element",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*StaleElementReferenceException.*"
+  },
+  {
+    "name": "Assertion failed",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*AssertionError.*"
+  },
+  {
+    "name": "Device/ADB problem",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(adbExec|device unauthorized|device offline).*"
+  }
+]
