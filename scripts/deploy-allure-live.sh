@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Publish Allure to GitHub Pages so the company URL always shows the latest run.
-# Public URL: https://rajcharchil.github.io/l2b-vendor-allure/
+# Publish Allure to GitHub Pages on the company repo.
+# Public URL: https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-REPO="${ALLURE_GH_REPO:-Rajcharchil/l2b-vendor-allure}"
+REPO="${ALLURE_GH_REPO:-charchilfromlink2build/L2B-Vendor-Appium-Automation}"
+PAGES_BASE="${ALLURE_PAGES_BASE:-https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation}"
 LIVE="$ROOT/reports/company-allure/live-git"
 
 if ! gh auth status >/dev/null 2>&1; then
@@ -15,9 +16,8 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 
 if ! gh repo view "$REPO" >/dev/null 2>&1; then
-  echo "Creating public repo $REPO ..."
-  gh repo create "$REPO" --public \
-    --description "Live Allure report for L2B Vendor Appium (updated after each test run)"
+  echo "FAIL: cannot access $REPO. Log in as the company GitHub account: gh auth login"
+  exit 1
 fi
 
 # Landing page at site root; Allure report under ./allure/
@@ -36,8 +36,9 @@ if [ -d "$RESULTS" ] && ls "$RESULTS"/*-result.json >/dev/null 2>&1; then
 fi
 
 PREV=$(mktemp -d)
-if gh repo view "$REPO" >/dev/null 2>&1; then
-  git clone --depth 1 --branch gh-pages "https://github.com/${REPO}.git" "$PREV" >/dev/null 2>&1 || true
+git clone --depth 1 --branch gh-pages "https://github.com/${REPO}.git" "$PREV" >/dev/null 2>&1 || true
+if [ ! -f "$PREV/allure/index.html" ] && [ ! -f "$PREV/index.html" ]; then
+  git clone --depth 1 --branch gh-pages "https://github.com/Rajcharchil/l2b-vendor-allure.git" "$PREV" >/dev/null 2>&1 || true
 fi
 
 if [ "$HAS_RESULTS" = "1" ]; then
@@ -88,8 +89,8 @@ EOF
 
 echo
 echo "Live report (wait ~30s on first deploy):"
-echo "  Landing:  https://rajcharchil.github.io/l2b-vendor-allure/"
-echo "  Allure:   https://rajcharchil.github.io/l2b-vendor-allure/allure/"
+echo "  Landing:  ${PAGES_BASE}/"
+echo "  Allure:   ${PAGES_BASE}/allure/"
 echo
 echo "This is a PUBLIC GitHub Pages site. Anyone with the link can open it."
 echo "Re-run this script (or ./run-tests.sh) after tests; the same URL updates."

@@ -95,10 +95,10 @@ Company: unzip → open `index.html` in Chrome. If the page is blank, they shoul
 
 Same link every time. After `./run-tests.sh` or `./scripts/publish-allure.sh` it updates automatically:
 
-**https://rajcharchil.github.io/l2b-vendor-allure/** — status page (flow + coverage).  
-**https://rajcharchil.github.io/l2b-vendor-allure/allure/** — full Allure report.
+**https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/** — status page (flow + coverage).  
+**https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/** — full Allure report.
 
-Repo: https://github.com/Rajcharchil/l2b-vendor-allure (public GitHub Pages). Anyone with the URL can view screenshots from the last run.
+Repo: https://github.com/charchilfromlink2build/L2B-Vendor-Appium-Automation (public GitHub Pages). Anyone with the URL can view screenshots from the last run.
 
 To publish without re-running tests:
 
