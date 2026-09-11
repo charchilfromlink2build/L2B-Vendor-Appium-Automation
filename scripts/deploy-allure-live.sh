@@ -77,7 +77,8 @@ git init -b gh-pages
 git add -A
 git commit -m "Allure report $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 git remote add origin "https://github.com/${REPO}.git"
-git push -f origin gh-pages
+TOKEN="$(gh auth token)"
+git push -f "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages
 
 # Point Pages at gh-pages / (ignore error if already configured).
 gh api -X PUT "repos/${REPO}/pages" \
