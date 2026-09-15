@@ -195,14 +195,17 @@ def whats_next(modules: list[dict]) -> str:
 def write_bugs_html(bugs: list[dict], updated: str) -> None:
     rows = []
     for b in bugs:
+        status_l = (b.get("status") or "").lower()
+        row_class = "open" if status_l == "open" else ""
+        status_class = "status-open" if status_l == "open" else ""
         rows.append(
-            "<tr>"
+            f'<tr class="{row_class}">'
             f'<td data-label="#">{html.escape(b["num"])}</td>'
             f'<td data-label="Module/Screen">{html.escape(b["module"])}</td>'
             f'<td data-label="Bug Description">{html.escape(b["description"])}</td>'
             f'<td data-label="Severity">{html.escape(b["severity"])}</td>'
             f'<td data-label="Found On">{html.escape(b["found"])}</td>'
-            f'<td data-label="Status">{html.escape(b["status"])}</td>'
+            f'<td data-label="Status" class="{status_class}">{html.escape(b["status"])}</td>'
             "</tr>"
         )
     body = "\n".join(rows) if rows else '<tr><td colspan="6">No bugs recorded yet.</td></tr>'
@@ -325,7 +328,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
     .next strong { color: var(--progress); }
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin: 22px 0 8px;
     }
@@ -335,6 +338,13 @@ INDEX_HTML = r"""<!DOCTYPE html>
     .stat .label { margin-top: 6px; color: var(--muted); font-size: 0.85rem; }
     .stat.fail .num { color: var(--fail); }
     .stat.ok .num { color: var(--done); }
+    .stat.bugs {
+      background: #FDECEA;
+      border-color: rgba(183, 28, 28, 0.38);
+      box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.10), var(--glass-shadow);
+    }
+    .stat.bugs .num { color: var(--fail); }
+    .stat.bugs .label { color: var(--fail); font-weight: 700; }
     h2 { font-size: 1.05rem; margin: 32px 0 12px; }
     .grid {
       display: grid;
@@ -360,6 +370,18 @@ INDEX_HTML = r"""<!DOCTYPE html>
     .card.status-done { border-color: rgba(46, 125, 50, 0.28); }
     .card.status-progress { border-color: rgba(212, 151, 10, 0.35); }
     .note { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
+    .note.bugs-open {
+      margin: 14px 0 10px;
+      padding: 12px 16px;
+      color: var(--fail);
+      background: #FDECEA;
+      border: 1.5px solid rgba(183, 28, 28, 0.38);
+      border-radius: 14px;
+      font-size: 1.02rem;
+      font-weight: 750;
+      box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.08);
+    }
+    .note.bugs-open a { color: var(--fail); font-weight: 800; }
     .flow { padding: 12px; overflow-x: auto; }
     .flow svg { background: transparent !important; }
     .flow .node { cursor: default; }
@@ -418,6 +440,12 @@ INDEX_HTML = r"""<!DOCTYPE html>
       border-color: var(--line);
     }
     .btn.ghost:hover { border-color: var(--brand); }
+    .btn.bugs {
+      color: var(--fail);
+      border-color: rgba(183, 28, 28, 0.4);
+      background: #FDECEA;
+    }
+    .btn.bugs:hover { border-color: var(--fail); }
     @media (prefers-reduced-motion: reduce) {
       .flow .node-visual, .flow .node:hover .node-visual { transition: none; transform: none; }
     }
@@ -467,8 +495,12 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <div class="num">{{FAILED}}</div>
         <div class="label">Failed in latest run ({{SKIPPED}} skipped)</div>
       </div>
+      <div class="stat bugs">
+        <div class="num">{{BUGS_OPEN}}</div>
+        <div class="label">Open bugs found so far</div>
+      </div>
     </section>
-    <p class="note">Open bugs: {{BUGS_OPEN}}.</p>
+    <p class="note bugs-open">Open bugs: {{BUGS_OPEN}} — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
 
     <h2>Modules</h2>
     <div class="grid">
@@ -490,7 +522,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
 
     <footer>
       <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
-      <a class="btn ghost" href="bugs.html">Bugs found ({{BUGS_OPEN}} open)</a>
+      <a class="btn bugs" href="bugs.html">Bugs found ({{BUGS_OPEN}} open)</a>
       <a class="btn ghost" href="BUGS_FOUND.docx">Download BUGS_FOUND.docx</a>
     </footer>
   </div>
@@ -606,6 +638,8 @@ BUGS_HTML = r"""<!DOCTYPE html>
     th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid rgba(80, 50, 10, 0.08); vertical-align: top; font-size: 0.95rem; }
     th { background: rgba(255, 246, 229, 0.72); color: #1A1A1A; }
     .muted { color: var(--muted); }
+    tr.open { background: rgba(253, 236, 234, 0.62); }
+    .status-open { color: #B71C1C; font-weight: 750; }
     @media (max-width: 700px) {
       table, thead, tbody, th, td, tr { display: block; }
       thead { display: none; }

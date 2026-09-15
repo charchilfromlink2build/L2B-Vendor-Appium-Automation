@@ -1,7 +1,7 @@
 {
-  "passed": 18,
+  "passed": 34,
   "failed": 0,
-  "skipped": 1,
-  "when": "2026-09-15T15:34:00+05:30",
-  "source": "confirmed SplashScreenTest (7 passed, 1 ignored) + OnboardingCarouselTest (11 passed)"
+  "skipped": 0,
+  "when": "2026-09-15T17:08:56+05:30",
+  "source": "allure-results"
 }
