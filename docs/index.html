@@ -355,16 +355,8 @@
       <pre class="mermaid">
 flowchart TB
   subgraph launch["First launch"]
-    direction TB
-    splash(["Splash"])
-    language(["Language"])
-    splash --> language
-    onboarding(["Onboarding"])
-    language --> onboarding
-    signup(["Sign up"])
-    onboarding --> signup
-    otp(["OTP"])
-    signup --> otp
+    direction LR
+    splash(["Splash"]) --> language(["Language"]) --> onboarding(["Onboarding"]) --> signup(["Sign up"]) --> otp(["OTP"])
   end
   subgraph loggedin["After login — not started"]
     direction TB
@@ -384,7 +376,7 @@ flowchart TB
     team(["Team"])
     settings --> team
   end
-  otp -.->|valid OTP, not automated| home
+  launch -.->|valid OTP, not automated| loggedin
   class splash,language,onboarding done
   class signup,otp progress
   class home,bookings,fleet,calendar,earning,team,settings,help pending

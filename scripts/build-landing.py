@@ -151,14 +151,27 @@ def mermaid_node(mod: dict) -> str:
     return f'{mod["id"]}(["{label}"])'
 
 
+def mermaid_class_lines(coverage: dict) -> list[str]:
+    lines = []
+    for status, ids in (
+        ("done", [m["id"] for m in coverage["modules"] if m["status"] == "done"]),
+        ("progress", [m["id"] for m in coverage["modules"] if m["status"] == "in-progress"]),
+        ("pending", [m["id"] for m in coverage["modules"] if m["status"] == "pending"]),
+    ):
+        if ids:
+            lines.append(f"  class {','.join(ids)} {status}")
+    lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
+    lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
+    lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
+    return lines
+
+
 def mermaid_graph(coverage: dict) -> str:
     by_id = {m["id"]: m for m in coverage["modules"]}
     launch = coverage["firstLaunch"]
-    lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction TB"]
-    for i, mid in enumerate(launch):
-        lines.append(f"    {mermaid_node(by_id[mid])}")
-        if i > 0:
-            lines.append(f"    {launch[i-1]} --> {mid}")
+    lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction LR"]
+    chain = " --> ".join(mermaid_node(by_id[mid]) for mid in launch)
+    lines.append(f"    {chain}")
     lines.append("  end")
     lines.append('  subgraph loggedin["After login — not started"]')
     lines.append("    direction TB")
@@ -170,17 +183,9 @@ def mermaid_graph(coverage: dict) -> str:
         lines.append(f"    {mermaid_node(by_id[mid])}")
         lines.append(f"    settings --> {mid}")
     lines.append("  end")
-    lines.append("  otp -.->|valid OTP, not automated| home")
-    for status, ids in (
-        ("done", [m["id"] for m in coverage["modules"] if m["status"] == "done"]),
-        ("progress", [m["id"] for m in coverage["modules"] if m["status"] == "in-progress"]),
-        ("pending", [m["id"] for m in coverage["modules"] if m["status"] == "pending"]),
-    ):
-        if ids:
-            lines.append(f"  class {','.join(ids)} {status}")
-    lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
-    lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
-    lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
+    # Cluster-to-cluster so First launch can stay left-to-right (otp --> home forces a vertical rank).
+    lines.append("  launch -.->|valid OTP, not automated| loggedin")
+    lines.extend(mermaid_class_lines(coverage))
     return "\n".join(lines)
 
 
