@@ -10,6 +10,11 @@
             <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SplashScreenTest"/>
         </classes>
     </test>
+    <test name="00b Language screen edges" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.LanguageScreenTest"/>
+        </classes>
+    </test>
     <test name="01 Splash screen" preserve-order="true">
         <classes>
             <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
