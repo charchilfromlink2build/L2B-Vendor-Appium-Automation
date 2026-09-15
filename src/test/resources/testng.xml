@@ -1,13 +1,18 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="L2B Vendor" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
-        <listener class-name="com.l2b.vendor.utils.TestListener"/>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
         <!-- AllureTestNg is auto-registered by allure-testng; do not add it twice. -->
     </listeners>
 
+    <test name="00 Splash screen edges" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SplashScreenTest"/>
+        </classes>
+    </test>
     <test name="01 Splash screen" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.tests.SmokeTest">
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
                 <methods>
                     <include name="splashScreen"/>
                 </methods>
@@ -16,7 +21,7 @@
     </test>
     <test name="02 Language screen" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.tests.SmokeTest">
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
                 <methods>
                     <include name="languageScreen"/>
                 </methods>
@@ -25,7 +30,7 @@
     </test>
     <test name="03 Onboarding slide 1" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.tests.SmokeTest">
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
                 <methods>
                     <include name="onboardingSlideOne"/>
                 </methods>
@@ -34,7 +39,7 @@
     </test>
     <test name="04 Onboarding slide 2" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.tests.SmokeTest">
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
                 <methods>
                     <include name="onboardingSlideTwo"/>
                 </methods>
@@ -43,7 +48,7 @@
     </test>
     <test name="05 Sign up screen" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.tests.SmokeTest">
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
                 <methods>
                     <include name="signUpScreen"/>
                 </methods>
@@ -52,11 +57,16 @@
     </test>
     <test name="06 OTP screen" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.tests.SmokeTest">
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SmokeTest">
                 <methods>
                     <include name="otpScreen"/>
                 </methods>
             </class>
+        </classes>
+    </test>
+    <test name="07 Onboarding carousel edges" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.OnboardingCarouselTest"/>
         </classes>
     </test>
 </suite>

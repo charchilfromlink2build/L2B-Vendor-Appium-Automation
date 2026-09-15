@@ -20,11 +20,19 @@ if ! gh repo view "$REPO" >/dev/null 2>&1; then
   exit 1
 fi
 
+# Landing dashboard is generated from docs/coverage.json + latest Allure/Surefire counts.
+python3 "$ROOT/scripts/build-landing.py"
+
 # Landing page at site root; Allure report under ./allure/
 # If there are no local results, reuse the last published Allure folder.
 rm -rf "$LIVE"
-mkdir -p "$LIVE/allure"
+mkdir -p "$LIVE/allure" "$LIVE/assets"
 cp "$ROOT/docs/index.html" "$LIVE/index.html"
+cp "$ROOT/docs/bugs.html" "$LIVE/bugs.html"
+cp -R "$ROOT/docs/assets/." "$LIVE/assets/"
+if [ -f "$ROOT/BUGS_FOUND.docx" ]; then
+  cp "$ROOT/BUGS_FOUND.docx" "$LIVE/BUGS_FOUND.docx"
+fi
 touch "$LIVE/.nojekyll"
 
 ALLURE="$ROOT/.allure/allure-2.32.2/bin/allure"

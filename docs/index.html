@@ -3,257 +3,446 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>L2B Vendor — Appium Automation</title>
+  <title>Vendor App — Automation Testing</title>
+  <link rel="icon" href="assets/ic_launcher.png">
   <style>
     :root {
-      --text: #1a1a1a;
-      --muted: #5c5c5c;
-      --line: #d9d9d9;
-      --bg: #f6f6f4;
-      --card: #ffffff;
-      --auto: #2d6a4f;
-      --auto-bg: #e8f5ee;
-      --pending: #6b6b6b;
-      --pending-bg: #ececec;
-      --accent: #1d4e89;
+      --brand: #FEB637;
+      --brand-dark: #E39A1C;
+      --cream: #FFFEF9;
+      --bg: #F3E6D4;
+      --card: rgba(255, 254, 249, 0.64);
+      --text: #1A1A1A;
+      --muted: #4F4F4F;
+      --line: rgba(255, 255, 255, 0.48);
+      --done: #145218;
+      --done-bg: #E8F5E9;
+      --progress: #7A5200;
+      --progress-bg: #FFF6E5;
+      --pending: #3D3D3D;
+      --pending-bg: #F3F3F3;
+      --fail: #B71C1C;
+      --glass-blur: blur(14px) saturate(140%);
+      --glass-shadow: 0 8px 28px rgba(80, 50, 10, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
     }
     * { box-sizing: border-box; }
+    html { color-scheme: light; }
     body {
       margin: 0;
-      background: var(--bg);
+      min-height: 100vh;
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      line-height: 1.5;
+      line-height: 1.45;
+      background:
+        radial-gradient(900px 420px at 8% -8%, rgba(254, 182, 55, 0.28), transparent 55%),
+        radial-gradient(820px 400px at 100% 0%, rgba(20, 82, 24, 0.10), transparent 52%),
+        radial-gradient(720px 380px at 78% 100%, rgba(254, 164, 5, 0.12), transparent 50%),
+        linear-gradient(180deg, #F7EFE3 0%, #F3E6D4 100%);
     }
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 40px 20px 64px;
-    }
-    h1 { font-size: 1.6rem; font-weight: 650; margin: 0 0 8px; }
-    h2 { font-size: 1.1rem; font-weight: 650; margin: 40px 0 12px; }
-    p.lede, p.note { color: var(--muted); margin: 0 0 12px; max-width: 46em; }
-    ol.order {
-      margin: 0 0 20px;
-      padding: 16px 16px 16px 36px;
-      background: var(--card);
-      border: 1px solid var(--line);
-    }
-    ol.order li { margin: 4px 0; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--card);
-      border: 1px solid var(--line);
-    }
-    th, td {
-      text-align: left;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--line);
-      font-size: 0.95rem;
-      vertical-align: top;
-    }
-    th { font-weight: 600; background: #f0f0ee; }
-    tr:last-child td { border-bottom: 0; }
-    .status-automated { color: var(--auto); font-weight: 600; }
-    .status-progress { color: #8a6d1d; font-weight: 600; }
-    .status-not { color: var(--pending); }
-    .flow {
-      background: var(--card);
-      border: 1px solid var(--line);
-      padding: 16px;
-      overflow-x: auto;
-    }
-    .legend {
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 20px 64px; }
+    header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-    .swatch {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      margin-right: 6px;
-      vertical-align: middle;
-      border: 1px solid var(--line);
-    }
-    .swatch.auto { background: var(--auto-bg); border-color: var(--auto); }
-    .swatch.pending { background: var(--pending-bg); }
-    .env {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      background: var(--card);
-      border: 1px solid var(--line);
-    }
-    .env li {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 16px;
+      padding: 8px 0 20px;
+      border-bottom: 1px solid rgba(80, 50, 10, 0.10);
     }
-    .env li:last-child { border-bottom: 0; }
-    .env span { color: var(--muted); }
-    .cta {
-      display: inline-block;
-      margin-top: 28px;
-      padding: 12px 20px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; min-height: 0; }
+    .brand img {
+      height: 72px;
+      width: auto;
+      max-width: 200px;
+      max-height: 72px;
+      object-fit: contain;
+      flex-shrink: 0;
+      min-width: 0;
+      min-height: 0;
+    }
+    .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; font-weight: 400; max-width: 42em; line-height: 1.4; }
+    .updated { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+    .next,
+    .stat,
+    .card,
+    .flow {
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--glass-shadow);
+    }
+    .next {
+      margin: 18px 0 0;
+      padding: 12px 16px;
+      font-size: 0.98rem;
+    }
+    .next strong { color: var(--progress); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 22px 0 8px;
+    }
+    .stat { padding: 16px 16px 14px; }
+    .stat .num { font-size: 1.85rem; font-weight: 750; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); }
+    .stat .num span { color: var(--muted); font-size: 1.1rem; font-weight: 600; }
+    .stat .label { margin-top: 6px; color: var(--muted); font-size: 0.85rem; }
+    .stat.fail .num { color: var(--fail); }
+    .stat.ok .num { color: var(--done); }
+    h2 { font-size: 1.05rem; margin: 32px 0 12px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .card { padding: 14px 14px 12px; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .card h3 { margin: 0; font-size: 1rem; color: var(--text); }
+    .cases { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .badge.done { background: var(--done-bg); color: var(--done); }
+    .badge.progress { background: var(--progress-bg); color: var(--progress); }
+    .badge.pending { background: var(--pending-bg); color: var(--pending); }
+    .card.status-done { border-color: rgba(46, 125, 50, 0.28); }
+    .card.status-progress { border-color: rgba(212, 151, 10, 0.35); }
+    .note { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
+    .flow { padding: 12px; overflow-x: auto; }
+    .flow svg { background: transparent !important; }
+    .flow .node { cursor: default; }
+    .flow .node-visual {
+      transition: transform 0.18s ease, filter 0.18s ease;
+      transform-box: fill-box;
+      transform-origin: center;
+      filter: drop-shadow(0 2px 3px rgba(26, 26, 26, 0.12));
+    }
+    .flow .node:hover .node-visual {
+      transform: translateY(-3px) scale(1.03);
+      filter: drop-shadow(0 8px 12px rgba(26, 26, 26, 0.18));
+    }
+    .flow .node .label-container > path[stroke]:not([stroke="none"]) {
+      stroke-width: 2.25px !important;
+    }
+    .flow .node:hover .label-container > path[stroke]:not([stroke="none"]) {
+      stroke-width: 2.85px !important;
+    }
+    .flow .node .nodeLabel,
+    .flow .node span,
+    .flow .node p {
       font-weight: 650;
     }
-    .cta:hover { filter: brightness(0.95); }
-    @media (max-width: 420px) {
-      main { padding: 24px 14px 48px; }
-      .env li { flex-direction: column; gap: 2px; }
+    .flow .node.done .nodeLabel { color: #145218; }
+    .flow .node.progress .nodeLabel { color: #7A5200; }
+    .flow .node.pending .nodeLabel { color: #3D3D3D; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--muted); font-size: 0.85rem; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot.done { background: var(--done); }
+    .dot.progress { background: var(--brand); }
+    .dot.pending { background: #8D8D8D; }
+    footer {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(80, 50, 10, 0.10);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+    .btn.primary { background: var(--brand); color: #1A1A1A; }
+    .btn.primary:hover { background: var(--brand-dark); }
+    .btn.ghost {
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .btn.ghost:hover { border-color: var(--brand); }
+    @media (prefers-reduced-motion: reduce) {
+      .flow .node-visual, .flow .node:hover .node-visual { transition: none; transform: none; }
+    }
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      header { flex-direction: column; align-items: flex-start; }
+      .brand img { height: 56px; max-height: 56px; }
+    }
+    @media (max-width: 480px) {
+      .wrap { padding: 16px 14px 48px; }
+      .stats { grid-template-columns: 1fr; }
+      .brand h1 { font-size: 1.15rem; }
+      .purpose { font-size: 0.88rem; }
+      .grid { grid-template-columns: 1fr; }
+      .btn { width: 100%; text-align: center; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>L2B Vendor — Appium Automation</h1>
-    <p class="lede">
-      Black-box UI suite for the Vendor QA APK (<code>com.l2b.app.qa</code>).
-      Tests run <strong>top to bottom in this order</strong>. Green boxes are already in Allure.
-      Grey boxes are next — they are not in the suite yet.
-    </p>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img src="assets/ic_splash_logo.png" alt="L2B Partner App">
+        <div>
+          <h1>Vendor App — Automation Testing</h1>
+          <p class="purpose">L2B Vendor is the partner app where vendors receive rental and material orders from customers, fulfil those jobs, and manage machines, bookings, fleet, team, and earnings in one place.</p>
+          <div class="updated">Last updated 15 Sep 2026, 03:45 PM IST</div>
+        </div>
+      </div>
+    </header>
 
-    <h2>Test order</h2>
-    <ol class="order">
-      <li>Splash (cold launch → first stable UI)</li>
-      <li>Language selection (English + Get started)</li>
-      <li>Onboarding slide 1 (Skip / Next)</li>
-      <li>Onboarding slide 2 (Get started)</li>
-      <li>Sign up (phone, +91, terms, Get OTP visible)</li>
-      <li>OTP screen (open only — valid OTP is not submitted in this suite)</li>
-      <li>Home, then Calendar / Earning / Fleet / Profile &amp; settings — not started</li>
-    </ol>
+    <p class="next">Next up: <strong>Language</strong> — module-by-module edge cases, in first-launch order.</p>
 
-    <h2>Coverage</h2>
-    <!-- TODO: add a row per new module (OTP submit, Home, Fleet, Team, Account, Calendar, KYC, …) -->
-    <table>
-      <thead>
-        <tr>
-          <th>Module</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Splash</td>
-          <td class="status-automated">Automated</td>
-        </tr>
-        <tr>
-          <td>Language</td>
-          <td class="status-automated">Automated</td>
-        </tr>
-        <tr>
-          <td>Onboarding</td>
-          <td class="status-automated">Automated</td>
-        </tr>
-        <tr>
-          <td>Sign up</td>
-          <td class="status-automated">Automated</td>
-        </tr>
-        <tr>
-          <td>OTP (open screen)</td>
-          <td class="status-progress">In progress</td>
-        </tr>
-        <tr>
-          <td>Home</td>
-          <td class="status-not">Not started</td>
-        </tr>
-        <tr>
-          <td>Fleet</td>
-          <td class="status-not">Not started</td>
-        </tr>
-        <tr>
-          <td>Calendar</td>
-          <td class="status-not">Not started</td>
-        </tr>
-        <tr>
-          <td>Earning</td>
-          <td class="status-not">Not started</td>
-        </tr>
-        <tr>
-          <td>Profile / settings</td>
-          <td class="status-not">Not started</td>
-        </tr>
-        <tr>
-          <td>Team / Account (drawer)</td>
-          <td class="status-not">Not started</td>
-        </tr>
-      </tbody>
-    </table>
+    <section class="stats" aria-label="Overall progress">
+      <div class="stat">
+        <div class="num">3 <span>/ 72</span></div>
+        <div class="label">Screens automated</div>
+      </div>
+      <div class="stat">
+        <div class="num">4.2%</div>
+        <div class="label">Coverage</div>
+      </div>
+      <div class="stat ok">
+        <div class="num">18</div>
+        <div class="label">Passed in latest run</div>
+      </div>
+      <div class="stat fail">
+        <div class="num">0</div>
+        <div class="label">Failed in latest run (1 skipped)</div>
+      </div>
+    </section>
+    <p class="note">Latest run 15 Sep 2026, 03:34 PM IST. Open bugs: 5.</p>
+
+    <h2>Modules</h2>
+    <div class="grid">
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Splash</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">8/8 cases</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Language</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Onboarding</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">11/11 cases</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Sign up</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>OTP</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Home</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Bookings</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Fleet</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Calendar</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Earning</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Team</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Profile / Settings</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Help</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+    </div>
 
     <h2>App flow</h2>
-    <p class="note">
-      Read left-to-right then down. First-launch is a straight line. After a valid OTP the app
-      lands on Home; Fleet, Calendar, Earning and settings hang off Home — they are not tested yet.
-    </p>
+    <p class="note">Green is done. Amber is in progress. Grey is not started. After a valid OTP the app lands on Home.</p>
     <div class="flow">
-      <!--
-        Extend this graph when a new module is automated:
-        add a node, an edge from the previous screen, classDef automated,
-        and a Coverage table row above.
-      -->
       <pre class="mermaid">
 flowchart TB
-  subgraph launch["First launch — suite order"]
+  subgraph launch["First launch"]
     direction TB
-    Splash["1 Splash"] --> Language["2 Language"]
-    Language -->|"English, Get started"| O1["3 Onboarding slide 1"]
-    O1 -->|Next| O2["4 Onboarding slide 2"]
-    O1 -->|Skip| Signup
-    O2 -->|"Get started"| Signup["5 Sign up"]
-    Signup -->|"Get OTP"| OTP["6 OTP screen"]
+    splash(["Splash"])
+    language(["Language"])
+    splash --> language
+    onboarding(["Onboarding"])
+    language --> onboarding
+    signup(["Sign up"])
+    onboarding --> signup
+    otp(["OTP"])
+    signup --> otp
   end
-
-  subgraph loggedin["After login — not in suite yet"]
+  subgraph loggedin["After login — not started"]
     direction TB
-    Home["Home"]
-    Home --> Calendar["Calendar"]
-    Home --> Earning["Earning"]
-    Home --> Fleet["Fleet"]
-    Home --> Settings["Profile / settings"]
-    Settings --> Team["Team"]
-    Settings --> Account["Account"]
+    home(["Home"])
+    bookings(["Bookings"])
+    home --> bookings
+    fleet(["Fleet"])
+    home --> fleet
+    calendar(["Calendar"])
+    home --> calendar
+    earning(["Earning"])
+    home --> earning
+    settings(["Profile / Settings"])
+    home --> settings
+    help(["Help"])
+    home --> help
+    team(["Team"])
+    settings --> team
   end
-
-  OTP -.->|"valid OTP — not automated"| Home
-
-  class Splash,Language,O1,O2,Signup automated
-  class OTP progress
-  class Home,Calendar,Earning,Fleet,Settings,Team,Account pending
-  classDef automated fill:#e8f5ee,stroke:#2d6a4f,color:#1b4332
-  classDef progress fill:#fff6d9,stroke:#8a6d1d,color:#5c4a12
-  classDef pending fill:#ececec,stroke:#8a8a8a,color:#5c5c5c
+  otp -.->|valid OTP, not automated| home
+  class splash,onboarding done
+  class language,signup,otp,home,bookings,fleet,calendar,earning,team,settings,help pending
+  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px
+  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px
+  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px
       </pre>
       <div class="legend">
-        <span><i class="swatch auto"></i>Automated (in Allure today)</span>
-        <span><i class="swatch pending"></i>Not started (Home, Fleet, settings, …)</span>
+        <span><i class="dot done"></i>Done</span>
+        <span><i class="dot progress"></i>In progress</span>
+        <span><i class="dot pending"></i>Pending</span>
       </div>
     </div>
 
-    <h2>Environment</h2>
-    <ul class="env">
-      <li><span>Appium</span><strong>3.6.0</strong></li>
-      <li><span>Java</span><strong>17</strong></li>
-      <li><span>Automation</span><strong>UiAutomator2</strong></li>
-      <li><span>Android</span><strong>16</strong></li>
-      <li><span>Emulator</span><strong>Medium_Phone_API_36.1</strong></li>
-    </ul>
-
-    <a class="cta" href="./allure/">Open full Allure report</a>
-  </main>
+    <footer>
+      <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
+      <a class="btn ghost" href="bugs.html">Bugs found (5 open)</a>
+      <a class="btn ghost" href="BUGS_FOUND.docx">Download BUGS_FOUND.docx</a>
+    </footer>
+  </div>
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-    mermaid.initialize({ startOnLoad: true, theme: "neutral", flowchart: { htmlLabels: true } });
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      themeVariables: {
+        background: "transparent",
+        primaryTextColor: "#1A1A1A",
+        lineColor: "#B8B0A4",
+        clusterBkg: "rgba(255,255,255,0.28)",
+        clusterBorder: "rgba(255,255,255,0.45)",
+        titleColor: "#5C5C5C",
+        edgeLabelBackground: "rgba(255,254,249,0.85)"
+      },
+      flowchart: { htmlLabels: true, curve: "basis", padding: 12 }
+    });
+    await mermaid.run({ querySelector: ".mermaid" });
+    const ns = "http://www.w3.org/2000/svg";
+    document.querySelectorAll(".flow svg").forEach((svg) => {
+      let defs = svg.querySelector("defs");
+      if (!defs) {
+        defs = document.createElementNS(ns, "defs");
+        svg.prepend(defs);
+      }
+      if (!svg.querySelector("#l2b-grad-done")) {
+        defs.insertAdjacentHTML("beforeend", `
+          <linearGradient id="l2b-grad-done" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F4FBF5"/>
+            <stop offset="100%" stop-color="#C8E6C9"/>
+          </linearGradient>
+          <linearGradient id="l2b-grad-progress" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFBF2"/>
+            <stop offset="100%" stop-color="#FFE4A8"/>
+          </linearGradient>
+          <linearGradient id="l2b-grad-pending" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FBFBFB"/>
+            <stop offset="100%" stop-color="#E4E4E4"/>
+          </linearGradient>`);
+      }
+      const paintFill = (status, fill) => {
+        svg.querySelectorAll(`.node.${status} .label-container > path`).forEach((el) => {
+          const current = el.getAttribute("fill");
+          if (current && current !== "none") {
+            el.setAttribute("fill", fill);
+            el.style.setProperty("fill", fill, "important");
+          }
+          el.style.removeProperty("stroke-width");
+        });
+        svg.querySelectorAll(`.node.${status} .label rect`).forEach((el) => {
+          el.setAttribute("fill", "transparent");
+          el.setAttribute("stroke", "none");
+          el.style.setProperty("fill", "transparent", "important");
+          el.style.setProperty("stroke", "none", "important");
+        });
+      };
+      paintFill("done", "url(#l2b-grad-done)");
+      paintFill("progress", "url(#l2b-grad-progress)");
+      paintFill("pending", "url(#l2b-grad-pending)");
+      svg.querySelectorAll(".node").forEach((node) => {
+        if (node.querySelector(":scope > .node-visual")) return;
+        const wrap = document.createElementNS(ns, "g");
+        wrap.setAttribute("class", "node-visual");
+        while (node.firstChild) wrap.appendChild(node.firstChild);
+        node.appendChild(wrap);
+      });
+    });
   </script>
 </body>
 </html>

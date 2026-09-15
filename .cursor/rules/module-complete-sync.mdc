@@ -1,0 +1,28 @@
+---
+description: Keep test code, GitHub Pages dashboard, and BUGS_FOUND.docx in the same commit after a module is confirmed complete
+alwaysApply: true
+---
+
+# Module complete = one commit (code + dashboard + bugs)
+
+After a module is **genuinely complete**, update these three in the **same commit** as the test code — never as a later follow-up:
+
+1. Test code (page objects, tests, suite XML)
+2. GitHub Pages dashboard (`docs/coverage.json`, `docs/index.html`, and any related `docs/` pages)
+3. `BUGS_FOUND.docx` — only if new bugs were found on that module (append; do not mark bugs Fixed unless the user verified)
+
+## Gate (all required)
+
+A module is complete only when:
+
+- Tests are written
+- Tests have been run on the real device/emulator
+- The user has **confirmed the results**
+
+Do not update the dashboard or bug doc from projected/assumed results. Do not ship dashboard/bug-doc updates before user confirmation.
+
+## Do not leave them out of sync
+
+Never commit test code for a finished module while leaving the dashboard or bug doc stale. Never update the dashboard/bug doc in a separate later step after the test commit.
+
+If the user has not confirmed yet, stop after the evidence report and wait.

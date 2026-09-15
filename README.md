@@ -56,7 +56,7 @@ mvn test && ./report.sh
 
 That sequence is required for the Allure **TREND** widget: `./report.sh` copies `target/allure-report/history` into the next results dir. `mvn allure:serve` skips history and will not grow the trend.
 
-Only **SmokeTest** is in `src/test/resources/testng.xml`.
+Default `mvn test` (`src/test/resources/testng.xml`) is the full committed suite: **SplashScreenTest**, onboarding **SmokeTest**, then **OnboardingCarouselTest**. Isolated runs: `splash-screen.xml` and `onboarding-carousel.xml`.
 
 **SmokeTest sets `noReset=false`.** That **clears Vendor app data** so first-launch (language → carousel → Sign up) can run. Do not run it if you still need the current logged-in session.
 
@@ -114,18 +114,12 @@ Skip the live deploy: `DEPLOY_LIVE=0 ./scripts/publish-allure.sh`
 
 ```
 src/test/java/com/l2b/vendor/
-  base/BaseTest.java
-  pages/          BaseScreen, Language, onboarding, Sign up
-  tests/SmokeTest.java
-  utils/          Config, Waits, ComposeLocators, DriverFactory,
-                  DriverManager, TestListener, ApiClient
-src/test/resources/
-  testng.xml
-  config.properties
-  allure.properties
-  log4j2.xml
+  environment/          Config, device/Appium check, Allure metadata
+  core/                 driver, waits, HTTP, BaseTest (session only)
+  modules/<feature>/
+    data/               Swagger API + DTOs
+    domain/             *Environment (noReset, session, prepareSuite)
+    presentation/       pages + tests
 ```
 
-`ApiClient` (`sendOtp`, `verifyOtp`, `getOnboardingStatus`) is ready. Smoke does not call it.
-
-Module tests (Onboarding/Login, Fleet, …) are **not** started until this smoke + Allure path is confirmed.
+Swagger: `https://qa.waardian.com/api/v1/openapi.json`. Only **onboarding** UI tests run today.
