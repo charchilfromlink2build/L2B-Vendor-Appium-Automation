@@ -151,27 +151,14 @@ def mermaid_node(mod: dict) -> str:
     return f'{mod["id"]}(["{label}"])'
 
 
-def mermaid_class_lines(coverage: dict) -> list[str]:
-    lines = []
-    for status, ids in (
-        ("done", [m["id"] for m in coverage["modules"] if m["status"] == "done"]),
-        ("progress", [m["id"] for m in coverage["modules"] if m["status"] == "in-progress"]),
-        ("pending", [m["id"] for m in coverage["modules"] if m["status"] == "pending"]),
-    ):
-        if ids:
-            lines.append(f"  class {','.join(ids)} {status}")
-    lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
-    lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
-    lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
-    return lines
-
-
 def mermaid_graph(coverage: dict) -> str:
     by_id = {m["id"]: m for m in coverage["modules"]}
     launch = coverage["firstLaunch"]
-    lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction LR"]
-    chain = " --> ".join(mermaid_node(by_id[mid]) for mid in launch)
-    lines.append(f"    {chain}")
+    lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction TB"]
+    for i, mid in enumerate(launch):
+        lines.append(f"    {mermaid_node(by_id[mid])}")
+        if i > 0:
+            lines.append(f"    {launch[i-1]} --> {mid}")
     lines.append("  end")
     lines.append('  subgraph loggedin["After login — not started"]')
     lines.append("    direction TB")
@@ -183,9 +170,17 @@ def mermaid_graph(coverage: dict) -> str:
         lines.append(f"    {mermaid_node(by_id[mid])}")
         lines.append(f"    settings --> {mid}")
     lines.append("  end")
-    # Cluster-to-cluster so First launch can stay left-to-right (otp --> home forces a vertical rank).
-    lines.append("  launch -.->|valid OTP, not automated| loggedin")
-    lines.extend(mermaid_class_lines(coverage))
+    lines.append("  otp -.->|valid OTP, not automated| home")
+    for status, ids in (
+        ("done", [m["id"] for m in coverage["modules"] if m["status"] == "done"]),
+        ("progress", [m["id"] for m in coverage["modules"] if m["status"] == "in-progress"]),
+        ("pending", [m["id"] for m in coverage["modules"] if m["status"] == "pending"]),
+    ):
+        if ids:
+            lines.append(f"  class {','.join(ids)} {status}")
+    lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
+    lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
+    lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
     return "\n".join(lines)
 
 
@@ -353,10 +348,28 @@ INDEX_HTML = r"""<!DOCTYPE html>
     h2 { font-size: 1.05rem; margin: 32px 0 12px; }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 28px;
+      row-gap: 12px;
     }
-    .card { padding: 14px 14px 12px; }
+    .card { padding: 14px 14px 12px; position: relative; }
+    .grid .card:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: 28px;
+      transform: translateY(-50%);
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #8A5A00;
+      pointer-events: none;
+    }
+    .grid .card:nth-child(4n)::after {
+      content: none;
+    }
     .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .card h3 { margin: 0; font-size: 1rem; color: var(--text); }
     .cases { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; }
@@ -458,13 +471,28 @@ INDEX_HTML = r"""<!DOCTYPE html>
       .stats { grid-template-columns: repeat(2, 1fr); }
       header { flex-direction: column; align-items: flex-start; }
       .brand img { height: 56px; max-height: 56px; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid .card:nth-child(4n)::after { content: "→"; }
+      .grid .card:nth-child(2n)::after { content: none; }
     }
     @media (max-width: 480px) {
       .wrap { padding: 16px 14px 48px; }
       .stats { grid-template-columns: 1fr; }
       .brand h1 { font-size: 1.15rem; }
       .purpose { font-size: 0.88rem; }
-      .grid { grid-template-columns: 1fr; }
+      .grid {
+        grid-template-columns: 1fr;
+        row-gap: 28px;
+      }
+      .grid .card:not(:last-child)::after {
+        content: "↓";
+        left: 50%;
+        top: 100%;
+        width: auto;
+        transform: translate(-50%, 4px);
+      }
+      .grid .card:nth-child(2n)::after { content: "↓"; }
+      .grid .card:last-child::after { content: none; }
       .btn { width: 100%; text-align: center; }
     }
   </style>
