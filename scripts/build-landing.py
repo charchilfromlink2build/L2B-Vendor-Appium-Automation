@@ -226,14 +226,12 @@ def build() -> None:
 
     page = INDEX_HTML
     replacements = {
-        "{{LAST_UPDATED}}": html.escape(updated),
         "{{AUTOMATED_SCREENS}}": str(automated),
         "{{TOTAL_SCREENS}}": str(total_screens),
         "{{COVERAGE_PCT}}": pct_label,
         "{{PASSED}}": str(int(run.get("passed") or 0)),
         "{{FAILED}}": str(int(run.get("failed") or 0)),
         "{{SKIPPED}}": str(int(run.get("skipped") or 0)),
-        "{{RUN_WHEN}}": html.escape(fmt_when(str(run.get("when") or ""))),
         "{{WHATS_NEXT}}": html.escape(whats_next(modules)),
         "{{MODULE_CARDS}}": module_cards(modules),
         "{{MERMAID}}": mermaid_graph(coverage),
@@ -308,7 +306,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
     }
     .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
     .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; font-weight: 400; max-width: 42em; line-height: 1.4; }
-    .updated { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
     .next,
     .stat,
     .card,
@@ -447,7 +444,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <div>
           <h1>Vendor App — Automation Testing</h1>
           <p class="purpose">L2B Vendor is the partner app where vendors receive rental and material orders from customers, fulfil those jobs, and manage machines, bookings, fleet, team, and earnings in one place.</p>
-          <div class="updated">Last updated {{LAST_UPDATED}}</div>
         </div>
       </div>
     </header>
@@ -472,7 +468,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <div class="label">Failed in latest run ({{SKIPPED}} skipped)</div>
       </div>
     </section>
-    <p class="note">Latest run {{RUN_WHEN}}. Open bugs: {{BUGS_OPEN}}.</p>
+    <p class="note">Open bugs: {{BUGS_OPEN}}.</p>
 
     <h2>Modules</h2>
     <div class="grid">
