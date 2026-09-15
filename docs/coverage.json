@@ -2,10 +2,10 @@
   "totalScreens": 72,
   "modules": [
     {"id": "splash", "name": "Splash", "status": "done", "casesDone": 8, "casesTotal": 8, "screens": 1},
-    {"id": "language", "name": "Language", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "language", "name": "Language", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "onboarding", "name": "Onboarding", "status": "done", "casesDone": 11, "casesTotal": 11, "screens": 2},
-    {"id": "signup", "name": "Sign up", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
-    {"id": "otp", "name": "OTP", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "signup", "name": "Sign up", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "otp", "name": "OTP", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "home", "name": "Home", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "bookings", "name": "Bookings", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "fleet", "name": "Fleet", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
