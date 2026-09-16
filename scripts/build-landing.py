@@ -162,12 +162,25 @@ def mermaid_graph(coverage: dict) -> str:
     by_id = {m["id"]: m for m in coverage["modules"]}
     launch = coverage["firstLaunch"]
     labels = coverage.get("firstLaunchEdgeLabels") or {}
+    branches = coverage.get("firstLaunchBranches") or []
+    loggedin_ids = set(
+        ["home"]
+        + list(coverage.get("postLoginFromHome") or [])
+        + list(coverage.get("postLoginFromSettings") or [])
+    )
     lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction TB"]
+    declared = set()
     for i, mid in enumerate(launch):
         lines.append(f"    {mermaid_node(by_id[mid])}")
+        declared.add(mid)
         if i > 0:
             prev = launch[i - 1]
             lines.append(mermaid_edge(prev, mid, labels.get(f"{prev}->{mid}")))
+    for branch in branches:
+        for mid in (branch.get("from"), branch.get("to")):
+            if mid and mid not in declared and mid not in loggedin_ids and mid in by_id:
+                lines.append(f"    {mermaid_node(by_id[mid])}")
+                declared.add(mid)
     lines.append("  end")
     lines.append('  subgraph loggedin["After login — not started"]')
     lines.append("    direction TB")
@@ -179,7 +192,7 @@ def mermaid_graph(coverage: dict) -> str:
         lines.append(f"    {mermaid_node(by_id[mid])}")
         lines.append(f"    settings --> {mid}")
     lines.append("  end")
-    for branch in coverage.get("firstLaunchBranches") or []:
+    for branch in branches:
         lines.append(mermaid_edge(branch["from"], branch["to"], branch.get("label"), indent="  "))
     link_otp_home = coverage.get("linkOtpToHome")
     if link_otp_home is None:
@@ -199,17 +212,23 @@ def mermaid_graph(coverage: dict) -> str:
     return "\n".join(lines)
 
 
-def flow_shots(evidence: list, note: str | None = None) -> str:
+def flow_shots(
+    evidence: list,
+    note: str | None = None,
+    heading: str = "First login after OTP",
+    extra_class: str = "",
+) -> str:
     if not evidence:
         return ""
     note_html = html.escape(
         note
-        or "Live-app screenshots, 16 Sep 2026. Contact us opens the same Help & Support chrome as the logged-in Help module."
+        or "Live-app screenshots, Sep."
     )
+    shots_class = "shots" + (f" {extra_class}" if extra_class else "")
     parts = [
-        "    <h2>First login after OTP</h2>",
+        f"    <h2>{html.escape(heading)}</h2>",
         f'    <p class="note">{note_html}</p>',
-        '    <div class="shots">',
+        f'    <div class="{shots_class}">',
     ]
     for shot in evidence:
         caption = html.escape(shot.get("caption") or "")
@@ -292,6 +311,34 @@ def build() -> None:
         "{{FLOW_SHOTS}}": flow_shots(
             coverage.get("flowEvidence") or [],
             coverage.get("flowEvidenceNote"),
+        ),
+        "{{ROLE_SHOTS}}": flow_shots(
+            coverage.get("roleEvidence") or [],
+            coverage.get("roleEvidenceNote"),
+            "After Select your role",
+        ),
+        "{{CATEGORY_SHOTS}}": flow_shots(
+            coverage.get("categoryEvidence") or [],
+            coverage.get("categoryEvidenceNote"),
+            "After Select category",
+        ),
+        "{{MATERIAL_SHOTS}}": flow_shots(
+            coverage.get("materialEvidence") or [],
+            coverage.get("materialEvidenceNote"),
+            "Material Vendor registration",
+            "filmstrip",
+        ),
+        "{{RENTAL_SHOTS}}": flow_shots(
+            coverage.get("rentalEvidence") or [],
+            coverage.get("rentalEvidenceNote"),
+            "Rental Vendor registration",
+            "filmstrip",
+        ),
+        "{{OPERATOR_SHOTS}}": flow_shots(
+            coverage.get("operatorEvidence") or [],
+            coverage.get("operatorEvidenceNote"),
+            "Operator / Driver registration",
+            "filmstrip",
         ),
         "{{BUGS_OPEN}}": str(sum(1 for b in bugs if b.get("status", "").lower() == "open")),
     }
@@ -482,6 +529,14 @@ INDEX_HTML = r"""<!DOCTYPE html>
       text-align: center;
       padding: 16px;
     }
+    .shots.filmstrip {
+      grid-template-columns: 1fr;
+    }
+    .shots.filmstrip img {
+      max-height: 240px;
+      object-fit: contain;
+      background: #1a1a1a;
+    }
     .note { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
     .note.bugs-open {
       margin: 14px 0 10px;
@@ -650,6 +705,16 @@ INDEX_HTML = r"""<!DOCTYPE html>
     </div>
 
 {{FLOW_SHOTS}}
+
+{{ROLE_SHOTS}}
+
+{{CATEGORY_SHOTS}}
+
+{{MATERIAL_SHOTS}}
+
+{{RENTAL_SHOTS}}
+
+{{OPERATOR_SHOTS}}
 
     <footer>
       <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
