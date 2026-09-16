@@ -27,10 +27,16 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
+/**
+ * Splash / first-launch permission gate for the Vendor QA APK ({@code com.l2b.app.qa}).
+ * Covers the system notification dialog and the splash-to-language handoff: Allow, Deny,
+ * Back-dismiss, 8-second timeout, offline launch, force-stop, and rotation. One Appium session per method.
+ */
 @Epic("Vendor app")
 @Feature("Splash screen")
 public class SplashScreenTest extends BaseTest {
 
+    /** Language must appear within this window after the permission dialog is handled. */
     private static final Duration SPLASH_TIMEOUT = Duration.ofSeconds(8);
 
     @BeforeSuite(alwaysRun = true)
@@ -38,21 +44,25 @@ public class SplashScreenTest extends BaseTest {
         OnboardingEnvironment.prepareSuite();
     }
 
+    /** Clear app data so every case starts at the real first-launch splash / permission prompt. */
     @Override
     protected boolean noReset() {
         return false;
     }
 
+    /** Isolated sessions so Allow / Deny / offline radio state cannot leak between cases. */
     @Override
     protected boolean newSessionPerMethod() {
         return true;
     }
 
+    /** Leave the system dialog on screen — these cases are specifically about that prompt. */
     @Override
     protected boolean autoGrantPermissions() {
         return false;
     }
 
+    /** Turn Wi-Fi and mobile data off before the offline-launch case creates its session. */
     @Override
     protected void beforeCreateDriver(Method method) {
         if ("noNetworkAtLaunchThenRecover".equals(method.getName())) {
@@ -60,6 +70,7 @@ public class SplashScreenTest extends BaseTest {
         }
     }
 
+    /** Always restore radios after a method so a failed offline case cannot leave the emulator dark. */
     @AfterMethod(alwaysRun = true)
     public void restoreRadios() {
         try {
@@ -69,6 +80,11 @@ public class SplashScreenTest extends BaseTest {
         }
     }
 
+    /**
+     * Simulates a first-time user tapping Allow on the system notification prompt.
+     * Expected: the dialog closes and the language chooser becomes the first in-app screen.
+     * This is the happy-path gate — without it, later first-launch modules never start.
+     */
     @Test(description = "Notification permission ALLOW")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Cold launch shows the system notification dialog. ALLOW → app proceeds to language.")
@@ -85,6 +101,11 @@ public class SplashScreenTest extends BaseTest {
         language.attachScreenshot("splash-allow-language");
     }
 
+    /**
+     * Simulates a user tapping Don't allow on the notification prompt.
+     * Expected: the app does not crash and still reaches the language screen.
+     * Notifications are optional for first-launch; denying them must not block onboarding.
+     */
     @Test(description = "Notification permission DENY")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Don't allow → app does not crash; first-launch continues to language.")
@@ -98,6 +119,11 @@ public class SplashScreenTest extends BaseTest {
         language.attachScreenshot("splash-deny-language");
     }
 
+    /**
+     * Simulates dismissing the permission dialog with the device Back key (neither Allow nor Deny).
+     * Expected: GrantPermissionsActivity is gone and language still appears; the app must not hang.
+     * Users often dismiss system prompts with Back; that must not trap them on the splash gate.
+     */
     @Test(description = "Notification permission dismissed with Back")
     @Severity(SeverityLevel.NORMAL)
     @Description("Back without Allow/Deny → dialog gone, app does not hang on GrantPermissionsActivity.")
@@ -114,6 +140,11 @@ public class SplashScreenTest extends BaseTest {
         language.attachScreenshot("splash-dismiss-back-language");
     }
 
+    /**
+     * Simulates Allow and then waits for the first in-app screen.
+     * Expected: language appears within 8 seconds (splash-specific timeout, not a generic wait).
+     * A hung splash after permission grant is a blocker for every later first-launch flow.
+     */
     @Test(description = "Splash proceeds within 8s")
     @Severity(SeverityLevel.CRITICAL)
     @Description("After Allow, language must appear within 8s. Timeout uses a splash-specific message, not a generic Wait timeout.")
@@ -124,6 +155,13 @@ public class SplashScreenTest extends BaseTest {
         new LanguagePage().waitUntilVisible(SPLASH_TIMEOUT);
     }
 
+    /**
+     * Simulates a cold launch with Wi-Fi and mobile data already off, then restoring radios and tapping Allow.
+     * Expected (ideal): a clear offline or retry message. Expected (this assertion): no crash; the permission
+     * dialog still appears; after radios return, Allow still reaches language.
+     * NOTE: this asserts actual observed behavior. Missing offline UX is logged as BUGS_FOUND.docx #1 —
+     * the app never shows an error/retry, only the same notification prompt.
+     */
     @Test(description = "No network at launch")
     @Severity(SeverityLevel.NORMAL)
     @Description("Wifi+data off before launch: no crash. Permission or language still appears. Restore radios → Allow still reaches language.")
@@ -141,6 +179,11 @@ public class SplashScreenTest extends BaseTest {
         assertThat(language.isDisplayedNow()).as("Language after radios restored + Allow").isTrue();
     }
 
+    /**
+     * Intended to simulate splash when the QA backend is down, without taking qa.waardian.com offline for others.
+     * Expected (when enabled): a controlled error rather than an infinite splash.
+     * Ignored until a local stub exists — enabling this would interfere with the shared QA environment.
+     */
     @Ignore("No isolated stub for QA.waardian.com; enabling this would interfere with the shared QA env.")
     @Test(description = "Backend unreachable at splash")
     @Severity(SeverityLevel.NORMAL)
@@ -149,6 +192,11 @@ public class SplashScreenTest extends BaseTest {
         throw new UnsupportedOperationException("No safe backend-down injection yet");
     }
 
+    /**
+     * Simulates Home (background) then activateApp, then a force-stop and cold relaunch during the permission gate.
+     * Expected: after background/foreground the dialog or language is still on screen; after force-stop the
+     * notification dialog appears again (clean first launch). Users kill and reopen apps during splash all the time.
+     */
     @Test(description = "Force-stop mid-splash then relaunch")
     @Severity(SeverityLevel.NORMAL)
     @Description("Background/foreground the permission dialog, then force-stop and relaunch: clean GrantPermissions UI.")
@@ -180,6 +228,11 @@ public class SplashScreenTest extends BaseTest {
         again.attachScreenshot("splash-after-force-stop");
     }
 
+    /**
+     * Simulates rotating the device while the notification dialog is on screen.
+     * Expected: no crash; if the app is portrait-locked, it stays portrait (landscape layout is not asserted).
+     * Rotation during a system overlay is a common crash site on first launch.
+     */
     @Test(description = "Rotation during splash")
     @Severity(SeverityLevel.MINOR)
     @Description("If portrait-locked, stay portrait and do not crash. Landscape layout is not asserted when locked.")

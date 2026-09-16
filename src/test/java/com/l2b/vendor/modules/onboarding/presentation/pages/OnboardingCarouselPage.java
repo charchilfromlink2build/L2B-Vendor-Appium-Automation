@@ -25,44 +25,52 @@ import org.openqa.selenium.WebElement;
  */
 public class OnboardingCarouselPage extends SplashScreen {
 
+    /** Slide 1 headline. Text-contains match; breaks if "Grow Your Machine" is rewritten. */
     @AndroidFindBy(xpath = "//android.widget.TextView[contains(@text,'Grow Your Machine')]")
     private WebElement slide1Headline;
 
+    /** Slide 2 headline. Text-contains match; breaks if "Manage Everything" is rewritten. */
     @AndroidFindBy(xpath = "//android.widget.TextView[contains(@text,'Manage Everything')]")
     private WebElement slide2Headline;
 
     /**
      * Slide 1 Skip. Live dump 2026-09-15: the TextView itself is clickable
-     * ({@code android.widget.TextView[@text='Skip']}), not a wrapping View.
+     * ({@code android.widget.TextView[@text='Skip']}), not a wrapping View. Fragile to copy change.
      */
     @AndroidFindBy(xpath = "//android.widget.TextView[@text='Skip']")
     private WebElement skipButton;
 
+    /** Clickable Compose wrapper around the Next label. Text-matched; Next and Get started share a slot. */
     @AndroidFindBy(xpath = "//android.view.View[@clickable='true'][.//android.widget.TextView[@text='Next']]")
     private WebElement nextButton;
 
+    /** Clickable Compose wrapper around Get started. Text-matched; English-only on this screen. */
     @AndroidFindBy(xpath = "//android.view.View[@clickable='true'][.//android.widget.TextView[@text='Get started']]")
     private WebElement getStartedButton;
 
 
+    /** Wait until slide 1 headline and Next are visible (carousel start). */
     @Override
     @Step("Wait for onboarding carousel")
     public void waitUntilLoaded() {
         waitUntilSlideOne();
     }
 
+    /** Wait until the slide 1 headline and Next button are visible. */
     @Step("Wait for onboarding slide 1")
     public void waitUntilSlideOne() {
         Waits.visible(driver, slide1Headline);
         Waits.visible(driver, nextButton);
     }
 
+    /** Wait until the slide 2 headline "Manage Everything" is present. */
     @Step("Wait for onboarding slide 2")
     public void waitUntilSlideTwo() {
         Waits.until(driver, d -> isOnSlideTwo() ? Boolean.TRUE : null,
                 "Onboarding slide 2 (Manage Everything) to load");
     }
 
+    /** True if slide 1, slide 2, Next, or Get started is present. */
     @Step("Check onboarding carousel is loaded")
     public boolean isLoaded() {
         return isOnSlideOne() || isOnSlideTwo()
@@ -70,56 +78,67 @@ public class OnboardingCarouselPage extends SplashScreen {
                 || isPresent(ComposeLocators.clickableWithText("Get started"));
     }
 
+    /** True when the slide 1 headline containing "Grow Your Machine" is present. Text-matched. */
     @Step("Check onboarding is on slide 1")
     public boolean isOnSlideOne() {
         return isPresent(ComposeLocators.textViewContains("Grow Your Machine"));
     }
 
+    /** True when the slide 2 headline containing "Manage Everything" is present. Text-matched. */
     @Step("Check onboarding is on slide 2")
     public boolean isOnSlideTwo() {
         return isPresent(ComposeLocators.textViewContains("Manage Everything"));
     }
 
+    /** True when slide 1 body copy "List your machines easily" is present. Text-matched. */
     @Step("Check slide 1 body copy is visible")
     public boolean isSlideOneBodyVisible() {
         return isPresent(ComposeLocators.textViewContains("List your machines easily"));
     }
 
+    /** True when a Skip TextView is on screen. Text-matched. */
     @Step("Check Skip is visible on slide 1")
     public boolean isSkipVisible() {
         return isPresent(ComposeLocators.textView("Skip"));
     }
 
+    /** True when a Next TextView is on screen. Text-matched. */
     @Step("Check Next is visible on slide 1")
     public boolean isNextVisible() {
         return isPresent(ComposeLocators.textView("Next"));
     }
 
+    /** True when the footer label "Are you Customer?" is present. Text-matched. */
     @Step("Check 'Are you Customer?' is visible")
     public boolean isCustomerPromptVisible() {
         return isPresent(ComposeLocators.textView("Are you Customer?"));
     }
 
+    /** True when slide 2 body copy about tracking orders is present. Text-matched. */
     @Step("Check slide 2 body copy is visible")
     public boolean isSlideTwoBodyVisible() {
         return isPresent(ComposeLocators.textViewContains("Track orders, inventory, deliveries"));
     }
 
+    /** True when English "Get started" text is on screen. Text-matched. */
     @Step("Check 'Get started' is visible on slide 2")
     public boolean isGetStartedVisible() {
         return isPresent(ComposeLocators.textView("Get started"));
     }
 
+    /** Attach a PNG screenshot to Allure with the given label. */
     @Step("Attach onboarding screenshot")
     public void attachScreen(String label) {
         attachScreenshot(label);
     }
 
+    /** Tap the slide 1 Next control. */
     @Step("Tap Next on onboarding")
     public void tapNext() {
         tap(nextButton);
     }
 
+    /** Tap the slide 1 Skip TextView. */
     @Step("Tap Skip on onboarding")
     public void tapSkip() {
         tap(skipButton);
@@ -130,16 +149,19 @@ public class OnboardingCarouselPage extends SplashScreen {
      * Skip is top-right; Next/Get started share the bottom CTA slot, so a fast
      * Next can land on Get started.
      */
+    /** Tap Skip {@code times} times at the same point with no wait (real double/triple tap). */
     @Step("Tap Skip rapidly {times} times")
     public void tapSkipRapidly(int times) {
         tapPointRapidly(skipButton, times);
     }
 
+    /** Tap Next {@code times} times at the same point; a fast Next can land on slide 2 Get started. */
     @Step("Tap Next rapidly {times} times")
     public void tapNextRapidly(int times) {
         tapPointRapidly(nextButton, times);
     }
 
+    /** Tap Get started only when slide 2 is showing; refuses if the headline is still slide 1. */
     @Step("Tap Get started on onboarding slide 2")
     public void tapGetStarted() {
         if (!isOnSlideTwo()) {
@@ -148,11 +170,13 @@ public class OnboardingCarouselPage extends SplashScreen {
         tap(getStartedButton);
     }
 
+    /** True when Skip is not on screen (expected on slide 2). */
     @Step("Check Skip is absent (slide 2 must not keep a Skip CTA)")
     public boolean isSkipAbsent() {
         return !isSkipVisible();
     }
 
+    /** True when neither slide 1 nor slide 2 headline is present. */
     @Step("Check onboarding carousel is gone")
     public boolean isGone() {
         return !isOnSlideOne() && !isOnSlideTwo();
@@ -196,11 +220,13 @@ public class OnboardingCarouselPage extends SplashScreen {
         swipe("right");
     }
 
+    /** Press the device Back key while the carousel is in the foreground. */
     @Step("Press Android Back on onboarding")
     public void pressBack() {
         ((AndroidDriver) driver).pressKey(new KeyEvent(AndroidKey.BACK));
     }
 
+    /** Current Android package name (Vendor vs Play Store vs launcher). */
     @Step("Read current Android package")
     public String currentPackage() {
         return ((AndroidDriver) driver).getCurrentPackage();
@@ -235,6 +261,7 @@ public class OnboardingCarouselPage extends SplashScreen {
         return count;
     }
 
+    /** True if any pager-indicator View above the CTA exposes selected=true or a content-desc (usually false). */
     @Step("Check whether any pager-indicator node is selected or labelled")
     public boolean pagerIndicatorExposesSelectedState() {
         org.openqa.selenium.Rectangle cta = ctaBounds();
@@ -273,6 +300,7 @@ public class OnboardingCarouselPage extends SplashScreen {
         return true;
     }
 
+    /** Bounds of Next or Get started, used to locate the dots sitting just above the bottom CTA. */
     private org.openqa.selenium.Rectangle ctaBounds() {
         List<WebElement> next = driver.findElements(ComposeLocators.clickableWithText("Next"));
         if (!next.isEmpty()) {
@@ -285,6 +313,7 @@ public class OnboardingCarouselPage extends SplashScreen {
         return null;
     }
 
+    /** Fire {@code times} coordinate clicks on the element center with no delay. */
     private void tapPointRapidly(WebElement element, int times) {
         org.openqa.selenium.Rectangle box = Waits.clickable(driver, element).getRect();
         int x = box.x + box.width / 2;
@@ -294,6 +323,7 @@ public class OnboardingCarouselPage extends SplashScreen {
         }
     }
 
+    /** UiAutomator2 swipeGesture across the middle of the screen in the given direction. */
     private void swipe(String direction) {
         Dimension size = driver.manage().window().getSize();
         int left = (int) (size.width * 0.10);

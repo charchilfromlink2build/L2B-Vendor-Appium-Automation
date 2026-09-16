@@ -21,8 +21,9 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 /**
- * First-launch flow, one Allure/TestNG test per screen. Shared Appium session.
- * OTP screen is opened; valid OTP is not submitted.
+ * First-launch happy-path smoke for {@code com.l2b.app.qa}: one TestNG method per screen, shared session.
+ * Walks splash → language → onboarding slides 1–2 → Sign up chrome → OTP UI. Does not submit a valid OTP
+ * and does not replace the dedicated Splash / Language / carousel edge suites.
  */
 @Epic("Vendor app")
 public class SmokeTest extends BaseTest {
@@ -32,6 +33,7 @@ public class SmokeTest extends BaseTest {
         OnboardingEnvironment.prepareSuite();
     }
 
+    /** Smoke uses the onboarding environment defaults (typically noReset=false, shared session). */
     @Override
     protected boolean noReset() {
         return OnboardingEnvironment.noReset();
@@ -42,6 +44,11 @@ public class SmokeTest extends BaseTest {
         return OnboardingEnvironment.newSessionPerMethod();
     }
 
+    /**
+     * Simulates a cold launch until the first stable in-app screen.
+     * Expected: language is visible (splash is transient) and qa.waardian.com returns HTTP 200.
+     * Proves splash completed and the QA backend is reachable before the rest of this shared-session walk.
+     */
     @Test(description = "Splash screen")
     @Feature("01 Splash screen")
     @Story("Cold launch reaches first stable UI")
@@ -61,6 +68,12 @@ public class SmokeTest extends BaseTest {
                 .isEqualTo(200);
     }
 
+    /**
+     * Simulates the language chooser on the continuing first-launch session.
+     * Expected: logo, English title, subtitle, all four languages, Default badge, and Get started are visible;
+     * then English is selected and Get started is tapped.
+     * This is chrome-only coverage; LanguageScreenTest owns single-select and locale-downstream edges.
+     */
     @Test(description = "Language screen")
     @Feature("02 Language screen")
     @Story("All language options and Get started")
@@ -83,6 +96,11 @@ public class SmokeTest extends BaseTest {
         language.tapGetStarted();
     }
 
+    /**
+     * Simulates arriving on onboarding slide 1 after English Get started.
+     * Expected: dump-sourced headline, body, Skip, Next, and "Are you Customer?" are visible; then Next is tapped.
+     * Confirms the English carousel actually opened after language, before slide-2 assertions.
+     */
     @Test(description = "Onboarding slide 1")
     @Feature("03 Onboarding slide 1")
     @Story("Grow Your Machine — Skip + Next")
@@ -99,6 +117,11 @@ public class SmokeTest extends BaseTest {
         carousel.tapNext();
     }
 
+    /**
+     * Simulates slide 2 after Next from slide 1.
+     * Expected: "Manage Everything…" headline, body, Get started, and the customer footer; then Get started is tapped.
+     * Completes the carousel happy path into Sign up without exercising Skip-equals-Next or rapid-tap bugs.
+     */
     @Test(description = "Onboarding slide 2")
     @Feature("04 Onboarding slide 2")
     @Story("Manage Everything — Get started")
@@ -114,6 +137,11 @@ public class SmokeTest extends BaseTest {
         carousel.tapGetStarted();
     }
 
+    /**
+     * Simulates landing on Sign up after carousel Get started.
+     * Expected: title, subtitle, mobile label, +91, placeholder, terms copy, and Get OTP are visible.
+     * Visibility only — this smoke does not type a phone number or send OTP (Sign up edges are a later module).
+     */
     @Test(description = "Sign up screen")
     @Feature("05 Sign up screen")
     @Story("Phone, +91, terms, Get OTP visible (not submitted yet)")
@@ -135,6 +163,11 @@ public class SmokeTest extends BaseTest {
         signUp.attachScreenshot("05 Sign up screen");
     }
 
+    /**
+     * Simulates accepting terms, entering the QA rental-company phone, and tapping Get OTP.
+     * Expected: the verify-OTP chrome appears (title, subtitle, OTP field label, Edit number, resend, Continue).
+     * Does not enter or submit a valid OTP — smoke stops at the OTP screen.
+     */
     @Test(description = "OTP screen")
     @Feature("06 OTP screen")
     @Story("Get OTP opens verify screen — do not submit valid OTP")

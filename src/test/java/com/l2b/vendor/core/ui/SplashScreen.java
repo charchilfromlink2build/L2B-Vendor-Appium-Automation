@@ -15,12 +15,16 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
-/** Shared page helper: locators + taps, no assertions. */
+/**
+ * Shared page helper for Vendor screens: Appium driver, taps, presence checks, Allure screenshots.
+ * Subclasses hold locators and actions only — assertions stay in the test classes.
+ */
 public abstract class SplashScreen {
 
     protected final AppiumDriver driver;
     protected final Logger log = LogManager.getLogger(getClass());
 
+    /** Binds this page to the current Appium session and initializes {@code @AndroidFindBy} fields. */
     protected SplashScreen() {
         this.driver = DriverManager.get();
         PageFactory.initElements(
@@ -28,12 +32,15 @@ public abstract class SplashScreen {
                 this);
     }
 
+    /** Block until this screen's primary marker is visible. */
     public abstract void waitUntilLoaded();
 
+    /** Wait until the element is clickable, then tap it. */
     protected void tap(WebElement element) {
         Waits.clickable(driver, element).click();
     }
 
+    /** True if the element becomes visible within 3 seconds; false on timeout (does not throw). */
     protected boolean isDisplayed(WebElement element) {
         try {
             return Waits.visible(driver, element, Duration.ofSeconds(3)).isDisplayed();
@@ -47,12 +54,13 @@ public abstract class SplashScreen {
         return !driver.findElements(locator).isEmpty();
     }
 
+    /** Attach a PNG screenshot to the Allure step with the given name. */
     public void attachScreenshot(String name) {
         byte[] png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
         Allure.addAttachment(name, "image/png", new ByteArrayInputStream(png), "png");
     }
 
-    /** System notification prompt on API 33+ after a data-clear. */
+    /** System notification prompt on API 33+ after a data-clear. Taps Allow if the dialog is present. */
     protected void dismissNotificationPromptIfPresent() {
         try {
             By allow = By.id("com.android.permissioncontroller:id/permission_allow_button");

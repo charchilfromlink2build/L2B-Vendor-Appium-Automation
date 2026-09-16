@@ -24,7 +24,9 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 /**
- * Onboarding carousel edges for {@code com.l2b.app.qa}.
+ * Two-slide Vendor onboarding carousel for {@code com.l2b.app.qa} (after language Get started).
+ * Scope: slide chrome, Next, Skip, Get started → Sign up, Customer footer, swipe, Back, rotation,
+ * relaunch persistence, rapid taps, and progress-dot accessibility. One session per method; dump-sourced copy only.
  *
  * <p>Locators come from live uiautomator dumps (slide copy confirmed 2026-09-11,
  * re-checked on this run). Do not copy Customer strings ({@code Rent Machinery},
@@ -102,6 +104,11 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 1 — Slide 1 chrome
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates arriving on slide 1 after English language Get started.
+     * Expected: dump-sourced headline, body, Skip, Next, and "Are you Customer?" are all visible.
+     * Progress-dot highlight is visual-only (see Case 11 / BUGS_FOUND.docx #5) and is not asserted here.
+     */
     @Test(priority = 1, description = "Case 1: Slide 1 shows headline, body, Skip, Next, Are you Customer?")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Dump-sourced slide 1: 'Grow Your Machine…', body 'List your machines easily', "
@@ -124,6 +131,11 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 2 — Next
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates tapping Next on slide 1.
+     * Expected: headline becomes "Manage Everything In One Place", Get started appears, Skip is gone.
+     * This is the intended one-step advance; Skip is tested separately because it does not skip.
+     */
     @Test(priority = 2, description = "Case 2: Next on slide 1 advances to slide 2")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Next must change the headline to 'Manage Everything In One Place' and expose Get started.")
@@ -147,6 +159,12 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 3 — Skip
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates tapping Skip on slide 1 (the control that should bypass onboarding).
+     * Expected (ideal): Sign up. Expected (this assertion): slide 2, same as Next; Sign up must not open.
+     * NOTE: this asserts actual observed behavior, which is logged as BUGS_FOUND.docx #2 — Skip is functionally
+     * redundant with Next, not the ideal skip-to-Sign-up behavior.
+     */
     @Test(priority = 3, description = "Case 3: Skip on slide 1 advances to slide 2 (same as Next)")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Live 15 Sep 2026: Skip does not bypass to Sign up. It behaves like Next — "
@@ -175,6 +193,11 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 4 — Get started
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates Next then Get started on slide 2.
+     * Expected: Sign up is visible and the carousel is gone. Does not send OTP.
+     * This is the only intended path from carousel into Sign up.
+     */
     @Test(priority = 4, description = "Case 4: Get started on slide 2 opens Sign up")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Happy path: Next → Get started → Sign up. Does not send OTP.")
@@ -197,6 +220,11 @@ public class OnboardingCarouselTest extends BaseTest {
     // and we can name the landing surface.
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates tapping the "Are you Customer?" footer on slide 1.
+     * Expected: Vendor does not crash and the landing can be named (Play Store, browser, or still Vendor).
+     * Customer-app E2E is out of scope; this only proves the deep link does not kill the Vendor process.
+     */
     @Test(priority = 5, description = "Case 5: Are you Customer? does not crash; landing screen is identifiable")
     @Severity(SeverityLevel.NORMAL)
     @Description("Tap the footer. Do not automate the Customer app. Pass = process alive + a named landing "
@@ -238,6 +266,11 @@ public class OnboardingCarouselTest extends BaseTest {
     // Pager may or may not be swipeable. Assert the real gesture result.
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates a horizontal swipe on slide 1 (pager may or may not be swipeable).
+     * Expected: no crash; land on slide 1 or slide 2. If it moved, reverse swipe returns to slide 1.
+     * Records the real gesture result instead of assuming Next is the only way to change slides.
+     */
     @Test(priority = 6, description = "Case 6: Horizontal swipe on slide 1 — record whether the pager moves")
     @Severity(SeverityLevel.NORMAL)
     @Description("Do not assume Next is the only path. Swipe left and record slide 2 vs stay-on-slide-1.")
@@ -272,6 +305,12 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 7 — Android Back
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates Android Back from slide 2 (and from slide 1 if Back returned there).
+     * Expected (ideal): slide 2 Back → slide 1. This test only requires a named landing and no crash.
+     * NOTE: this asserts actual observed behavior (Back from slide 2 exits to the launcher), which is
+     * logged as BUGS_FOUND.docx #4 — not the ideal in-carousel Back stack.
+     */
     @Test(priority = 7, description = "Case 7: Android Back from slide 2 and slide 1 — no crash, named screen")
     @Severity(SeverityLevel.NORMAL)
     @Description("Back from slide 2 may return to slide 1, language, or exit. Record the actual screen.")
@@ -309,6 +348,11 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 8 — Rotation
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates rotating the device while slide 1 is on screen.
+     * Expected: no crash; if portrait-locked, stay portrait. Landscape layout is not asserted when locked.
+     * Rotation during a Compose pager is a common crash / layout-break site.
+     */
     @Test(priority = 8, description = "Case 8: Rotation during carousel does not crash")
     @Severity(SeverityLevel.MINOR)
     @Description("If portrait-locked, stay portrait. Landscape layout is not asserted when locked.")
@@ -338,6 +382,12 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 10 — Rapid double/triple tap (was in the original 9; rotation stayed too)
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates three fast Skip taps, then three fast Next taps on slide 1.
+     * Expected (ideal): one advance per control (Skip/Next → slide 2 once). Pass here = process alive and a named landing.
+     * NOTE: rapid Next landing on Sign up is logged as BUGS_FOUND.docx #3 — the Next slot also fires slide 2 Get started.
+     * Rapid Skip is asserted to stay on slide 2 (same as bug #2, not Sign up).
+     */
     @Test(priority = 10, description = "Case 10: Rapid Skip/Next taps — no crash, no duplicate navigation")
     @Severity(SeverityLevel.NORMAL)
     @Description("Tap Skip 3× fast on a fresh slide 1, then Next 3× fast on a fresh slide 1. "
@@ -395,6 +445,12 @@ public class OnboardingCarouselTest extends BaseTest {
     // Case 11 — Progress dots (not asserted in Case 1)
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates inspecting the pill + circle above Next / Get started on both slides.
+     * Expected (ideal): screen readers can announce page 1 of 2 vs page 2 of 2 via selected/content-desc.
+     * NOTE: this asserts actual observed behavior (indicator Views exist but have no selected state or label),
+     * which is logged as BUGS_FOUND.docx #5 — screenshots are the only highlight-sync evidence.
+     */
     @Test(priority = 11, description = "Case 11: Progress dots — visual cluster exists; highlight not in dump")
     @Severity(SeverityLevel.MINOR)
     @Description("Screenshots show a pill + circle above Next/Get started. Dump has two 126×126 "
@@ -432,6 +488,12 @@ public class OnboardingCarouselTest extends BaseTest {
     // Second session: noReset=true so data is kept. Do not assume skip vs replay.
     // -------------------------------------------------------------------------
 
+    /**
+     * Simulates completing Get started → Sign up, then terminateApp + activateApp without clearing data.
+     * Expected (ideal): Sign up (or later) on relaunch, skipping the carousel.
+     * NOTE: this asserts actual observed behavior (first-launch language/carousel can return), which is
+     * logged as BUGS_FOUND.docx #4 together with Back-to-launcher — not the ideal persisted-onboarding path.
+     */
     @Test(priority = 9, description = "Case 9: After Get started, relaunch with data kept — record if carousel returns")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Complete slide 2 Get started → Sign up, force-stop, new session noReset=true. "
