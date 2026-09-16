@@ -224,7 +224,7 @@ def build() -> None:
     pct = (automated / total_screens * 100) if total_screens else 0
     pct_label = f"{pct:.1f}".rstrip("0").rstrip(".") if pct < 10 else str(int(round(pct)))
     bugs = read_bugs()
-    updated = datetime.now(IST).strftime("%d %b %Y, %I:%M %p IST")
+    updated = datetime.now(IST).strftime("%d %b %Y")
     write_bugs_html(bugs, updated)
 
     page = INDEX_HTML
