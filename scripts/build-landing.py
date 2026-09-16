@@ -192,7 +192,7 @@ def whats_next(modules: list[dict]) -> str:
     return "All listed modules"
 
 
-def write_bugs_html(bugs: list[dict], updated: str) -> None:
+def write_bugs_html(bugs: list[dict]) -> None:
     rows = []
     for b in bugs:
         status_l = (b.get("status") or "").lower()
@@ -210,7 +210,7 @@ def write_bugs_html(bugs: list[dict], updated: str) -> None:
         )
     body = "\n".join(rows) if rows else '<tr><td colspan="6">No bugs recorded yet.</td></tr>'
     (DOCS / "bugs.html").write_text(
-        BUGS_HTML.replace("{{UPDATED}}", html.escape(updated)).replace("{{ROWS}}", body),
+        BUGS_HTML.replace("{{ROWS}}", body),
         encoding="utf-8",
     )
 
@@ -224,8 +224,7 @@ def build() -> None:
     pct = (automated / total_screens * 100) if total_screens else 0
     pct_label = f"{pct:.1f}".rstrip("0").rstrip(".") if pct < 10 else str(int(round(pct)))
     bugs = read_bugs()
-    updated = datetime.now(IST).strftime("%d %b %Y")
-    write_bugs_html(bugs, updated)
+    write_bugs_html(bugs)
 
     page = INDEX_HTML
     replacements = {
@@ -686,7 +685,7 @@ BUGS_HTML = r"""<!DOCTYPE html>
   <div class="wrap">
     <p><a href="index.html">← Back to dashboard</a></p>
     <h1>Bugs found</h1>
-    <p class="muted">Human-readable list. Last generated {{UPDATED}}. <a href="./BUGS_FOUND.docx">Download Word file</a>.</p>
+    <p class="muted">Human-readable list. <a href="./BUGS_FOUND.docx">Download Word file</a>.</p>
     <table>
       <thead>
         <tr>
