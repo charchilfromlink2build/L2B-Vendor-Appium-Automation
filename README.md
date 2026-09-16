@@ -56,7 +56,7 @@ mvn test && ./report.sh
 
 That sequence is required for the Allure **TREND** widget: `./report.sh` copies `target/allure-report/history` into the next results dir. `mvn allure:serve` skips history and will not grow the trend.
 
-Default `mvn test` (`src/test/resources/testng.xml`) is the full committed suite: **SplashScreenTest**, **LanguageScreenTest**, onboarding **SmokeTest**, then **OnboardingCarouselTest**. Isolated runs: `splash-screen.xml`, `language-screen.xml`, and `onboarding-carousel.xml`.
+Default `mvn test` (`src/test/resources/testng.xml`) is the full committed suite: **SplashScreenTest**, **LanguageScreenTest**, onboarding **SmokeTest**, **OnboardingCarouselTest**, then **SignUpTest**. Isolated runs: `splash-screen.xml`, `language-screen.xml`, `onboarding-carousel.xml`, and `sign-up-screen.xml`.
 
 **SmokeTest sets `noReset=false`.** That **clears Vendor app data** so first-launch (language → carousel → Sign up) can run. Do not run it if you still need the current logged-in session.
 

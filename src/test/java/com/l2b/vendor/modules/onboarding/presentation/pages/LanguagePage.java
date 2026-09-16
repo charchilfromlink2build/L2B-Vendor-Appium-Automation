@@ -28,12 +28,18 @@ public class LanguagePage extends SplashScreen {
     @AndroidFindBy(xpath = "(//android.view.View[@clickable='true'][.//android.widget.TextView[@text='Get started']])[last()]")
     private WebElement getStartedButton;
 
-    /** Dismiss the notification prompt if present, then wait for the English language title. */
+    /**
+     * Dismiss the notification prompt whenever it appears, then wait for the English language title.
+     * Polls both because a late permission dialog after a slow UiAutomator2 recreate can otherwise
+     * time out waiting for {@code Welcome to L2B} while the dialog is still on top.
+     */
     @Override
     @Step("Wait for language screen")
     public void waitUntilLoaded() {
-        dismissNotificationPromptIfPresent();
-        Waits.visible(driver, screenTitle);
+        Waits.until(driver, d -> {
+            dismissNotificationPromptIfPresent();
+            return isDisplayedNow() ? Boolean.TRUE : null;
+        }, "Language screen did not appear after splash", Duration.ofSeconds(25));
     }
 
     /** Wait until the English title is present, with a splash-specific timeout message. */

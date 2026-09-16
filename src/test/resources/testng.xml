@@ -74,4 +74,9 @@
             <class name="com.l2b.vendor.modules.onboarding.presentation.tests.OnboardingCarouselTest"/>
         </classes>
     </test>
+    <test name="08 Sign up screen edges" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SignUpTest"/>
+        </classes>
+    </test>
 </suite>
