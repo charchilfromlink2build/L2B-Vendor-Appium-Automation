@@ -151,14 +151,23 @@ def mermaid_node(mod: dict) -> str:
     return f'{mod["id"]}(["{label}"])'
 
 
+def mermaid_edge(src: str, dst: str, label: str | None = None, indent: str = "    ") -> str:
+    if label:
+        safe = str(label).replace('"', "'")
+        return f"{indent}{src} -->|{safe}| {dst}"
+    return f"{indent}{src} --> {dst}"
+
+
 def mermaid_graph(coverage: dict) -> str:
     by_id = {m["id"]: m for m in coverage["modules"]}
     launch = coverage["firstLaunch"]
+    labels = coverage.get("firstLaunchEdgeLabels") or {}
     lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction TB"]
     for i, mid in enumerate(launch):
         lines.append(f"    {mermaid_node(by_id[mid])}")
         if i > 0:
-            lines.append(f"    {launch[i-1]} --> {mid}")
+            prev = launch[i - 1]
+            lines.append(mermaid_edge(prev, mid, labels.get(f"{prev}->{mid}")))
     lines.append("  end")
     lines.append('  subgraph loggedin["After login — not started"]')
     lines.append("    direction TB")
@@ -170,7 +179,13 @@ def mermaid_graph(coverage: dict) -> str:
         lines.append(f"    {mermaid_node(by_id[mid])}")
         lines.append(f"    settings --> {mid}")
     lines.append("  end")
-    lines.append("  otp -.->|valid OTP, not automated| home")
+    for branch in coverage.get("firstLaunchBranches") or []:
+        lines.append(mermaid_edge(branch["from"], branch["to"], branch.get("label"), indent="  "))
+    link_otp_home = coverage.get("linkOtpToHome")
+    if link_otp_home is None:
+        link_otp_home = "signupCompleted" not in launch
+    if link_otp_home:
+        lines.append("  otp -.->|valid OTP, not automated| home")
     for status, ids in (
         ("done", [m["id"] for m in coverage["modules"] if m["status"] == "done"]),
         ("progress", [m["id"] for m in coverage["modules"] if m["status"] == "in-progress"]),
@@ -182,6 +197,39 @@ def mermaid_graph(coverage: dict) -> str:
     lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
     lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
     return "\n".join(lines)
+
+
+def flow_shots(evidence: list, note: str | None = None) -> str:
+    if not evidence:
+        return ""
+    note_html = html.escape(
+        note
+        or "Live-app screenshots, 16 Sep 2026. Contact us opens the same Help & Support chrome as the logged-in Help module."
+    )
+    parts = [
+        "    <h2>First login after OTP</h2>",
+        f'    <p class="note">{note_html}</p>',
+        '    <div class="shots">',
+    ]
+    for shot in evidence:
+        caption = html.escape(shot.get("caption") or "")
+        src = shot.get("src")
+        if src:
+            parts.append(
+                f"""      <figure>
+        <img src="{html.escape(src)}" alt="{caption}">
+        <figcaption>{caption}</figcaption>
+      </figure>"""
+            )
+        else:
+            parts.append(
+                f"""      <figure class="missing">
+        <div class="placeholder">Screenshot not captured yet</div>
+        <figcaption>{caption}</figcaption>
+      </figure>"""
+            )
+    parts.append("    </div>")
+    return "\n".join(parts)
 
 
 def whats_next(modules: list[dict]) -> str:
@@ -237,6 +285,14 @@ def build() -> None:
         "{{WHATS_NEXT}}": html.escape(whats_next(modules)),
         "{{MODULE_CARDS}}": module_cards(modules),
         "{{MERMAID}}": mermaid_graph(coverage),
+        "{{FLOW_NOTE}}": html.escape(
+            coverage.get("flowNote")
+            or "Green is done. Amber is in progress. Grey is not started."
+        ),
+        "{{FLOW_SHOTS}}": flow_shots(
+            coverage.get("flowEvidence") or [],
+            coverage.get("flowEvidenceNote"),
+        ),
         "{{BUGS_OPEN}}": str(sum(1 for b in bugs if b.get("status", "").lower() == "open")),
     }
     for key, value in replacements.items():
@@ -386,6 +442,46 @@ INDEX_HTML = r"""<!DOCTYPE html>
     .badge.pending { background: var(--pending-bg); color: var(--pending); }
     .card.status-done { border-color: rgba(46, 125, 50, 0.28); }
     .card.status-progress { border-color: rgba(212, 151, 10, 0.35); }
+    .shots {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .shots figure {
+      margin: 0;
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--glass-shadow);
+      overflow: hidden;
+    }
+    .shots img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      object-position: top;
+      background: #111;
+      display: block;
+    }
+    .shots figcaption {
+      padding: 10px 12px 12px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .shots .placeholder {
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.04);
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 16px;
+    }
     .note { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
     .note.bugs-open {
       margin: 14px 0 10px;
@@ -473,6 +569,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid .card:nth-child(4n)::after { content: "→"; }
       .grid .card:nth-child(2n)::after { content: none; }
+      .shots { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .wrap { padding: 16px 14px 48px; }
@@ -540,7 +637,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
     </div>
 
     <h2>App flow</h2>
-    <p class="note">Green is done. Amber is in progress. Grey is not started. After a valid OTP the app lands on Home.</p>
+    <p class="note">{{FLOW_NOTE}}</p>
     <div class="flow">
       <pre class="mermaid">
 {{MERMAID}}
@@ -551,6 +648,8 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <span><i class="dot pending"></i>Pending</span>
       </div>
     </div>
+
+{{FLOW_SHOTS}}
 
     <footer>
       <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>

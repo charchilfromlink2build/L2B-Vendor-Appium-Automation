@@ -139,6 +139,46 @@
     .badge.pending { background: var(--pending-bg); color: var(--pending); }
     .card.status-done { border-color: rgba(46, 125, 50, 0.28); }
     .card.status-progress { border-color: rgba(212, 151, 10, 0.35); }
+    .shots {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .shots figure {
+      margin: 0;
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--glass-shadow);
+      overflow: hidden;
+    }
+    .shots img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      object-position: top;
+      background: #111;
+      display: block;
+    }
+    .shots figcaption {
+      padding: 10px 12px 12px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .shots .placeholder {
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.04);
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 16px;
+    }
     .note { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
     .note.bugs-open {
       margin: 14px 0 10px;
@@ -226,6 +266,7 @@
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid .card:nth-child(4n)::after { content: "→"; }
       .grid .card:nth-child(2n)::after { content: none; }
+      .shots { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .wrap { padding: 16px 14px 48px; }
@@ -324,6 +365,20 @@
         </div>
         <p class="cases">Cases not counted yet</p>
       </article>
+      <article class="card status-progress">
+        <div class="card-top">
+          <h3>Sign Up Completed</h3>
+          <span class="badge progress">In progress</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-progress">
+        <div class="card-top">
+          <h3>Select your role</h3>
+          <span class="badge progress">In progress</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
       <article class="card status-pending">
         <div class="card-top">
           <h3>Home</h3>
@@ -375,7 +430,7 @@
       </article>
       <article class="card status-pending">
         <div class="card-top">
-          <h3>Help</h3>
+          <h3>Help &amp; Support</h3>
           <span class="badge pending">Pending</span>
         </div>
         <p class="cases">Cases not counted yet</p>
@@ -383,7 +438,7 @@
     </div>
 
     <h2>App flow</h2>
-    <p class="note">Green is done. Amber is in progress. Grey is not started. After a valid OTP the app lands on Home.</p>
+    <p class="note">Green is done. Amber is in progress. Grey is not started. After a valid OTP on first login, Sign Up Completed appears on top of Select your role. Register Yourself dismisses the dialog and leaves the role page. Contact us opens Help &amp; Support. Home is not the next screen.</p>
     <div class="flow">
       <pre class="mermaid">
 flowchart TB
@@ -398,6 +453,10 @@ flowchart TB
     onboarding --> signup
     otp(["OTP"])
     signup --> otp
+    signupCompleted(["Sign Up Completed"])
+    otp -->|first login| signupCompleted
+    role(["Select your role"])
+    signupCompleted -->|Register Yourself| role
   end
   subgraph loggedin["After login — not started"]
     direction TB
@@ -412,14 +471,14 @@ flowchart TB
     home --> earning
     settings(["Profile / Settings"])
     home --> settings
-    help(["Help"])
+    help(["Help & Support"])
     home --> help
     team(["Team"])
     settings --> team
   end
-  otp -.->|valid OTP, not automated| home
+  signupCompleted -->|Contact us to Register| help
   class splash,language,onboarding done
-  class signup,otp progress
+  class signup,otp,signupCompleted,role progress
   class home,bookings,fleet,calendar,earning,team,settings,help pending
   classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px
   classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px
@@ -430,6 +489,23 @@ flowchart TB
         <span><i class="dot progress"></i>In progress</span>
         <span><i class="dot pending"></i>Pending</span>
       </div>
+    </div>
+
+    <h2>First login after OTP</h2>
+    <p class="note">Live-app screenshots, 16 Sep 2026. Contact us opens the same Help &amp; Support chrome as the logged-in Help module (also in APPscreenshots, 4 Sep).</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/flow/sign-up-completed.jpg" alt="1. After first login — Sign Up Completed">
+        <figcaption>1. After first login — Sign Up Completed</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/flow/select-your-role.jpg" alt="2. Register Yourself — Select your role">
+        <figcaption>2. Register Yourself — Select your role</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/flow/help-and-support.jpg" alt="3. Contact us — Help &amp; Support">
+        <figcaption>3. Contact us — Help &amp; Support</figcaption>
+      </figure>
     </div>
 
     <footer>

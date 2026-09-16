@@ -6,6 +6,8 @@
     {"id": "onboarding", "name": "Onboarding", "status": "done", "casesDone": 11, "casesTotal": 11, "screens": 2},
     {"id": "signup", "name": "Sign up", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "otp", "name": "OTP", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "signupCompleted", "name": "Sign Up Completed", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "role", "name": "Select your role", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "home", "name": "Home", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "bookings", "name": "Bookings", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "fleet", "name": "Fleet", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
@@ -13,9 +15,24 @@
     {"id": "earning", "name": "Earning", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "team", "name": "Team", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "settings", "name": "Profile / Settings", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
-    {"id": "help", "name": "Help", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1}
+    {"id": "help", "name": "Help & Support", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1}
   ],
-  "firstLaunch": ["splash", "language", "onboarding", "signup", "otp"],
+  "firstLaunch": ["splash", "language", "onboarding", "signup", "otp", "signupCompleted", "role"],
+  "firstLaunchEdgeLabels": {
+    "otp->signupCompleted": "first login",
+    "signupCompleted->role": "Register Yourself"
+  },
+  "firstLaunchBranches": [
+    {"from": "signupCompleted", "to": "help", "label": "Contact us to Register"}
+  ],
+  "linkOtpToHome": false,
+  "flowNote": "Green is done. Amber is in progress. Grey is not started. After a valid OTP on first login, Sign Up Completed appears on top of Select your role. Register Yourself dismisses the dialog and leaves the role page. Contact us opens Help & Support. Home is not the next screen.",
+  "flowEvidenceNote": "Live-app screenshots, 16 Sep 2026. Contact us opens the same Help & Support chrome as the logged-in Help module (also in APPscreenshots, 4 Sep).",
+  "flowEvidence": [
+    {"src": "assets/flow/sign-up-completed.jpg", "caption": "1. After first login — Sign Up Completed"},
+    {"src": "assets/flow/select-your-role.jpg", "caption": "2. Register Yourself — Select your role"},
+    {"src": "assets/flow/help-and-support.jpg", "caption": "3. Contact us — Help & Support"}
+  ],
   "postLoginFromHome": ["bookings", "fleet", "calendar", "earning", "settings", "help"],
   "postLoginFromSettings": ["team"]
 }
