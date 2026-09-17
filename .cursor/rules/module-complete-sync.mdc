@@ -26,3 +26,11 @@ Do not update the dashboard or bug doc from projected/assumed results. Do not sh
 Never commit test code for a finished module while leaving the dashboard or bug doc stale. Never update the dashboard/bug doc in a separate later step after the test commit.
 
 If the user has not confirmed yet, stop after the evidence report and wait.
+
+## BUGS_FOUND numbering — one row per page finding
+
+Do **not** merge bugs across screens even when the pattern is the same (offline UX, a11y checkbox, rapid-tap, etc.). Each page that shows the defect gets its **own sequential number**.
+
+- Sign up offline Get OTP = one row; OTP offline Submit = next row; OTP offline Resend = next row.
+- Never fold a later page into an earlier row ("same family as #8").
+- Number strictly 1, 2, 3… in the order found. Do not reuse or collapse numbers.

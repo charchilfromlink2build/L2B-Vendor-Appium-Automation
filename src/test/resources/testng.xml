@@ -79,4 +79,9 @@
             <class name="com.l2b.vendor.modules.onboarding.presentation.tests.SignUpTest"/>
         </classes>
     </test>
+    <test name="09 OTP screen edges" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.OTPScreenTest"/>
+        </classes>
+    </test>
 </suite>
