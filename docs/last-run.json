@@ -2,7 +2,7 @@
   "passed": 135,
   "failed": 3,
   "skipped": 4,
-  "when": "2026-09-18T16:49:57+05:30",
+  "when": "2026-09-18T16:50:59+05:30",
   "source": "allure-results-unique-latest",
   "note": "Unique latest status per test (retries collapsed). Known fails: OTP 23/24 on 9000000001 (Quick Booking intercept \u2014 process note, not an OTP product bug) and QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16)."
 }
