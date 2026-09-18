@@ -1,0 +1,1 @@
+[{"values":["17.0.18"],"name":"Java.Version"},{"values":["Android"],"name":"Platform"},{"values":["16"],"name":"Platform.Version"},{"values":["Medium_Phone_API_36.1"],"name":"Device"},{"values":["https://qa.waardian.com"],"name":"API.Base.URL"},{"values":["com.l2b.app.qa"],"name":"App.Package"},{"values":["2026-09-18T11:06:43.331899Z"],"name":"Execution.Start"}]
