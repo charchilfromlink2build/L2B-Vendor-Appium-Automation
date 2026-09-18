@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Quick Booking — material vendor 9000000017" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Material vendor Quick Booking" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.bookings.presentation.tests.quickbooking.MaterialVendorQuickBookingTest"/>
+        </classes>
+    </test>
+</suite>

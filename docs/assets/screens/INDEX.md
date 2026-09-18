@@ -17,10 +17,24 @@ Duplicates skipped: Home twice at 12:13, Fleet empty twice, bug028 OTP/login rep
 
 OTP is **not** in the 4 Sep Drive pack. This copy is `emu_07_otp.png`.
 
-## After OTP — three landings (account state)
+## After OTP — existing vs new user
+
+Valid OTP then: is this mobile already registered?
+
+**Existing user**
+- Check for active rental or material booking (any assigned machine / material order) → if yes, Quick Booking first (same accept/reject page; 18 Sep drawing is rental, material uses the same pattern). Close/Back → Home.
+- No active booking/order → Home.
+- Operator-specific existing-user landing after OTP is **not specified yet**.
+
+**New user**
+- Sign Up Completed popup → Contact us to Register (Help & Support) or Register Yourself.
+
+Invalid / wrong OTP stays on the OTP screen with an error.
 
 | File | When |
 |---|---|
+| *(not captured yet)* | **Existing vendor + active rental/material job** — Quick Booking |
+| home-rental-with-fleet.png | **Existing vendor, no active job** — Home |
 | ../flow/sign-up-completed.jpg | **New vendor** — Sign Up Completed dialog |
 | ../flow/select-your-role.jpg | Register Yourself → Select your role |
 | ../flow/help-and-support.jpg | Contact us → Help & Support |

@@ -6,9 +6,9 @@
     {"id": "onboarding", "name": "Onboarding", "status": "done", "casesDone": 11, "casesTotal": 11, "screens": 2},
     {"id": "signup", "name": "Sign up", "status": "done", "casesDone": 23, "casesTotal": 23, "screens": 1},
     {"id": "otp", "name": "OTP", "status": "done", "casesDone": 25, "casesTotal": 25, "screens": 1},
-    {"id": "signupCompleted", "name": "Sign Up Completed", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
-    {"id": "role", "name": "Select your role", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
-    {"id": "category", "name": "Select category", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "signupCompleted", "name": "Sign Up Completed", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "role", "name": "Select your role", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "category", "name": "Select category", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "tellUs", "name": "Tell us (Operator)", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "listSkills", "name": "List skills", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "tellUsMaterial", "name": "Tell us (Materials)", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
@@ -16,6 +16,7 @@
     {"id": "listMachineries", "name": "List machineries", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "kyc", "name": "KYC", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "profileVerification", "name": "Profile Verification", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "quickBooking", "name": "Quick Booking", "status": "done", "casesDone": 40, "casesTotal": 40, "screens": 1},
     {"id": "home", "name": "Home", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "bookings", "name": "Bookings", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "fleet", "name": "Fleet", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
@@ -25,13 +26,32 @@
     {"id": "settings", "name": "Profile / Settings", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "help", "name": "Help & Support", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1}
   ],
-  "firstLaunch": ["splash", "language", "onboarding", "signup", "otp", "signupCompleted", "role"],
-  "firstLaunchEdgeLabels": {
-    "otp->signupCompleted": "first login",
-    "signupCompleted->role": "Register Yourself"
+  "firstLaunch": ["splash", "language", "onboarding", "signup", "otp"],
+  "firstLaunchEdgeLabels": {},
+  "afterOtp": {
+    "registeredDecision": {
+      "id": "registered",
+      "label": "Mobile already registered?"
+    },
+    "existing": {
+      "edge": "Yes, existing user",
+      "activeDecision": {
+        "id": "activeBooking",
+        "shape": "rect",
+        "label": "Check for active rental or material booking<br>(any assigned machine / material order)"
+      },
+      "yes": {"to": "quickBooking", "label": "Yes, Quick Booking first"},
+      "no": {"to": "home", "label": "No, go to Home"}
+    },
+    "newUser": {
+      "edge": "No, new user",
+      "to": "signupCompleted"
+    }
   },
   "firstLaunchBranches": [
+    {"from": "signupCompleted", "to": "role", "label": "Register Yourself"},
     {"from": "signupCompleted", "to": "help", "label": "Contact us to Register"},
+    {"from": "quickBooking", "to": "home", "label": "Close / Back"},
     {"from": "role", "to": "category", "label": "Vendor / Owner"},
     {"from": "role", "to": "tellUs", "label": "Operator / Driver"},
     {"from": "tellUs", "to": "listSkills", "label": "Continue"},
@@ -47,8 +67,16 @@
     {"from": "profileVerification", "to": "home", "label": "skip or after KYC"}
   ],
   "linkOtpToHome": false,
-  "flowNote": "Green is done. Amber is in progress. Grey is not started. All three first-login paths end on Home. Materials: Tell us → KYC → Profile Verification → skip or KYC → Home. Rental: Tell us → List machineries → Skip → Home, or Complete KYC → Profile Verification → Home. Operator: Tell us → List skills → Skip → Home, or Complete KYC → Profile Verification → Home.",
-  "flowEvidenceNote": "Live-app screenshots, Sep. Contact us opens the same Help & Support chrome as the logged-in Help module.",
+  "loggedInExtra": ["quickBooking"],
+  "whatsNext": "Material Vendor Quick Booking (9000000017)",
+  "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first (rental is drawn; material uses the same accept/reject pattern); Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Dev blocker #16: Assign machine Confirm stays disabled when operators are busy, so Accept cannot complete. Material Vendor and Operator Quick Booking are not started. Operator-specific existing-user landing after OTP is not on this chart yet.",
+  "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP. Material uses the same page when an order is waiting. Operator existing-user landing will be added when specified.",
+  "existingUserEvidence": [
+    {"caption": "Existing user + active rental booking — Quick Booking (screenshot not captured yet)"},
+    {"caption": "Existing user + active material order — same Quick Booking pattern (screenshot not captured yet)"},
+    {"src": "assets/screens/home-rental-with-fleet.png", "caption": "Existing user, no active booking/order — Home"}
+  ],
+  "flowEvidenceNote": "New user only (mobile not already registered). Live-app screenshots, Sep. Contact us opens the same Help & Support chrome as the logged-in Help module.",
   "flowEvidence": [
     {"src": "assets/flow/sign-up-completed.jpg", "caption": "1. After first login — Sign Up Completed"},
     {"src": "assets/flow/select-your-role.jpg", "caption": "2. Register Yourself — Select your role"},

@@ -961,11 +961,17 @@ public class OTPScreenTest extends BaseTest {
     }
 
     /**
-     * QA rental phone has static OTP 1234. Correct code should land on Home.
+     * QA rental company phone has static OTP 1234. This case asserts Home screen identity,
+     * not merely “left OTP”. Process note 18 Sep: {@code 9000000001} has rental
+     * {@code pending} jobs, so Quick Booking intercepts. That is not a product bug on OTP;
+     * the original wait already required Home chrome ({@code Good Morning!} /
+     * {@code Current Earning}), so Quick Booking could not have counted as a pass. Combined
+     * suite timeouts on 23/24 were real Home misses, not a loose “not on OTP” check.
      */
     @Test(priority = 23, description = "Case 23: Correct OTP lands on Home with a session")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("QA phone + 1234. Auto-submit on 4th digit. Must reach Home (Good Morning / Current Earning).")
+    @Description("QA phone + 1234. Auto-submit on 4th digit. Must reach Home identity "
+            + "(greeting or Current Earning) and must not treat Quick Booking as Home.")
     public void correctOtpLandsOnHomeWithSession() {
         String qaPhone = Config.get("user.rental.company.phone");
         OtpPage otp = openOtp(qaPhone);
@@ -973,36 +979,44 @@ public class OTPScreenTest extends BaseTest {
         otp.pressDigitKeys("1234");
 
         Waits.until(DriverManager.get(),
-                d -> isHomeNow() ? Boolean.TRUE : null,
-                "Correct OTP 1234 did not reach Home",
+                d -> (isHomeNow() || isQuickBookingNow() || !otp.isDisplayedNow()) ? Boolean.TRUE : null,
+                "Correct OTP 1234 stayed on OTP — no Home or Quick Booking",
                 Duration.ofSeconds(15));
 
+        String landing = namedLanding(otp);
         Allure.parameter("qaPhone", qaPhone);
-        Allure.parameter("landing", namedLanding(otp));
+        Allure.parameter("landing", landing);
         Allure.parameter("homeVisible", String.valueOf(isHomeNow()));
-        otp.attachScreenshot("case23-correct-otp-home");
+        Allure.parameter("quickBookingVisible", String.valueOf(isQuickBookingNow()));
+        otp.attachScreenshot("case23-correct-otp-" + landing);
 
         assertThat(((io.appium.java_client.android.AndroidDriver) DriverManager.get()).getCurrentPackage())
                 .isEqualTo("com.l2b.app.qa");
-        assertThat(isHomeNow()).as("Correct static OTP must land on Home").isTrue();
+        assertThat(isQuickBookingNow())
+                .as("Process: Quick Booking on 9000000001 is not Home. OTP 23 must not pass on this intercept.")
+                .isFalse();
+        assertThat(isHomeNow()).as("Correct static OTP must land on Home screen identity").isTrue();
         assertThat(otp.isDisplayedNow()).as("OTP must be gone after successful login").isFalse();
     }
 
     /**
      * After a successful login, force-stop and relaunch without pm clear. Session should
-     * return to Home, not Language / Sign up.
+     * return to Home identity, not Language / Sign up. Same process note as case 23:
+     * {@code 9000000001} pending jobs open Quick Booking first — not a product OTP bug,
+     * and not a loose landing check.
      */
     @Test(priority = 24, description = "Case 24: Session persists after login + relaunch")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("QA phone + 1234 to Home, terminateApp + activateApp without pm clear. Must return to Home.")
+    @Description("QA phone + 1234, terminateApp + activateApp without pm clear. Must return to "
+            + "Home identity, not Quick Booking / first-launch.")
     public void sessionPersistenceAfterLoginRelaunch() {
         String qaPhone = Config.get("user.rental.company.phone");
         OtpPage otp = openOtp(qaPhone);
         otp.focusOtpField();
         otp.pressDigitKeys("1234");
         Waits.until(DriverManager.get(),
-                d -> isHomeNow() ? Boolean.TRUE : null,
-                "Precondition: 1234 did not reach Home",
+                d -> (isHomeNow() || isQuickBookingNow() || !otp.isDisplayedNow()) ? Boolean.TRUE : null,
+                "Precondition: 1234 stayed on OTP — no Home or Quick Booking",
                 Duration.ofSeconds(15));
 
         io.appium.java_client.android.AndroidDriver android =
@@ -1018,23 +1032,28 @@ public class OTPScreenTest extends BaseTest {
                         return null;
                     }
                     return (isHomeNow()
+                            || isQuickBookingNow()
                             || otp.isDisplayedNow()
                             || new SignUpPage().isDisplayedNow()
                             || new LanguagePage().isTitleEnglish()
                             || new OnboardingCarouselPage().isLoaded()) ? Boolean.TRUE : null;
                 },
-                "After login relaunch, no Home / OTP / Sign up / language / carousel",
+                "After login relaunch, no Home / Quick Booking / OTP / Sign up / language / carousel",
                 Duration.ofSeconds(20));
 
         String landing = namedBackLanding(otp, android);
         Allure.parameter("qaPhone", qaPhone);
         Allure.parameter("relaunchLanding", landing);
         Allure.parameter("homeVisible", String.valueOf(isHomeNow()));
+        Allure.parameter("quickBookingVisible", String.valueOf(isQuickBookingNow()));
         otp.attachScreenshot("case24-session-relaunch-" + landing);
 
         assertThat(android.getCurrentPackage()).isEqualTo(pkg);
+        assertThat(isQuickBookingNow())
+                .as("Process: Quick Booking on 9000000001 after relaunch is not Home.")
+                .isFalse();
         assertThat(isHomeNow())
-                .as("Logged-in session must survive force-kill relaunch (Home, not first-launch)")
+                .as("Logged-in session must survive force-kill relaunch (Home identity, not first-launch)")
                 .isTrue();
     }
 
@@ -1188,16 +1207,34 @@ public class OTPScreenTest extends BaseTest {
         return otp;
     }
 
+    /**
+     * Home screen identity from live dump 18 Sep ({@code Good Afternoon!}, {@code Current Earning}).
+     * Greeting is time-of-day specific, so afternoon/evening variants are included. Quick Booking
+     * is excluded even if a card reused similar copy.
+     */
     private static boolean isHomeNow() {
+        if (isQuickBookingNow()) {
+            return false;
+        }
+        return DriverManager.get().findElements(org.openqa.selenium.By.xpath(
+                "//android.widget.TextView[@text='Good Morning!' or @text='Good Afternoon!' "
+                        + "or @text='Good Evening!' or @text='Current Earning']"))
+                .size() > 0;
+    }
+
+    /** App-bar title from live dump 18 Sep. Card badges also say Quick Booking — same string. */
+    private static boolean isQuickBookingNow() {
         return DriverManager.get().findElements(
-                org.openqa.selenium.By.xpath(
-                        "//android.widget.TextView[@text='Good Morning!' or @text='Current Earning']"))
+                org.openqa.selenium.By.xpath("//android.widget.TextView[@text='Quick Booking']"))
                 .size() > 0;
     }
 
     private static String namedLanding(OtpPage otp) {
         if (otp.isDisplayedNow()) {
             return "otp";
+        }
+        if (isQuickBookingNow()) {
+            return "quick-booking";
         }
         if (isHomeNow()) {
             return "home";
@@ -1226,6 +1263,9 @@ public class OTPScreenTest extends BaseTest {
         }
         if (otp.isDisplayedNow()) {
             return "otp";
+        }
+        if (isQuickBookingNow()) {
+            return "quick-booking";
         }
         SignUpPage signUp = new SignUpPage();
         if (signUp.isDisplayedNow()) {

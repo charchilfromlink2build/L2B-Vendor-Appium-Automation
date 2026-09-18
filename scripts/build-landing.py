@@ -34,12 +34,19 @@ def parse_allure_results(results_dir: Path) -> dict | None:
     files = list(results_dir.glob("*-result.json"))
     if not files:
         return None
-    passed = failed = skipped = 0
+    latest: dict[str, tuple[float, dict]] = {}
     for f in files:
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
+        key = str(data.get("fullName") or data.get("historyId") or f.name)
+        mtime = f.stat().st_mtime
+        prev = latest.get(key)
+        if prev is None or mtime > prev[0]:
+            latest[key] = (mtime, data)
+    passed = failed = skipped = 0
+    for _mtime, data in latest.values():
         status = str(data.get("status", "")).lower()
         if status == "passed":
             passed += 1
@@ -52,7 +59,12 @@ def parse_allure_results(results_dir: Path) -> dict | None:
         "failed": failed,
         "skipped": skipped,
         "when": datetime.now(IST).isoformat(timespec="seconds"),
-        "source": "allure-results",
+        "source": "allure-results-unique-latest",
+        "note": (
+            "Unique latest status per test (retries collapsed). "
+            "Known fails: OTP 23/24 on 9000000001 (Quick Booking intercept — process note, not an OTP product bug) "
+            "and QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16)."
+        ),
     }
 
 
@@ -151,6 +163,15 @@ def mermaid_node(mod: dict) -> str:
     return f'{mod["id"]}(["{label}"])'
 
 
+def mermaid_decision(node_id: str, label: str, shape: str = "diamond") -> str:
+    safe = str(label).replace('"', "'")
+    if shape == "round":
+        return f'{node_id}(["{safe}"])'
+    if shape in ("rect", "box"):
+        return f'{node_id}["{safe}"]'
+    return f'{node_id}{{"{safe}"}}'
+
+
 def mermaid_edge(src: str, dst: str, label: str | None = None, indent: str = "    ") -> str:
     if label:
         safe = str(label).replace('"', "'")
@@ -163,10 +184,12 @@ def mermaid_graph(coverage: dict) -> str:
     launch = coverage["firstLaunch"]
     labels = coverage.get("firstLaunchEdgeLabels") or {}
     branches = coverage.get("firstLaunchBranches") or []
+    after = coverage.get("afterOtp") or {}
     loggedin_ids = set(
         ["home"]
         + list(coverage.get("postLoginFromHome") or [])
         + list(coverage.get("postLoginFromSettings") or [])
+        + list(coverage.get("loggedInExtra") or [])
     )
     lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction TB"]
     declared = set()
@@ -182,8 +205,27 @@ def mermaid_graph(coverage: dict) -> str:
                 lines.append(f"    {mermaid_node(by_id[mid])}")
                 declared.add(mid)
     lines.append("  end")
-    lines.append('  subgraph loggedin["After login — not started"]')
+    decision_ids = []
+    if after:
+        registered = after["registeredDecision"]
+        existing = after["existing"]
+        active = existing["activeDecision"]
+        new_user = after["newUser"]
+        decision_ids = [registered["id"], active["id"]]
+        lines.append(f"  {mermaid_decision(registered['id'], registered['label'])}")
+        lines.append(f"  otp --> {registered['id']}")
+        lines.append(
+            f"  {mermaid_decision(active['id'], active['label'], active.get('shape', 'round'))}"
+        )
+        lines.append(mermaid_edge(registered["id"], active["id"], existing.get("edge"), indent="  "))
+        lines.append(mermaid_edge(active["id"], existing["yes"]["to"], existing["yes"].get("label"), indent="  "))
+        lines.append(mermaid_edge(active["id"], existing["no"]["to"], existing["no"].get("label"), indent="  "))
+        lines.append(mermaid_edge(registered["id"], new_user["to"], new_user.get("edge"), indent="  "))
+    lines.append('  subgraph loggedin["After login"]')
     lines.append("    direction TB")
+    for mid in coverage.get("loggedInExtra") or []:
+        if mid in by_id:
+            lines.append(f"    {mermaid_node(by_id[mid])}")
     lines.append(f"    {mermaid_node(by_id['home'])}")
     for mid in coverage["postLoginFromHome"]:
         lines.append(f"    {mermaid_node(by_id[mid])}")
@@ -196,7 +238,7 @@ def mermaid_graph(coverage: dict) -> str:
         lines.append(mermaid_edge(branch["from"], branch["to"], branch.get("label"), indent="  "))
     link_otp_home = coverage.get("linkOtpToHome")
     if link_otp_home is None:
-        link_otp_home = "signupCompleted" not in launch
+        link_otp_home = "signupCompleted" not in launch and not after
     if link_otp_home:
         lines.append("  otp -.->|valid OTP, not automated| home")
     for status, ids in (
@@ -206,9 +248,12 @@ def mermaid_graph(coverage: dict) -> str:
     ):
         if ids:
             lines.append(f"  class {','.join(ids)} {status}")
+    if decision_ids:
+        lines.append(f"  class {','.join(decision_ids)} decision")
     lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
     lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
     lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
+    lines.append("  classDef decision fill:#FFF8E1,stroke:#F9A825,color:#7A5200,stroke-width:2px")
     return "\n".join(lines)
 
 
@@ -251,7 +296,10 @@ def flow_shots(
     return "\n".join(parts)
 
 
-def whats_next(modules: list[dict]) -> str:
+def whats_next(modules: list[dict], coverage: dict | None = None) -> str:
+    override = (coverage or {}).get("whatsNext")
+    if override:
+        return str(override)
     for status in ("in-progress", "pending"):
         for mod in modules:
             if mod.get("status") == status:
@@ -259,15 +307,43 @@ def whats_next(modules: list[dict]) -> str:
     return "All listed modules"
 
 
+def blocker_banner(bugs: list[dict]) -> str:
+    blockers = [
+        b for b in bugs
+        if (b.get("num") or "") == "16" and (b.get("status") or "").lower() == "open"
+    ]
+    if not blockers:
+        return ""
+    b = blockers[0]
+    return f"""    <section class="blocker" aria-label="Functional blocker for developers">
+      <p><strong>Dev blocker #{html.escape(b["num"])} ({html.escape(b["severity"])}):</strong>
+      Assign machine Confirm stays disabled when operators are busy, so a vendor cannot complete
+      Accept on a pending rental. The sheet copy says confirm the machine now and assign an
+      operator later. This is a functional blocker, not cosmetic — treat it separately from
+      the rest of the bug list.</p>
+      <p><a href="bugs.html#bug-16">Open #16</a></p>
+    </section>"""
+
+
 def write_bugs_html(bugs: list[dict]) -> None:
     rows = []
     for b in bugs:
         status_l = (b.get("status") or "").lower()
-        row_class = "open" if status_l == "open" else ""
+        sev = (b.get("severity") or "").lower()
+        num = b.get("num") or ""
+        classes = []
+        if status_l == "open":
+            classes.append("open")
+        if num == "16":
+            classes.append("blocker")
+        if sev == "high":
+            classes.append("high")
+        row_class = " ".join(classes)
         status_class = "status-open" if status_l == "open" else ""
+        row_id = f' id="bug-{html.escape(num)}"' if num else ""
         rows.append(
-            f'<tr class="{row_class}">'
-            f'<td data-label="#">{html.escape(b["num"])}</td>'
+            f'<tr{row_id} class="{row_class}">'
+            f'<td data-label="#">{html.escape(num)}</td>'
             f'<td data-label="Module/Screen">{html.escape(b["module"])}</td>'
             f'<td data-label="Bug Description">{html.escape(b["description"])}</td>'
             f'<td data-label="Severity">{html.escape(b["severity"])}</td>'
@@ -276,8 +352,17 @@ def write_bugs_html(bugs: list[dict]) -> None:
             "</tr>"
         )
     body = "\n".join(rows) if rows else '<tr><td colspan="6">No bugs recorded yet.</td></tr>'
+    callout = ""
+    if any((b.get("num") or "") == "16" for b in bugs):
+        callout = """    <section class="blocker" id="blocker-16">
+      <p><strong>Priority for dev — #16 (High).</strong> Vendors cannot finish Accept when
+      Assign machine shows busy operators: Confirm stays disabled even though the copy says
+      to confirm the machine now. Functional blocker. Please pick this up separately from
+      the rest of the list.</p>
+    </section>
+"""
     (DOCS / "bugs.html").write_text(
-        BUGS_HTML.replace("{{ROWS}}", body),
+        BUGS_HTML.replace("{{CALLOUT}}", callout).replace("{{ROWS}}", body),
         encoding="utf-8",
     )
 
@@ -301,16 +386,24 @@ def build() -> None:
         "{{PASSED}}": str(int(run.get("passed") or 0)),
         "{{FAILED}}": str(int(run.get("failed") or 0)),
         "{{SKIPPED}}": str(int(run.get("skipped") or 0)),
-        "{{WHATS_NEXT}}": html.escape(whats_next(modules)),
+        "{{WHATS_NEXT}}": html.escape(whats_next(modules, coverage)),
+        "{{RUN_NOTE}}": html.escape(str(run.get("note") or "")),
+        "{{BLOCKER}}": blocker_banner(bugs),
         "{{MODULE_CARDS}}": module_cards(modules),
         "{{MERMAID}}": mermaid_graph(coverage),
         "{{FLOW_NOTE}}": html.escape(
             coverage.get("flowNote")
             or "Green is done. Amber is in progress. Grey is not started."
         ),
+        "{{EXISTING_USER_SHOTS}}": flow_shots(
+            coverage.get("existingUserEvidence") or [],
+            coverage.get("existingUserEvidenceNote"),
+            "After OTP — existing vs new user",
+        ),
         "{{FLOW_SHOTS}}": flow_shots(
             coverage.get("flowEvidence") or [],
             coverage.get("flowEvidenceNote"),
+            "New user after OTP",
         ),
         "{{ROLE_SHOTS}}": flow_shots(
             coverage.get("roleEvidence") or [],
@@ -550,8 +643,19 @@ INDEX_HTML = r"""<!DOCTYPE html>
       box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.08);
     }
     .note.bugs-open a { color: var(--fail); font-weight: 800; }
-    .flow { padding: 12px; overflow-x: auto; }
-    .flow svg { background: transparent !important; }
+    .blocker {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      background: rgba(183, 28, 28, 0.10);
+      border: 1px solid rgba(183, 28, 28, 0.28);
+      border-radius: 12px;
+    }
+    .blocker p { margin: 0 0 8px; }
+    .blocker p:last-child { margin: 0; }
+    .blocker a { color: #8A1C1C; font-weight: 800; }
+    .run-note { color: var(--muted); margin: 0 0 16px; font-size: 0.88rem; }
+    .flow { padding: 12px; overflow: auto; max-height: none; }
+    .flow svg { background: transparent !important; max-width: none !important; width: auto !important; height: auto !important; }
     .flow .node { cursor: default; }
     .flow .node-visual {
       transition: transform 0.18s ease, filter 0.18s ease;
@@ -577,11 +681,22 @@ INDEX_HTML = r"""<!DOCTYPE html>
     .flow .node.done .nodeLabel { color: #145218; }
     .flow .node.progress .nodeLabel { color: #7A5200; }
     .flow .node.pending .nodeLabel { color: #3D3D3D; }
+    .flow .node.decision .nodeLabel { color: #7A5200; }
+    .flow .node#activeBooking .nodeLabel p,
+    .flow .node.decision .nodeLabel p,
+    .flow .node.decision .nodeLabel span {
+      white-space: normal;
+      text-align: center;
+      line-height: 1.35;
+      font-size: 13px;
+      max-width: 260px;
+    }
     .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--muted); font-size: 0.85rem; }
     .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
     .dot.done { background: var(--done); }
     .dot.progress { background: var(--brand); }
     .dot.pending { background: #8D8D8D; }
+    .dot.decision { background: #F9A825; border-radius: 2px; transform: rotate(45deg); }
     footer {
       margin-top: 36px;
       padding-top: 20px;
@@ -685,6 +800,8 @@ INDEX_HTML = r"""<!DOCTYPE html>
       </div>
     </section>
     <p class="note bugs-open">Open bugs: {{BUGS_OPEN}} — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
+{{BLOCKER}}
+    <p class="run-note">{{RUN_NOTE}}</p>
 
     <h2>Modules</h2>
     <div class="grid">
@@ -701,8 +818,11 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <span><i class="dot done"></i>Done</span>
         <span><i class="dot progress"></i>In progress</span>
         <span><i class="dot pending"></i>Pending</span>
+        <span><i class="dot decision"></i>Decision</span>
       </div>
     </div>
+
+{{EXISTING_USER_SHOTS}}
 
 {{FLOW_SHOTS}}
 
@@ -736,11 +856,19 @@ INDEX_HTML = r"""<!DOCTYPE html>
         titleColor: "#5C5C5C",
         edgeLabelBackground: "rgba(255,254,249,0.85)"
       },
-      flowchart: { htmlLabels: true, curve: "basis", padding: 12 }
+      flowchart: { htmlLabels: true, curve: "basis", padding: 20, wrappingWidth: 240, useMaxWidth: false }
     });
     await mermaid.run({ querySelector: ".mermaid" });
     const ns = "http://www.w3.org/2000/svg";
     document.querySelectorAll(".flow svg").forEach((svg) => {
+      const vb = svg.viewBox && svg.viewBox.baseVal;
+      if (vb && vb.width && vb.height) {
+        svg.setAttribute("width", String(Math.round(vb.width)));
+        svg.setAttribute("height", String(Math.round(vb.height)));
+        svg.style.width = `${Math.round(vb.width)}px`;
+        svg.style.height = `${Math.round(vb.height)}px`;
+      }
+      svg.style.maxWidth = "none";
       let defs = svg.querySelector("defs");
       if (!defs) {
         defs = document.createElementNS(ns, "defs");
@@ -759,6 +887,10 @@ INDEX_HTML = r"""<!DOCTYPE html>
           <linearGradient id="l2b-grad-pending" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#FBFBFB"/>
             <stop offset="100%" stop-color="#E4E4E4"/>
+          </linearGradient>
+          <linearGradient id="l2b-grad-decision" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFDF5"/>
+            <stop offset="100%" stop-color="#FFE082"/>
           </linearGradient>`);
       }
       const paintFill = (status, fill) => {
@@ -780,6 +912,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
       paintFill("done", "url(#l2b-grad-done)");
       paintFill("progress", "url(#l2b-grad-progress)");
       paintFill("pending", "url(#l2b-grad-pending)");
+      paintFill("decision", "url(#l2b-grad-decision)");
       svg.querySelectorAll(".node").forEach((node) => {
         if (node.querySelector(":scope > .node-visual")) return;
         const wrap = document.createElementNS(ns, "g");
@@ -835,7 +968,17 @@ BUGS_HTML = r"""<!DOCTYPE html>
     th { background: rgba(255, 246, 229, 0.72); color: #1A1A1A; }
     .muted { color: var(--muted); }
     tr.open { background: rgba(253, 236, 234, 0.62); }
+    tr.high td:nth-child(4) { font-weight: 800; color: #B71C1C; }
+    tr.blocker { outline: 2px solid #B71C1C; outline-offset: -2px; background: rgba(183, 28, 28, 0.12); }
     .status-open { color: #B71C1C; font-weight: 750; }
+    .blocker {
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      background: rgba(183, 28, 28, 0.10);
+      border: 1px solid rgba(183, 28, 28, 0.28);
+      border-radius: 12px;
+    }
+    .blocker p { margin: 0; }
     @media (max-width: 700px) {
       table, thead, tbody, th, td, tr { display: block; }
       thead { display: none; }
@@ -850,6 +993,7 @@ BUGS_HTML = r"""<!DOCTYPE html>
     <p><a href="index.html">← Back to dashboard</a></p>
     <h1>Bugs found</h1>
     <p class="muted">Human-readable list. <a href="./BUGS_FOUND.docx">Download Word file</a>.</p>
+{{CALLOUT}}
     <table>
       <thead>
         <tr>

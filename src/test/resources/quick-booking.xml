@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Per-persona suites: src/test/resources/quick-booking/{rental-company,rental-individual,material,operator}.xml -->
+<suite name="L2B Vendor Quick Booking — rental company 9000000001" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Rental company Quick Booking" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.bookings.presentation.tests.quickbooking.RentalCompanyQuickBookingTest"/>
+        </classes>
+    </test>
+</suite>
