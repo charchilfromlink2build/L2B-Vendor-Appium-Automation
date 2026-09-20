@@ -155,6 +155,28 @@ public class QuickBookingLandingPage extends SplashScreen {
         return isPresent(ComposeLocators.textView("Booking Declined"));
     }
 
+    @Step("Check Request Declined success dialog")
+    public boolean isRequestDeclinedVisible() {
+        return isPresent(ComposeLocators.textView("Request Declined"));
+    }
+
+    @Step("Tap Ok on Request Declined")
+    public void tapRequestDeclinedOk() {
+        if (!isRequestDeclinedVisible()) {
+            throw new IllegalStateException("Request Declined not on screen — refusing Ok");
+        }
+        WebElement ok = smallestClickableWithText("Ok");
+        if (ok == null) {
+            List<WebElement> labels = driver.findElements(ComposeLocators.textView("Ok"));
+            if (labels.isEmpty()) {
+                throw new IllegalStateException("Ok not on Request Declined");
+            }
+            clickGestureOn(labels.get(0));
+        } else {
+            clickGestureOn(ok);
+        }
+    }
+
     @Step("Tap OK on Booking Declined")
     public void tapBookingDeclinedOk() {
         if (!isBookingDeclinedVisible()) {
@@ -223,6 +245,100 @@ public class QuickBookingLandingPage extends SplashScreen {
         String chosen = pickFirstDropdownOption("Select a reason", "Reason dropdown showed no options");
         dismissDropdownOverlay();
         return chosen;
+    }
+
+    /**
+     * Opens {@code Select a reason} and returns every new menu label. Does not tap a row.
+     * Caller must pick or dismiss. Used to record Material reason copy, not assume Rental's list.
+     */
+    @Step("List all Select a reason options without picking")
+    public List<String> listDeclineReasonOptions() {
+        if (!isDeclineBookingDialogVisible()) {
+            throw new IllegalStateException("Decline Booking? dialog not on screen");
+        }
+        Set<String> before = visibleTexts();
+        WebElement field = smallestClickableWithText("Select a reason");
+        if (field == null) {
+            List<WebElement> labels = driver.findElements(ComposeLocators.textView("Select a reason"));
+            if (labels.isEmpty()) {
+                throw new IllegalStateException("Select a reason not on screen");
+            }
+            clickGestureOn(labels.get(0));
+        } else {
+            clickGestureOn(field);
+        }
+        Waits.until(driver,
+                d -> firstNewMenuNode(before) != null ? Boolean.TRUE : null,
+                "Reason dropdown showed no options",
+                Duration.ofSeconds(8));
+        List<String> options = new ArrayList<>();
+        for (WebElement node : driver.findElements(By.className("android.widget.TextView"))) {
+            String raw = node.getAttribute("text");
+            if (raw == null || raw.isBlank() || "null".equalsIgnoreCase(raw)) {
+                continue;
+            }
+            String text = raw.trim();
+            if (before.contains(text) || text.length() >= 80) {
+                continue;
+            }
+            if (text.contains("operators are busy")
+                    || text.contains("Confirm the machine")
+                    || text.startsWith("Please select")
+                    || text.equalsIgnoreCase("Search")
+                    || text.equalsIgnoreCase("Cancel")) {
+                continue;
+            }
+            if (!options.contains(text)) {
+                options.add(text);
+            }
+        }
+        return options;
+    }
+
+    @Step("Tap an already-open decline reason row")
+    public void tapDeclineReasonOption(String label) {
+        List<WebElement> rows = driver.findElements(ComposeLocators.textView(label));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Reason option not visible: " + label);
+        }
+        WebElement row = clickableAncestorOrSelf(rows.get(0));
+        lastMenuOptionEnabled = Boolean.parseBoolean(row.getAttribute("enabled"));
+        clickGestureOn(row);
+    }
+
+    @Step("Check Confirm Decline is visible")
+    public boolean isConfirmDeclineVisible() {
+        return isPresent(ComposeLocators.textView("Confirm Decline"));
+    }
+
+    @Step("Read Confirm Decline enabled on the clickable outer View")
+    public boolean isConfirmDeclineEnabled() {
+        List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Confirm Decline"));
+        for (WebElement row : rows) {
+            if (Boolean.parseBoolean(row.getAttribute("enabled"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Step("Tap Confirm Decline on the reason dialog via clickGesture")
+    public void tapConfirmDecline() {
+        if (!isDeclineBookingDialogVisible()) {
+            throw new IllegalStateException("Decline Booking? dialog not on screen — refusing Confirm Decline");
+        }
+        List<WebElement> labels = driver.findElements(ComposeLocators.textView("Confirm Decline"));
+        if (labels.isEmpty()) {
+            throw new IllegalStateException("Confirm Decline not on reason dialog");
+        }
+        org.openqa.selenium.Rectangle labelBox = labels.get(0).getRect();
+        WebElement outer = smallestClickableWithText("Confirm Decline");
+        org.openqa.selenium.Rectangle tapBox = outer != null ? outer.getRect() : labelBox;
+        int x = tapBox.x + tapBox.width / 2;
+        int y = tapBox.y + tapBox.height / 2;
+        io.qameta.allure.Allure.parameter("confirmDeclineTap",
+                tapBox.x + "," + tapBox.y + " " + tapBox.width + "x" + tapBox.height + " -> " + x + "," + y);
+        clickGestureAt(x, y);
     }
 
     @Step("Read whether the last dropdown row was enabled")

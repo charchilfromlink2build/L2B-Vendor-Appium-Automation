@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Material Quick Booking edges 9000000017" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Material Quick Booking edges" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.quickbooking.presentation.tests.MaterialQuickBookingEdgeCasesTest">
+                <methods>
+                    <include name="emptyQueueAfterConsume"/>
+                    <include name="closeGoesToHome"/>
+                    <include name="backNamedLanding"/>
+                    <include name="rotationKeepsChrome"/>
+                    <include name="backgroundThenForegroundKeepsLanding"/>
+                    <include name="offlineOnLandingDoesNotCrash"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

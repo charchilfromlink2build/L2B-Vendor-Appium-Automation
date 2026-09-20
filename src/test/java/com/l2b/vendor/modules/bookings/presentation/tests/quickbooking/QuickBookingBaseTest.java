@@ -17,6 +17,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -45,8 +46,18 @@ public abstract class QuickBookingBaseTest extends BaseTest {
         return true;
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void restoreNetworkAfterQuickBooking() {
+        try {
+            Adb.ensureNetworkReady();
+        } catch (RuntimeException ignored) {
+            // restore must not hide the test failure
+        }
+    }
+
     @Override
     protected void beforeCreateDriver(Method method) {
+        Adb.ensureNetworkReady();
         Adb.forceStop("com.l2b.app.qa");
         String name = method.getName();
         if (name.toLowerCase().contains("back") || name.toLowerCase().contains("session")
@@ -153,11 +164,13 @@ public abstract class QuickBookingBaseTest extends BaseTest {
         return pkg != null && pkg.contains("launcher");
     }
 
-    /** Home account sheet: Account + Log Out. Do not tap Log Out. */
+    /** Home account sheet: Account + Log Out / Logout. Do not tap Logout. */
     protected static boolean profileDrawerNow() {
         AppiumDriver driver = DriverManager.get();
-        return !driver.findElements(ComposeLocators.textView("Account")).isEmpty()
-                && !driver.findElements(ComposeLocators.textView("Log Out")).isEmpty();
+        boolean account = !driver.findElements(ComposeLocators.textView("Account")).isEmpty();
+        boolean logout = !driver.findElements(ComposeLocators.textView("Log Out")).isEmpty()
+                || !driver.findElements(ComposeLocators.textView("Logout")).isEmpty();
+        return account && logout;
     }
 
     protected static String vendorPackage() {

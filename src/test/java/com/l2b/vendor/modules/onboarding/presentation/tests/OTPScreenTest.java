@@ -961,19 +961,16 @@ public class OTPScreenTest extends BaseTest {
     }
 
     /**
-     * QA rental company phone has static OTP 1234. This case asserts Home screen identity,
-     * not merely “left OTP”. Process note 18 Sep: {@code 9000000001} has rental
-     * {@code pending} jobs, so Quick Booking intercepts. That is not a product bug on OTP;
-     * the original wait already required Home chrome ({@code Good Morning!} /
-     * {@code Current Earning}), so Quick Booking could not have counted as a pass. Combined
-     * suite timeouts on 23/24 were real Home misses, not a loose “not on OTP” check.
+     * QA rental individual {@code 9000000003} has static OTP 1234 and no pending Quick
+     * Booking intercept (unlike {@code 9000000001}). This case asserts Home screen identity,
+     * not merely “left OTP”. Quick Booking must not count as a pass.
      */
     @Test(priority = 23, description = "Case 23: Correct OTP lands on Home with a session")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("QA phone + 1234. Auto-submit on 4th digit. Must reach Home identity "
+    @Description("9000000003 + 1234. Auto-submit on 4th digit. Must reach Home identity "
             + "(greeting or Current Earning) and must not treat Quick Booking as Home.")
     public void correctOtpLandsOnHomeWithSession() {
-        String qaPhone = Config.get("user.rental.company.phone");
+        String qaPhone = Config.get("user.rental.individual.phone");
         OtpPage otp = openOtp(qaPhone);
         otp.focusOtpField();
         otp.pressDigitKeys("1234");
@@ -992,8 +989,9 @@ public class OTPScreenTest extends BaseTest {
 
         assertThat(((io.appium.java_client.android.AndroidDriver) DriverManager.get()).getCurrentPackage())
                 .isEqualTo("com.l2b.app.qa");
+        assertThat(qaPhone).as("OTP 23 uses rental individual, not 0001").isEqualTo("9000000003");
         assertThat(isQuickBookingNow())
-                .as("Process: Quick Booking on 9000000001 is not Home. OTP 23 must not pass on this intercept.")
+                .as("Quick Booking is not Home. OTP 23 must not pass on a queue intercept.")
                 .isFalse();
         assertThat(isHomeNow()).as("Correct static OTP must land on Home screen identity").isTrue();
         assertThat(otp.isDisplayedNow()).as("OTP must be gone after successful login").isFalse();
@@ -1001,16 +999,15 @@ public class OTPScreenTest extends BaseTest {
 
     /**
      * After a successful login, force-stop and relaunch without pm clear. Session should
-     * return to Home identity, not Language / Sign up. Same process note as case 23:
-     * {@code 9000000001} pending jobs open Quick Booking first — not a product OTP bug,
-     * and not a loose landing check.
+     * return to Home identity, not Language / Sign up. Uses {@code 9000000003} so a
+     * pending-rental Quick Booking intercept cannot masquerade as a session pass.
      */
     @Test(priority = 24, description = "Case 24: Session persists after login + relaunch")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("QA phone + 1234, terminateApp + activateApp without pm clear. Must return to "
+    @Description("9000000003 + 1234, terminateApp + activateApp without pm clear. Must return to "
             + "Home identity, not Quick Booking / first-launch.")
     public void sessionPersistenceAfterLoginRelaunch() {
-        String qaPhone = Config.get("user.rental.company.phone");
+        String qaPhone = Config.get("user.rental.individual.phone");
         OtpPage otp = openOtp(qaPhone);
         otp.focusOtpField();
         otp.pressDigitKeys("1234");
@@ -1048,9 +1045,10 @@ public class OTPScreenTest extends BaseTest {
         Allure.parameter("quickBookingVisible", String.valueOf(isQuickBookingNow()));
         otp.attachScreenshot("case24-session-relaunch-" + landing);
 
+        assertThat(qaPhone).as("OTP 24 uses rental individual, not 0001").isEqualTo("9000000003");
         assertThat(android.getCurrentPackage()).isEqualTo(pkg);
         assertThat(isQuickBookingNow())
-                .as("Process: Quick Booking on 9000000001 after relaunch is not Home.")
+                .as("Quick Booking after relaunch is not Home.")
                 .isFalse();
         assertThat(isHomeNow())
                 .as("Logged-in session must survive force-kill relaunch (Home identity, not first-launch)")

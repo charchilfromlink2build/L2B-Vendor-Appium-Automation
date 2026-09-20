@@ -62,8 +62,8 @@ def parse_allure_results(results_dir: Path) -> dict | None:
         "source": "allure-results-unique-latest",
         "note": (
             "Unique latest status per test (retries collapsed). "
-            "Known fails: OTP 23/24 on 9000000001 (Quick Booking intercept — process note, not an OTP product bug) "
-            "and QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16)."
+            "Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16). "
+            "OTP 23/24 are retargeted to 9000000003 so Home identity can pass without a 0001 queue intercept."
         ),
     }
 

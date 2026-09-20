@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor OTP isolated" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="OTP case 23" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.onboarding.presentation.tests.OTPScreenTest">
+                <methods>
+                    <include name="correctOtpLandsOnHomeWithSession"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -48,6 +48,7 @@ public abstract class QuickBookingBaseTest extends BaseTest {
 
     @Override
     protected void beforeCreateDriver(Method method) {
+        Adb.ensureNetworkReady();
         Adb.forceStop(Config.get("app.package"));
         String name = method.getName().toLowerCase();
         if (name.contains("direction") || name.contains("reopen") || name.contains("close")) {
@@ -117,7 +118,7 @@ public abstract class QuickBookingBaseTest extends BaseTest {
     @AfterMethod(alwaysRun = true)
     public void restoreRadiosAfterQuickBooking() {
         try {
-            Adb.enableRadios();
+            Adb.ensureNetworkReady();
         } catch (RuntimeException ignored) {
             // radio restore must not hide the test failure
         }
