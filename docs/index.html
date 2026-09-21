@@ -332,19 +332,19 @@
       </div>
     </header>
 
-    <p class="next">Next up: <strong>Home screen (9000000017)</strong> — module-by-module edge cases, in first-launch order.</p>
+    <p class="next">Next up: <strong>Bookings (after Home review)</strong> — module-by-module edge cases, in first-launch order.</p>
 
     <section class="stats" aria-label="Overall progress">
       <div class="stat">
-        <div class="num">7 <span>/ 72</span></div>
+        <div class="num">8 <span>/ 72</span></div>
         <div class="label">Screens automated</div>
       </div>
       <div class="stat">
-        <div class="num">9.7%</div>
+        <div class="num">11%</div>
         <div class="label">Coverage</div>
       </div>
       <div class="stat ok">
-        <div class="num">150</div>
+        <div class="num">183</div>
         <div class="label">Passed in latest run</div>
       </div>
       <div class="stat fail">
@@ -352,11 +352,11 @@
         <div class="label">Failed in latest run (6 skipped)</div>
       </div>
       <div class="stat bugs">
-        <div class="num">16</div>
+        <div class="num">18</div>
         <div class="label">Open bugs found so far</div>
       </div>
     </section>
-    <p class="note bugs-open">Open bugs: 16 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
+    <p class="note bugs-open">Open bugs: 18 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
     <section class="blocker" aria-label="Functional blocker for developers">
       <p><strong>Dev blocker #16 (High):</strong>
       Assign machine Confirm stays disabled when operators are busy, so a vendor cannot complete
@@ -481,12 +481,12 @@
         </div>
         <p class="cases">54/54 cases</p>
       </article>
-      <article class="card status-progress">
+      <article class="card status-done">
         <div class="card-top">
           <h3>Home</h3>
-          <span class="badge progress">In progress</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">32/32 cases</p>
       </article>
       <article class="card status-pending">
         <div class="card-top">
@@ -608,8 +608,8 @@ flowchart TB
   tellUsMaterial -->|Continue| kyc
   kyc -->|submit KYC| profileVerification
   profileVerification -->|skip or after KYC| home
-  class splash,language,onboarding,signup,otp,quickBooking done
-  class signupCompleted,role,category,home progress
+  class splash,language,onboarding,signup,otp,quickBooking,home done
+  class signupCompleted,role,category progress
   class tellUs,listSkills,tellUsMaterial,tellUsRental,listMachineries,kyc,profileVerification,bookings,fleet,calendar,earning,team,settings,help pending
   class registered,activeBooking decision
   classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px
@@ -714,7 +714,7 @@ flowchart TB
 
     <footer>
       <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
-      <a class="btn bugs" href="bugs.html">Bugs found (16 open)</a>
+      <a class="btn bugs" href="bugs.html">Bugs found (18 open)</a>
       <a class="btn ghost" href="BUGS_FOUND.docx">Download BUGS_FOUND.docx</a>
     </footer>
   </div>

@@ -17,7 +17,7 @@
     {"id": "kyc", "name": "KYC", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "profileVerification", "name": "Profile Verification", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "quickBooking", "name": "Quick Booking", "status": "done", "casesDone": 54, "casesTotal": 54, "screens": 1},
-    {"id": "home", "name": "Home", "status": "in-progress", "casesDone": 0, "casesTotal": 0, "screens": 1},
+    {"id": "home", "name": "Home", "status": "done", "casesDone": 32, "casesTotal": 32, "screens": 1},
     {"id": "bookings", "name": "Bookings", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "fleet", "name": "Fleet", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
     {"id": "calendar", "name": "Calendar", "status": "pending", "casesDone": 0, "casesTotal": 0, "screens": 1},
@@ -68,7 +68,7 @@
   ],
   "linkOtpToHome": false,
   "loggedInExtra": ["quickBooking"],
-  "whatsNext": "Home screen (9000000017)",
+  "whatsNext": "Bookings (after Home review)",
   "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1 (one-step, no Assign machine), Decline 1 (reason sheet + Confirm Decline + Request Declined), Edge 6 (Close/Back skipped after empty queue). Dev blocker #16: rental Assign machine Confirm stays disabled when operators are busy. Operator Quick Booking is not started. Operator-specific existing-user landing after OTP is not on this chart yet.",
   "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP. 19 Sep on 9000000017: pending material orders open the same Quick Booking page (material chrome, no timer/operator). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
   "existingUserEvidence": [
