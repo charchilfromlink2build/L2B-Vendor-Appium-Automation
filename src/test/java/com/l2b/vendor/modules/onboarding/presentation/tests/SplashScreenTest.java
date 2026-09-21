@@ -31,6 +31,8 @@ import org.testng.annotations.Test;
  * Splash / first-launch permission gate for the Vendor QA APK ({@code com.l2b.app.qa}).
  * Covers the system notification dialog and the splash-to-language handoff: Allow, Deny,
  * Back-dismiss, 8-second timeout, offline launch, force-stop, and rotation. One Appium session per method.
+ * Known open splash bugs (do not merge): {@code BUGS_FOUND} #1 offline launch has no
+ * error/retry; #19 cold-start logo paints twice (system splash exit + Compose splash).
  */
 @Epic("Vendor app")
 @Feature("Splash screen")
