@@ -26,10 +26,15 @@ python3 "$ROOT/scripts/build-landing.py"
 # Landing page at site root; Allure report under ./allure/
 # If there are no local results, reuse the last published Allure folder.
 rm -rf "$LIVE"
-mkdir -p "$LIVE/allure" "$LIVE/assets"
+mkdir -p "$LIVE/allure" "$LIVE/assets" "$LIVE/rental-flow"
 cp "$ROOT/docs/index.html" "$LIVE/index.html"
 cp "$ROOT/docs/bugs.html" "$LIVE/bugs.html"
+cp "$ROOT/docs/rental-flow.html" "$LIVE/rental-flow.html"
+cp "$ROOT/docs/material-flow.html" "$LIVE/material-flow.html"
 cp -R "$ROOT/docs/assets/." "$LIVE/assets/"
+if [ -d "$ROOT/docs/rental-flow" ]; then
+  cp -R "$ROOT/docs/rental-flow/." "$LIVE/rental-flow/"
+fi
 if [ -f "$ROOT/BUGS_FOUND.docx" ]; then
   cp "$ROOT/BUGS_FOUND.docx" "$LIVE/BUGS_FOUND.docx"
 fi

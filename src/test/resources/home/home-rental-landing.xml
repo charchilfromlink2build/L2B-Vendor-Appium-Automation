@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Rental Home RH-L1 to RH-L3 9000000001" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Rental Home overlay RH-L1 RH-L2 RH-L3" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.home.presentation.tests.RentalHomeLandingTest">
+                <methods>
+                    <include name="postOtpLandsOnQuickBooking"/>
+                    <include name="closeOnceLeavesQuickBooking"/>
+                    <include name="extendTimeFullyBlocksHome"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rental Vendor App — Flow</title>
+  <link rel="icon" href="assets/ic_launcher.png">
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#FFF6E5",
+        primaryTextColor: "#1A1A1A",
+        primaryBorderColor: "#FEB637",
+        lineColor: "#8A5A00",
+        secondaryColor: "#E8F5E9",
+        tertiaryColor: "#FFFEF9",
+        fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --brand: #FEB637;
+      --brand-dark: #E39A1C;
+      --cream: #FFFEF9;
+      --bg: #F3E6D4;
+      --card: rgba(255, 254, 249, 0.64);
+      --text: #1A1A1A;
+      --muted: #4F4F4F;
+      --line: rgba(255, 255, 255, 0.48);
+      --done: #145218;
+      --done-bg: #E8F5E9;
+      --progress: #7A5200;
+      --progress-bg: #FFF6E5;
+      --pending: #3D3D3D;
+      --fail: #B71C1C;
+      --glass-blur: blur(14px) saturate(140%);
+      --glass-shadow: 0 8px 28px rgba(80, 50, 10, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.45;
+      background:
+        radial-gradient(900px 420px at 8% -8%, rgba(254, 182, 55, 0.28), transparent 55%),
+        radial-gradient(820px 400px at 100% 0%, rgba(20, 82, 24, 0.10), transparent 52%),
+        linear-gradient(180deg, #F7EFE3 0%, #F3E6D4 100%);
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 20px 72px; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 0 20px;
+      border-bottom: 1px solid rgba(80, 50, 10, 0.10);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .brand img {
+      height: 72px; width: auto; max-width: 200px; object-fit: contain;
+    }
+    .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; max-width: 46em; }
+    .header-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .back {
+      font-size: 0.82rem; font-weight: 650; color: var(--progress); text-decoration: none;
+    }
+    .back:hover { text-decoration: underline; }
+    .role-banners {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+      align-items: stretch;
+    }
+    .role-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 198px;
+      padding: 8px 12px 8px 8px;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow);
+    }
+    .role-banner.current { border-color: var(--brand); }
+    .role-banner img {
+      width: 52px; height: 52px; object-fit: cover; border-radius: 12px; flex-shrink: 0; background: #F3E6D4;
+    }
+    .role-banner small {
+      display: block; font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--muted);
+    }
+    .role-banner strong { display: block; margin-top: 2px; font-size: 0.92rem; font-weight: 750; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 650;
+      background: var(--progress-bg); color: var(--progress);
+      border: 1px solid rgba(254, 182, 55, 0.45);
+      white-space: nowrap;
+    }
+    .card, .note, .screen, table.wrap-table {
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--glass-shadow);
+    }
+    .note { margin: 18px 0 0; padding: 12px 16px; font-size: 0.95rem; }
+    .note strong { color: var(--progress); }
+    nav.toc {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px;
+    }
+    nav.toc a {
+      color: var(--progress); text-decoration: none; font-size: 0.82rem; font-weight: 650;
+      padding: 6px 10px; border-radius: 999px; background: var(--progress-bg);
+      border: 1px solid rgba(254, 182, 55, 0.35);
+    }
+    h2 { font-size: 1.08rem; margin: 36px 0 12px; }
+    h3 { font-size: 0.98rem; margin: 18px 0 8px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    .diagram {
+      padding: 16px; overflow-x: auto; margin: 0 0 16px;
+    }
+    .screens {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+    .screen {
+      margin: 0;
+      padding: 10px 10px 12px;
+      text-align: center;
+      min-width: 0;
+    }
+    .screen img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1080 / 2400;
+      object-fit: contain;
+      object-position: top center;
+      display: block;
+      border-radius: 16px;
+      background: #111;
+    }
+    .screen .cap { margin: 10px 4px 2px; font-size: 0.82rem; font-weight: 650; }
+    .screen .sub { margin: 0 4px 2px; font-size: 0.74rem; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 10px 12px; vertical-align: top; border-bottom: 1px solid rgba(80, 50, 10, 0.08); }
+    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+    .tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 2px 8px;
+      border-radius: 999px; background: var(--done-bg); color: var(--done);
+    }
+    .tag.warn { background: #FDECEA; color: var(--fail); }
+    .tag.stack { background: #E3F2FD; color: #0D47A1; }
+    .tag.tab { background: var(--progress-bg); color: var(--progress); }
+    .mod {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+    }
+    .mod .card { padding: 14px 16px; }
+    .mod h3 { margin-top: 0; }
+    .mod ul { margin: 0; padding-left: 18px; }
+    .mod li { margin: 4px 0; font-size: 0.9rem; }
+    kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.82em; background: #fff; border: 1px solid rgba(80,50,10,.18);
+      border-radius: 6px; padding: 1px 6px;
+    }
+    @media (max-width: 900px) {
+      .screens { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .mod { grid-template-columns: 1fr; }
+      .brand img { height: 52px; }
+      header { flex-wrap: wrap; }
+      .header-side { align-items: flex-start; width: 100%; }
+      .role-banners { width: 100%; }
+      .role-banner { flex: 1; width: auto; }
+      .screens { grid-template-columns: 1fr; max-width: 360px; margin-left: auto; margin-right: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img src="assets/ic_splash_logo.png" alt="Link2Build">
+        <div>
+          <h1>Rental Vendor App — Flow</h1>
+          <p class="purpose">Standalone map of the rental vendor surface, explored live on 21 Sep 2026. This page is not the main coverage dashboard and is not mixed with Material Vendor results.</p>
+        </div>
+      </div>
+      <div class="header-side">
+        <a class="back" href="index.html">← Vendor dashboard</a>
+        <nav class="role-banners" aria-label="Vendor testing reports">
+          <a class="role-banner current" href="rental-flow.html" aria-current="page">
+            <img src="assets/banner-excavator.png" alt="Excavator">
+            <span>
+              <small>Testing report</small>
+              <strong>Rental Vendor</strong>
+            </span>
+          </a>
+          <a class="role-banner" href="material-flow.html">
+            <img src="assets/banner-cement.png" alt="Cement bags">
+            <span>
+              <small>Testing report</small>
+              <strong>Material Vendor</strong>
+            </span>
+          </a>
+        </nav>
+        <span class="pill">9000000001 · OTP 1234 · live dump</span>
+      </div>
+    </header>
+
+    <div class="note">
+      Explored on emulator <strong>Medium_Phone_API_36.1</strong> with package <kbd>com.l2b.app.qa</kbd>.
+      Working directory: <kbd>/Users/charchil/Documents/L2B-Vendor-Appium-Automation</kbd>.
+      Dumps: <kbd>/tmp/l2b-rental-flow-0001-20260921/</kbd>.
+      No Accept / Decline / Logout / extend-time consume.
+    </div>
+
+    <nav class="toc">
+      <a href="#trees">Navigation trees</a>
+      <a href="#login">Login → Home</a>
+      <a href="#home">Rental Home</a>
+      <a href="#bookings">Bookings</a>
+      <a href="#tabs">Calendar · Earning · Fleet</a>
+      <a href="#notify">Notifications</a>
+      <a href="#drawer">Profile drawer</a>
+      <a href="#paths">Duplicate paths</a>
+      <a href="#states">Empty vs available</a>
+      <a href="#next">Page-by-page plan</a>
+    </nav>
+
+    <h2 id="trees">1. Navigation trees (live)</h2>
+    <div class="card diagram">
+      <pre class="mermaid">
+flowchart TD
+  L[Login OTP 1234] --> QB[Quick Booking queue]
+  QB -->|Close| H{Rental Home}
+  QB -->|Back| OS[Android launcher — bug #13]
+  H -->|sometimes| ET[Request to extend time #15]
+  ET -.->|no safe dismiss| ET
+  H --> Cal[Calendar Schedule]
+  H --> Ear[Earning and Incentive]
+  H --> Flt[Your Fleet]
+  H --> N[Notifications]
+  H --> D[Profile drawer]
+  H -->|Upcoming See all or card| B[Bookings Upcoming / Active / Completed]
+  H -->|Booking Orders See all| QB
+  Cal --> H
+  Ear --> H
+  Flt --> H
+  B -->|Back| H
+  N -->|Back| H
+      </pre>
+    </div>
+    <div class="card diagram">
+      <pre class="mermaid">
+flowchart LR
+  D[Profile drawer] --> Acc[Account / Profile Info]
+  D --> KYC[KYC Details]
+  D --> YM[Your machines = Fleet]
+  D --> Team[Manage team]
+  D --> Help[Help and Support]
+  D --> Lang[Language]
+  D --> Ref[Refer and Earn]
+  D --> FAQ[FAQ]
+  D --> Terms[Terms and Services]
+  D --> Pol[Policies]
+  D --> Set[Settings]
+  D -.->|do not tap| LO[Log Out]
+      </pre>
+    </div>
+
+    <h2 id="login">2. Login → intercept → Home</h2>
+    <div class="mod">
+      <div class="card">
+        <h3>Login</h3>
+        <ul>
+          <li>Phone <kbd>9000000001</kbd>, OTP <kbd>1234</kbd> (QA).</li>
+          <li>After OTP this account lands on <strong>Quick Booking</strong>, not Home.</li>
+          <li>Two pending rental cards this session: ₹51,000 and ₹459,000.</li>
+          <li>Chrome: Timer, Accept, Decline, View More Details, Get Direction, Close.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>After Close</h3>
+        <ul>
+          <li><strong>This session:</strong> Close opened usable Rental Home. Extend-time was <em>absent</em>.</li>
+          <li><strong>Earlier 0001 session:</strong> Close opened <em>Request to extend time</em> (#15 High). No Close / X / Not now. Outside tap and Back do not dismiss. Do not tap View More Details, Decline, or Accept.</li>
+          <li>Android Back from Quick Booking still exits to launcher (#13).</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="home">3. Rental Home</h2>
+    <p class="muted">Bottom tabs are Calendar · Home · Earning · Fleet (not Orders / Inventory). Header: Profile left, Notifications right, Monthly period chip.</p>
+    <div class="screens">
+      <figure class="screen"><img src="rental-flow/screens/home.png" alt="Rental Home"><figcaption class="cap">Home</figcaption><p class="sub">Greeting, stats, upcoming, pending QB</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/quick-booking.png" alt="Quick Booking"><figcaption class="cap">Quick Booking</figcaption><p class="sub">Post-OTP and Booking Orders See all</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/calendar.png" alt="Calendar"><figcaption class="cap">Calendar</figcaption><p class="sub">Schedule · keeps bottom tabs</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/earning.png" alt="Earning"><figcaption class="cap">Earning</figcaption><p class="sub">Wallet, incentive, withdraw</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/fleet.png" alt="Fleet"><figcaption class="cap">Fleet</figcaption><p class="sub">3 active machines</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/notifications.png" alt="Notifications"><figcaption class="cap">Notifications</figcaption><p class="sub">Stack screen · Back only</p></figure>
+    </div>
+    <div class="mod" style="margin-top:14px">
+      <div class="card">
+        <h3>Home body (this account)</h3>
+        <ul>
+          <li>Greeting: Good Afternoon!</li>
+          <li>Current Earning ₹ 93,744</li>
+          <li>Active Fleet <strong>3 / 20</strong> — See all → Fleet</li>
+          <li>Total Completed Task <strong>1</strong></li>
+          <li>Upcoming Booking <strong>4</strong></li>
+          <li>Earning Projected ₹ 769,250</li>
+          <li>Upcoming strip card KA13Z2117 (17–18 Sep 2026)</li>
+          <li>Booking Orders: pending Quick Booking with Timer / Decline / Accept</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Home exits (verified)</h3>
+        <ul>
+          <li><span class="tag">See all</span> Upcoming → Bookings Upcoming list</li>
+          <li><span class="tag">Card</span> first upcoming card → same Bookings list</li>
+          <li><span class="tag warn">See all</span> Booking Orders → Quick Booking queue again</li>
+          <li>Do not tap Accept / Decline on the Home feed card</li>
+          <li>About this stat and Monthly period are present; pull-to-refresh is not</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="bookings">4. Bookings — Upcoming / Active / Completed</h2>
+    <p class="muted">Reached from Home Upcoming See all or the first upcoming card. Stack screen: Back, Help. No bottom tabs.</p>
+    <div class="screens">
+      <figure class="screen"><img src="rental-flow/screens/bookings-upcoming.png" alt="Upcoming bookings"><figcaption class="cap">Upcoming</figcaption><p class="sub">Cards + operator Change / Assign</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/bookings-active.png" alt="Active bookings"><figcaption class="cap">Active</figcaption><p class="sub">Empty: No active bookings.</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/bookings-completed.png" alt="Completed bookings"><figcaption class="cap">Completed</figcaption><p class="sub">One completed excavator</p></figure>
+    </div>
+    <table class="wrap-table" style="margin-top:14px">
+      <thead><tr><th>Tab</th><th>Live 0001</th><th>Card actions seen</th><th>Back</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Upcoming</td>
+          <td>Excavator 20T KA13Z2117 (operator assigned) + 14 Ft Truck MH12SD4444 (Operator Not Assigned)</td>
+          <td>Get Direction, View More Details, Change / Assign operator. Tapping the Home card did <em>not</em> open a dedicated detail page — it opened this list.</td>
+          <td>Returns to Home</td>
+        </tr>
+        <tr>
+          <td>Active</td>
+          <td>Empty copy: <em>No active bookings.</em></td>
+          <td>None</td>
+          <td>Returns to Home</td>
+        </tr>
+        <tr>
+          <td>Completed</td>
+          <td>Excavator 20 Tonnes, 31 Aug 2026, ₹1,02,000</td>
+          <td>List row only this session</td>
+          <td>Returns to Home</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="tabs">5. Calendar · Earning · Fleet</h2>
+    <p class="muted">These three keep the bottom tab bar <em>and</em> an in-app Back. Back and Home tab both return to Rental Home.</p>
+    <div class="mod">
+      <div class="card">
+        <h3>Calendar</h3>
+        <ul>
+          <li>Title: Schedule · month/year (September 2026)</li>
+          <li>Previous / Next month</li>
+          <li>Selected day this session: 21 September Monday</li>
+          <li>Empty day: <em>No bookings on this day.</em></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Earning</h3>
+        <ul>
+          <li>Title: Earning &amp; Incentive · Help</li>
+          <li>Wallet ₹ 93,744 · Incentive ₹ 0 · Withdraw</li>
+          <li>FIRST bonus 0/10 · Order 2 · Sale ₹ 1,30,200</li>
+          <li>Recent Transactions (See all) with Credited rows</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Fleet</h3>
+        <ul>
+          <li>Title: Your Fleet · Add Machine</li>
+          <li>Three machines, all Status Active: KA13Z2117, KA02MH2612, MH12SD4444</li>
+          <li>Change operator on each card</li>
+          <li>Same destination as drawer <em>Your machines</em> and Home Active Fleet See all</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Tab vs stack</h3>
+        <ul>
+          <li><span class="tag tab">Tab</span> Calendar, Home, Earning, Fleet — bottom bar stays</li>
+          <li><span class="tag stack">Stack</span> Quick Booking, Bookings, Notifications, drawer destinations — Back, no bottom bar (except Your machines → Fleet)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="notify">6. Notifications</h2>
+    <div class="card" style="padding:14px 16px">
+      <ul>
+        <li>Opened from Home header bell. Title: Notification. Tabs: Unread / All.</li>
+        <li>Empty: <em>You're all caught up.</em> · View all notifications.</li>
+        <li>Back only — bottom tabs are gone. Returns to Home.</li>
+      </ul>
+    </div>
+
+    <h2 id="drawer">7. Profile drawer</h2>
+    <div class="screens">
+      <figure class="screen"><img src="rental-flow/screens/drawer.png" alt="Drawer"><figcaption class="cap">Drawer</figcaption><p class="sub">waardian · L2B-8FV7CE</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/account.png" alt="Account"><figcaption class="cap">Account</figcaption><p class="sub">Profile Info · Edit / Update</p></figure>
+      <figure class="screen"><img src="rental-flow/screens/help.png" alt="Help"><figcaption class="cap">Help</figcaption><p class="sub">Live chat · Raise Ticket</p></figure>
+    </div>
+    <table class="wrap-table" style="margin-top:14px">
+      <thead><tr><th>Row</th><th>Destination</th><th>Live copy</th></tr></thead>
+      <tbody>
+        <tr><td>Header</td><td>Drawer chrome</td><td>waardian · Company Id L2B-8FV7CE · Close navigation menu</td></tr>
+        <tr><td>Account</td><td>Profile Info</td><td>Edit, Full Name, Mobile 9000000001, Company Info, Update</td></tr>
+        <tr><td>KYC</td><td>KYC Details</td><td>Company PAN AAECW1706A, GST, Document Details</td></tr>
+        <tr><td>Your machines</td><td>Fleet (same as tab)</td><td>Same three Active machines</td></tr>
+        <tr><td>Manage team</td><td>Your team member</td><td>Nauman Majid Pathan · 9000000002 · Change Assignment</td></tr>
+        <tr><td>Help</td><td>Help &amp; Support</td><td>Live chat, Raise Ticket, Ticket history · 8:00 AM – 8:00 PM</td></tr>
+        <tr><td>Language</td><td>All language</td><td>English Default, हिंदी, తెలుగు, ಕನ್ನಡ · Save</td></tr>
+        <tr><td>Refer &amp; Earn</td><td>Referral</td><td>Code HRHND8 · INR 500</td></tr>
+        <tr><td>FAQ</td><td>FAQs</td><td>Review, payout, start job, cancel, reach a human</td></tr>
+        <tr><td>Terms &amp; Services</td><td>Terms</td><td>Partner obligations, no off-platform settle</td></tr>
+        <tr><td>Policies</td><td>Privacy</td><td>KYC, location on active jobs, payouts</td></tr>
+        <tr><td>Settings</td><td>Settings</td><td>Notification, GPS Location, Camera Access</td></tr>
+        <tr><td>Log Out</td><td><span class="tag warn">not opened</span></td><td>Do not tap in automation</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="paths">8. Same screen, several doors</h2>
+    <table class="wrap-table">
+      <thead><tr><th>Destination</th><th>Paths that reached it</th></tr></thead>
+      <tbody>
+        <tr><td>Quick Booking queue</td><td>Post-OTP intercept · Home Booking Orders See all</td></tr>
+        <tr><td>Rental Home</td><td>QB Close (when #15 absent) · bottom Home tab · Back from Calendar/Earning/Fleet/Bookings/Notifications</td></tr>
+        <tr><td>Bookings list</td><td>Home Upcoming See all · first upcoming card</td></tr>
+        <tr><td>Fleet</td><td>Bottom Fleet tab · Home Active Fleet See all · drawer Your machines</td></tr>
+        <tr><td>Help</td><td>Drawer Help · Earning Help · Bookings Help</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="states">9. Empty vs available (this account)</h2>
+    <table class="wrap-table">
+      <thead><tr><th>Surface</th><th>State on 9000000001</th><th>Automation note</th></tr></thead>
+      <tbody>
+        <tr><td>Home</td><td>Full chrome: fleet 3/20, upcoming 4, pending QB on feed</td><td>Best account for rental Home / Calendar / Earning / Fleet</td></tr>
+        <tr><td>Quick Booking</td><td>Two pending cards</td><td>Do not Accept / Decline (0001–0003 standing rule)</td></tr>
+        <tr><td>Bookings Active</td><td>Empty</td><td>Need another booking state or account for Active cards</td></tr>
+        <tr><td>Bookings Upcoming / Completed</td><td>Available</td><td>List + operator Change/Assign on Upcoming</td></tr>
+        <tr><td>Notifications</td><td>Empty</td><td>Unread/All chrome only</td></tr>
+        <tr><td>Calendar day</td><td>Empty for 21 Sep</td><td>Month nav still present</td></tr>
+        <tr><td>Extend-time #15</td><td>Absent this session; present on an earlier 0001 dump</td><td>If it returns, Home a11y is blocked. Overlay-only RH-L1–L3 already exist. Do not consume.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="next">10. Page-by-page automation (not started)</h2>
+    <div class="note">
+      Flow is designed from live 0001. <strong>Do not start the next module until this page is reviewed.</strong>
+      Each later module stays isolated, dump-sourced, and will not merge same-pattern bugs.
+    </div>
+    <div class="mod" style="margin-top:14px">
+      <div class="card">
+        <h3>Proposed order</h3>
+        <ol>
+          <li>Rental Home (continue RH after overlay L1–L3)</li>
+          <li>Bookings Upcoming / Active / Completed</li>
+          <li>Calendar</li>
+          <li>Earning</li>
+          <li>Fleet</li>
+          <li>Notifications</li>
+          <li>Drawer modules one screen at a time</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>Still queued, not this page</h3>
+        <ul>
+          <li>RH-L4+ on 9000000003 if #15 blocks 0001 Home again</li>
+          <li>Material Bookings (after Rental Home review — previous standing order)</li>
+          <li>No Logout, no 0001–0003 Accept/Decline, no extend-time consume</li>
+          <li>Main coverage dashboard stays separate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

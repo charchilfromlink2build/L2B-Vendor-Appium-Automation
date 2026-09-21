@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Rental flow explore 9000000001" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Rental flow explore" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.home.presentation.tests.RentalFlowExplore">
+                <methods>
+                    <include name="exploreBookingsAndDrawer"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

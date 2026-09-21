@@ -503,7 +503,63 @@ INDEX_HTML = r"""<!DOCTYPE html>
       min-height: 0;
     }
     .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
-    .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; font-weight: 400; max-width: 42em; line-height: 1.4; }
+    .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; font-weight: 400; max-width: 36em; line-height: 1.4; }
+    .role-banners {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+      align-items: stretch;
+    }
+    .role-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 214px;
+      padding: 8px 12px 8px 8px;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .role-banner:hover {
+      transform: translateY(-2px);
+      border-color: var(--brand);
+    }
+    .role-banner img {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 12px;
+      flex-shrink: 0;
+      background: #F3E6D4;
+    }
+    .role-banner small {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .role-banner strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.98rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+    }
+    .role-banner .go {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--progress);
+    }
     .next,
     .stat,
     .card,
@@ -736,6 +792,8 @@ INDEX_HTML = r"""<!DOCTYPE html>
       .stats { grid-template-columns: repeat(2, 1fr); }
       header { flex-direction: column; align-items: flex-start; }
       .brand img { height: 56px; max-height: 56px; }
+      .role-banners { width: 100%; }
+      .role-banner { flex: 1; width: auto; }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid .card:nth-child(4n)::after { content: "→"; }
       .grid .card:nth-child(2n)::after { content: none; }
@@ -760,6 +818,8 @@ INDEX_HTML = r"""<!DOCTYPE html>
       .grid .card:nth-child(2n)::after { content: "↓"; }
       .grid .card:last-child::after { content: none; }
       .btn { width: 100%; text-align: center; }
+      .role-banners { flex-direction: column; }
+      .role-banner { width: 100%; }
     }
   </style>
 </head>
@@ -773,6 +833,24 @@ INDEX_HTML = r"""<!DOCTYPE html>
           <p class="purpose">L2B Vendor is the partner app where vendors receive rental and material orders from customers, fulfil those jobs, and manage machines, bookings, fleet, team, and earnings in one place.</p>
         </div>
       </div>
+      <nav class="role-banners" aria-label="Vendor testing reports">
+        <a class="role-banner" href="rental-flow.html">
+          <img src="assets/banner-excavator.png" alt="Excavator">
+          <span>
+            <small>Testing report</small>
+            <strong>Rental Vendor</strong>
+            <span class="go">Open excavator flow →</span>
+          </span>
+        </a>
+        <a class="role-banner" href="material-flow.html">
+          <img src="assets/banner-cement.png" alt="Cement bags">
+          <span>
+            <small>Testing report</small>
+            <strong>Material Vendor</strong>
+            <span class="go">Open cement flow →</span>
+          </span>
+        </a>
+      </nav>
     </header>
 
     <p class="next">Next up: <strong>{{WHATS_NEXT}}</strong> — module-by-module edge cases, in first-launch order.</p>

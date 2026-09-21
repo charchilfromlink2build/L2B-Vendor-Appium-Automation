@@ -533,6 +533,57 @@ public class QuickBookingLandingPage extends SplashScreen {
         return isPresent(ComposeLocators.textView("Request to extend time"));
     }
 
+    /**
+     * Dump 21 Sep {@code /tmp/l2b-home-rental-0001-20260921/01-after-close/window.xml}.
+     * Clickable TextView, not a clickable outer View. Do not tap.
+     */
+    @Step("Check extend-time View More Details (dump clickable TextView)")
+    public boolean isExtendTimeViewMoreDetailsVisible() {
+        return isPresent(By.xpath(
+                "//android.widget.TextView[@text='View More Details'][@clickable='true']"));
+    }
+
+    /** Dump: clickable outer View wrapping Decline TextView decoy. Do not tap. */
+    @Step("Check extend-time Decline clickable outer")
+    public boolean isExtendTimeDeclineOuterVisible() {
+        return isPresent(ComposeLocators.clickableWithText("Decline"));
+    }
+
+    /** Dump: clickable outer View wrapping Accept TextView decoy. Do not tap. */
+    @Step("Check extend-time Accept clickable outer")
+    public boolean isExtendTimeAcceptOuterVisible() {
+        return isPresent(ComposeLocators.clickableWithText("Accept"));
+    }
+
+    /**
+     * Non-committal dismiss from dump inventory — none found (no Close/X, Not now,
+     * Remind me later, Close sheet).
+     */
+    @Step("Check a safe dismiss control on the current tree")
+    public boolean hasSafeDismissCopy() {
+        return isPresent(ComposeLocators.textView("Not now"))
+                || isPresent(ComposeLocators.textView("Remind me later"))
+                || isPresent(By.xpath("//*[@content-desc='Close']"))
+                || isPresent(By.xpath("//*[@content-desc='Close sheet']"));
+    }
+
+    @Step("Check any checkable node in the tree")
+    public boolean hasCheckableControl() {
+        return !driver.findElements(By.xpath("//*[@checkable='true']")).isEmpty();
+    }
+
+    /** Dump root FrameLayout {@code dismissable=false} while the dialog owns the window. */
+    @Step("Check extend-time window reports dismissable=false")
+    public boolean isExtendTimeMarkedNotDismissable() {
+        String src = driver.getPageSource();
+        return src.contains("Request to extend time") && src.contains("dismissable=\"false\"");
+    }
+
+    @Step("Count clickable=true nodes in the current window")
+    public int clickableCount() {
+        return driver.findElements(By.xpath("//*[@clickable='true']")).size();
+    }
+
     @Step("Read Accept enabled on the clickable outer View")
     public boolean isAcceptEnabled() {
         return outerEnabled("Accept");
