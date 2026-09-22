@@ -29,6 +29,11 @@
  * {@code src/test/resources/bookings/} and report zero tests until a case is
  * enabled on execution day.
  *
+ * <p>Running an on-hold suite reports {@code Tests run: 0}, but the Allure TestNG
+ * listener still schedules a status-less result per method in the class. Those
+ * entries surface as {@code unknown} in a generated report and must be dropped
+ * from {@code target/allure-results} before publishing, until the cases are live.
+ *
  * <p>Rules carried over from Quick Booking and Rental Home: never tap Accept,
  * Decline, or Assign on the pre-existing 0001 queue; never tap Log Out; a new
  * Bookings defect always gets a new sequential number and is never merged into
