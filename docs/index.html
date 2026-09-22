@@ -410,7 +410,7 @@
       </nav>
     </header>
 
-    <p class="next">Next up: <strong>Bookings (after Home review)</strong> — module-by-module edge cases, in first-launch order.</p>
+    <p class="next">Next up: <strong>Rental Booking execution (82 cases scaffolded; wait for customer-web seed credentials)</strong> — module-by-module edge cases, in first-launch order.</p>
 
     <section class="stats" aria-label="Overall progress">
       <div class="stat">
@@ -422,19 +422,19 @@
         <div class="label">Coverage</div>
       </div>
       <div class="stat ok">
-        <div class="num">189</div>
+        <div class="num">223</div>
         <div class="label">Passed in latest run</div>
       </div>
       <div class="stat fail">
         <div class="num">2</div>
-        <div class="label">Failed in latest run (6 skipped)</div>
+        <div class="label">Failed in latest run (9 skipped)</div>
       </div>
       <div class="stat bugs">
-        <div class="num">19</div>
+        <div class="num">26</div>
         <div class="label">Open bugs found so far</div>
       </div>
     </section>
-    <p class="note bugs-open">Open bugs: 19 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
+    <p class="note bugs-open">Open bugs: 26 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
     <section class="blocker" aria-label="Functional blocker for developers">
       <p><strong>Dev blocker #16 (High):</strong>
       Assign machine Confirm stays disabled when operators are busy, so a vendor cannot complete
@@ -564,14 +564,14 @@
           <h3>Home</h3>
           <span class="badge done">Done</span>
         </div>
-        <p class="cases">32/32 cases</p>
+        <p class="cases">72/72 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-progress">
         <div class="card-top">
           <h3>Bookings</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge progress">In progress</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">0/82 cases</p>
       </article>
       <article class="card status-pending">
         <div class="card-top">
@@ -618,7 +618,7 @@
     </div>
 
     <h2>App flow</h2>
-    <p class="note">Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help &amp; Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1 (one-step, no Assign machine), Decline 1 (reason sheet + Confirm Decline + Request Declined), Edge 6 (Close/Back skipped after empty queue). Dev blocker #16: rental Assign machine Confirm stays disabled when operators are busy. Operator Quick Booking is not started. Operator-specific existing-user landing after OTP is not on this chart yet.</p>
+    <p class="note">Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help &amp; Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open bugs #25 (Rental Home Back → launcher) and #26 (Rental Home rotation opens Account drawer). Rental Booking structure is scaffolded — 82 cases (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14), all enabled=false until customer-web credentials seed real bookings. Dev blocker #16 still open on Assign Confirm when operators are busy. Operator Quick Booking is not started.</p>
     <div class="flow">
       <pre class="mermaid">
 flowchart TB
@@ -687,8 +687,8 @@ flowchart TB
   kyc -->|submit KYC| profileVerification
   profileVerification -->|skip or after KYC| home
   class splash,language,onboarding,signup,otp,quickBooking,home done
-  class signupCompleted,role,category progress
-  class tellUs,listSkills,tellUsMaterial,tellUsRental,listMachineries,kyc,profileVerification,bookings,fleet,calendar,earning,team,settings,help pending
+  class signupCompleted,role,category,bookings progress
+  class tellUs,listSkills,tellUsMaterial,tellUsRental,listMachineries,kyc,profileVerification,fleet,calendar,earning,team,settings,help pending
   class registered,activeBooking decision
   classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px
   classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px
@@ -792,7 +792,7 @@ flowchart TB
 
     <footer>
       <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
-      <a class="btn bugs" href="bugs.html">Bugs found (19 open)</a>
+      <a class="btn bugs" href="bugs.html">Bugs found (26 open)</a>
       <a class="btn ghost" href="BUGS_FOUND.docx">Download BUGS_FOUND.docx</a>
     </footer>
   </div>

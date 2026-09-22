@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- RB-I13 — on hold. The method is enabled=false until execution day. -->
+<suite name="L2B RB-I13" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="RB-I13 changeOperatorSheetCancel" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingInteractTest">
+                <methods>
+                    <include name="changeOperatorSheetCancel"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

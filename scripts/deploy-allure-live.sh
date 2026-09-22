@@ -31,6 +31,9 @@ cp "$ROOT/docs/index.html" "$LIVE/index.html"
 cp "$ROOT/docs/bugs.html" "$LIVE/bugs.html"
 cp "$ROOT/docs/rental-flow.html" "$LIVE/rental-flow.html"
 cp "$ROOT/docs/material-flow.html" "$LIVE/material-flow.html"
+if [ -f "$ROOT/docs/rental-booking-test-plan.md" ]; then
+  cp "$ROOT/docs/rental-booking-test-plan.md" "$LIVE/rental-booking-test-plan.md"
+fi
 cp -R "$ROOT/docs/assets/." "$LIVE/assets/"
 if [ -d "$ROOT/docs/rental-flow" ]; then
   cp -R "$ROOT/docs/rental-flow/." "$LIVE/rental-flow/"

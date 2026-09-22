@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B RH-L15" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="RH-L15 v-swipe" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.home.presentation.tests.RentalHomeLandingTest">
+                <methods>
+                    <include name="verticalSwipeKeepsChrome"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

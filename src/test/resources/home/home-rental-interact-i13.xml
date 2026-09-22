@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B RH-I13" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="RH-I13 home tab" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.home.presentation.tests.RentalHomeInteractTest">
+                <methods>
+                    <include name="homeTabAgain"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

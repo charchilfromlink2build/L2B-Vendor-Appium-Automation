@@ -5,7 +5,10 @@ import com.l2b.vendor.core.ui.SplashScreen;
 import com.l2b.vendor.core.wait.Waits;
 import io.qameta.allure.Step;
 import java.time.Duration;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * Logged-in Home. Identity from live dumps:
@@ -103,6 +106,28 @@ public class HomePage extends SplashScreen {
                 || isPresent(ComposeLocators.textView("Calendar"));
     }
 
+    /**
+     * Live 21 Sep {@code /tmp/l2b-rental-flow-0001-20260921/01-after-close}:
+     * Calendar · Home · Earning · Fleet. Not material Orders / Inventory.
+     */
+    @Step("Check rental bottom tabs from 21 Sep dump")
+    public boolean isRentalBottomTabsVisible() {
+        return isCalendarTabVisible()
+                && isHomeTabVisible()
+                && isPresent(By.xpath("//*[@content-desc='Earning']"))
+                && isFleetTabVisible();
+    }
+
+    @Step("Check material Orders tab is visible")
+    public boolean isOrdersTabVisible() {
+        return isPresent(By.xpath("//*[@content-desc='Orders']"));
+    }
+
+    @Step("Check material Inventory tab is visible")
+    public boolean isInventoryTabVisible() {
+        return isPresent(By.xpath("//*[@content-desc='Inventory']"));
+    }
+
     @Step("Check Upcoming Orders material copy")
     public boolean isUpcomingOrdersVisible() {
         return isPresent(ComposeLocators.textView("Upcoming Orders"));
@@ -139,6 +164,72 @@ public class HomePage extends SplashScreen {
         return isPresent(ComposeLocators.textView(label));
     }
 
+    /**
+     * Dump 21 Sep {@code 01-after-close} 2×2: Active Fleet, Total Completed Task,
+     * Upcoming Booking, Earning Projected. Counts and rupees change — labels only.
+     */
+    @Step("Check rental Home stat cards from 21 Sep dump")
+    public boolean areRentalStatCardsVisible() {
+        return isStatVisible("Active Fleet")
+                && isStatVisible("Total Completed Task")
+                && isStatVisible("Upcoming Booking")
+                && isStatVisible("Earning Projected");
+    }
+
+    /**
+     * Dump 21 Sep {@code 01-after-close}: horizontal strip under Upcoming Booking
+     * with a clickable card (machine + plate + Booking for). Second card is clipped.
+     */
+    @Step("Check Upcoming Booking strip has at least one card")
+    public boolean isUpcomingStripCardVisible() {
+        return isPresent(ComposeLocators.textView("Upcoming Booking"))
+                && upcomingStripCardCount() >= 1
+                && isPresent(ComposeLocators.textView("Booking for"));
+    }
+
+    @Step("Count clickable cards in the Upcoming Booking strip")
+    public int upcomingStripCardCount() {
+        return upcomingStripCards().size();
+    }
+
+    @Step("First Upcoming strip machine name")
+    public String firstUpcomingMachineNow() {
+        List<WebElement> texts = firstUpcomingCardTexts();
+        for (WebElement el : texts) {
+            String t = safeText(el);
+            if (t.isBlank() || "Booking for".equals(t) || t.startsWith("See all")) {
+                continue;
+            }
+            if (PLATE.matcher(t).matches() || t.contains(" day)")) {
+                continue;
+            }
+            return t;
+        }
+        return "";
+    }
+
+    @Step("First Upcoming strip plate")
+    public String firstUpcomingPlateNow() {
+        for (WebElement el : firstUpcomingCardTexts()) {
+            String t = safeText(el);
+            if (PLATE.matcher(t).matches()) {
+                return t;
+            }
+        }
+        return "";
+    }
+
+    @Step("First Upcoming strip Booking-for address")
+    public String firstUpcomingBookingForAddressNow() {
+        List<WebElement> texts = firstUpcomingCardTexts();
+        for (int i = 0; i < texts.size(); i++) {
+            if ("Booking for".equals(safeText(texts.get(i))) && i + 1 < texts.size()) {
+                return safeText(texts.get(i + 1));
+            }
+        }
+        return "";
+    }
+
     @Step("Check Confirmed upcoming card copy")
     public boolean isUpcomingConfirmedCardVisible() {
         return isPresent(ComposeLocators.textViewContains("Confirmed"))
@@ -150,10 +241,11 @@ public class HomePage extends SplashScreen {
         return isQuickBookingAppBar();
     }
 
-    @Step("Tap clickable outer wrapping content-desc")
+    @Step("Tap clickable node with content-desc, or clickable outer wrapping it")
     public void tapDesc(String desc) {
         tap(driver.findElement(By.xpath(
-                "//android.view.View[@clickable='true'][.//*[@content-desc="
+                "//*[@clickable='true'][@content-desc=" + xpathLit(desc) + "]"
+                        + " | //android.view.View[@clickable='true'][.//*[@content-desc="
                         + xpathLit(desc) + "]]")));
     }
 
@@ -173,6 +265,81 @@ public class HomePage extends SplashScreen {
         tap(driver.findElement(By.xpath(
                 "//android.view.View[@clickable='true']"
                         + "[.//android.widget.TextView[contains(@text,'Pickup scheduled')]]")));
+    }
+
+    @Step("Check Booking Orders feed (title, Timer, Decline, Accept) — do not tap actions")
+    public boolean isBookingOrdersFeedVisible() {
+        return isPresent(ComposeLocators.textView("Booking Orders"))
+                && isPresent(ComposeLocators.textView("Timer"))
+                && isPresent(ComposeLocators.textView("Decline"))
+                && isPresent(ComposeLocators.textView("Accept"));
+    }
+
+    @Step("Visible Booking Orders timer values mm:ss")
+    public List<String> bookingOrderTimersNow() {
+        List<String> out = new java.util.ArrayList<>();
+        for (WebElement el : driver.findElements(By.className("android.widget.TextView"))) {
+            String t = safeText(el);
+            if (TIMER.matcher(t).matches()) {
+                out.add(t);
+            }
+        }
+        return out;
+    }
+
+    @Step("Check View More Details is visible")
+    public boolean isViewMoreDetailsVisible() {
+        return isPresent(ComposeLocators.textView("View More Details"));
+    }
+
+    @Step("Count About this stat info icons")
+    public int aboutThisStatCount() {
+        return driver.findElements(By.xpath("//*[@content-desc='About this stat']")).size();
+    }
+
+    @Step("Count clickable See all rows")
+    public int seeAllCount() {
+        return seeAllRows().size();
+    }
+
+    @Step("Tap nth See all (0 Active Fleet, 1 Upcoming, 2 Booking Orders)")
+    public void tapNthSeeAll(int index) {
+        List<WebElement> rows = seeAllRows();
+        if (index < 0 || index >= rows.size()) {
+            throw new IllegalStateException("See all index " + index + " size " + rows.size());
+        }
+        tap(rows.get(index));
+    }
+
+    @Step("Tap first Upcoming strip card")
+    public void tapFirstUpcomingStripCard() {
+        List<WebElement> cards = upcomingStripCards();
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("No Upcoming strip card");
+        }
+        tap(cards.get(0));
+    }
+
+    @Step("Swipe rental Upcoming strip")
+    public void swipeRentalUpcomingStrip(String direction) {
+        List<WebElement> strips = driver.findElements(By.xpath(
+                "//android.view.View[@scrollable='true']"
+                        + "[.//android.widget.TextView[@text='Booking for']]"
+                        + "[not(.//android.widget.TextView[@text='Timer'])]"));
+        if (strips.isEmpty()) {
+            swipeUpcomingStripLeft();
+            return;
+        }
+        org.openqa.selenium.Rectangle box = strips.get(0).getRect();
+        // Inset from the left edge so the gesture is not Android Back (E1 / #25).
+        int inset = Math.max(120, box.getWidth() / 5);
+        driver.executeScript("mobile: swipeGesture", java.util.Map.of(
+                "left", box.getX() + inset,
+                "top", box.getY() + 16,
+                "width", Math.max(box.getWidth() - inset * 2, 80),
+                "height", Math.max(box.getHeight() - 32, 80),
+                "direction", direction,
+                "percent", 0.75));
     }
 
     @Step("Swipe Upcoming Orders strip sideways")
@@ -196,6 +363,39 @@ public class HomePage extends SplashScreen {
                 "height", (int) (size.height * 0.40),
                 "direction", "up",
                 "percent", 0.7));
+    }
+
+    private static final Pattern PLATE = Pattern.compile("[A-Z]{2}[0-9]{2}[A-Z]{1,3}[0-9]{4}");
+    private static final Pattern TIMER = Pattern.compile("^\\d{2}:\\d{2}$");
+
+    private static final By UPCOMING_STRIP_CARDS = By.xpath(
+            "//android.view.View[@scrollable='true']"
+                    + "[.//android.widget.TextView[@text='Booking for']]"
+                    + "[not(.//android.widget.TextView[@text='Timer'])]"
+                    + "[not(.//android.widget.TextView[@text='Booking Orders'])]"
+                    + "/android.view.View[@clickable='true']");
+
+    private List<WebElement> upcomingStripCards() {
+        return driver.findElements(UPCOMING_STRIP_CARDS);
+    }
+
+    private List<WebElement> seeAllRows() {
+        return driver.findElements(By.xpath(
+                "//android.view.View[@clickable='true'][.//android.widget.TextView[@text='See all']]"
+                        + " | //android.widget.TextView[@text='See all'][@clickable='true']"));
+    }
+
+    private List<WebElement> firstUpcomingCardTexts() {
+        List<WebElement> cards = upcomingStripCards();
+        if (cards.isEmpty()) {
+            return List.of();
+        }
+        return cards.get(0).findElements(By.className("android.widget.TextView"));
+    }
+
+    private static String safeText(WebElement el) {
+        String t = el.getText();
+        return t == null ? "" : t.trim();
     }
 
     private static String xpathLit(String value) {

@@ -1,8 +1,8 @@
 {
-  "passed": 189,
+  "passed": 223,
   "failed": 2,
-  "skipped": 6,
-  "when": "2026-09-21T13:26:08+05:30",
+  "skipped": 9,
+  "when": "2026-09-22T14:31:08+05:30",
   "source": "allure-results-unique-latest",
   "note": "Unique latest status per test (retries collapsed). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16). OTP 23/24 are retargeted to 9000000003 so Home identity can pass without a 0001 queue intercept."
 }
