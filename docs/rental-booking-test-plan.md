@@ -250,3 +250,22 @@ never merged into an existing bug:
 | Short-slot seeding | RB-S12 / RB-S13 need a start and end inside the session | Book the shortest slot the customer site allows |
 | 30:00 countdown | RB-S15 and RB-E4 take real time | Schedule them as long-running, run other cases meanwhile |
 | Second vendor account | RB-A12 needs a foreign booking id | Use a `9000000017` or `9000000003` booking id |
+
+## Live confirmation (23 Sep 2026)
+
+Customer `9110981038` → vendor `9000000001` → operator `9000000002`.
+
+| Step | Evidence |
+|---|---|
+| Place order | `L2B-RNT-2026-1837E2` Excavator 20T, site `RB-FULL-FLOW`, Juspay captured |
+| Vendor queue | Pending card on Quick Booking after relaunch (Accept / Decline / Timer) |
+| UI Accept | Opens Assign machine; Confirm blocked when `all_operators_busy` (**#16**) |
+| API Accept | `POST .../accept` → `confirmed` |
+| API Assign | `POST .../assign` + `allow_operator_overlap=true` → `operator_assigned` (Nauman / KA13Z2117) |
+| Start OTP | Customer `9477` → operator `POST .../start` → `in_progress` |
+| End OTP | Customer `5400` → operator `POST .../end` → `completed` (customer shows Job finished) |
+
+Executable API suite (no Appium): `src/test/resources/bookings/rental-booking-lifecycle-api.xml`  
+`mvn test -Dsurefire.suiteXmlFiles=src/test/resources/bookings/rental-booking-lifecycle-api.xml`  
+Optional Start/End: `-Dl2b.bookingId=… -Dl2b.startOtp=… -Dl2b.endOtp=…`
+

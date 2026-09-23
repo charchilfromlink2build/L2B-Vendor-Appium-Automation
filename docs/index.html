@@ -410,7 +410,7 @@
       </nav>
     </header>
 
-    <p class="next">Next up: <strong>Rental Booking execution (82 cases scaffolded; wait for customer-web seed credentials)</strong> — module-by-module edge cases, in first-launch order.</p>
+    <p class="next">Next up: <strong>Free-operator UI Accept → Assign → Confirm</strong> (scope #16) before activating the 82-case Rental Booking scaffold.</p>
 
     <section class="stats" aria-label="Overall progress">
       <div class="stat">
@@ -422,12 +422,12 @@
         <div class="label">Coverage</div>
       </div>
       <div class="stat ok">
-        <div class="num">223</div>
+        <div class="num">7</div>
         <div class="label">Passed in latest run</div>
       </div>
       <div class="stat fail">
-        <div class="num">2</div>
-        <div class="label">Failed in latest run (9 skipped)</div>
+        <div class="num">0</div>
+        <div class="label">Failed in latest run (1 skipped)</div>
       </div>
       <div class="stat bugs">
         <div class="num">26</div>
@@ -443,7 +443,7 @@
       the rest of the bug list.</p>
       <p><a href="bugs.html#bug-16">Open #16</a></p>
     </section>
-    <p class="run-note">Unique latest status per test (retries collapsed). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16). OTP 23/24 are retargeted to 9000000003 so Home identity can pass without a 0001 queue intercept.</p>
+    <p class="run-note">Latest suite (23 Sep): <code>rental-booking-lifecycle-api.xml</code> — 7 passed / 0 failed / 1 skipped (Start/End OTP skipped on already-completed seed). API path Accept→Assign→Start OTP→End OTP→completed proven on L2B-RNT-2026-1837E2. UI Assign Confirm still tracked as #16 for busy-operator slots; free-operator UI verify next.</p>
 
     <h2>Modules</h2>
     <div class="grid">
@@ -571,7 +571,8 @@
           <h3>Bookings</h3>
           <span class="badge progress">In progress</span>
         </div>
-        <p class="cases">0/82 cases</p>
+        <p class="cases">8/82 cases</p>
+        <p class="muted" style="font-size:0.85rem;margin:0 0 0">API lifecycle suite live (7 PASS / 1 SKIP). UI scaffold still on hold.</p>
       </article>
       <article class="card status-pending">
         <div class="card-top">
@@ -618,7 +619,7 @@
     </div>
 
     <h2>App flow</h2>
-    <p class="note">Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help &amp; Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open bugs #25 (Rental Home Back → launcher) and #26 (Rental Home rotation opens Account drawer). Rental Booking structure is scaffolded — 82 cases (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14), all enabled=false until customer-web credentials seed real bookings. Dev blocker #16 still open on Assign Confirm when operators are busy. Operator Quick Booking is not started.</p>
+    <p class="note">Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help &amp; Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open bugs #25 (Rental Home Back → launcher) and #26 (Rental Home rotation opens Account drawer). Rental Booking structure is scaffolded — 82 cases (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14), all enabled=false until customer-web credentials seed real bookings. 23 Sep API lifecycle suite live (7 PASS / 1 SKIP) — Accept→Assign→Start/End OTP→completed proven. Dev blocker #16 still open on Assign Confirm when operators are busy; free-operator UI verify next. Operator Quick Booking is not started.</p>
     <div class="flow">
       <pre class="mermaid">
 flowchart TB
