@@ -6,30 +6,40 @@ import com.l2b.vendor.core.wait.Waits;
 import io.qameta.allure.Step;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 
 /**
- * Rental Bookings list for {@code 9000000001} — reached from Home → Upcoming
- * Booking → {@code See all}. Read-only queries only: every locator below is taken
- * from the 21 Sep live dumps, and no state-changing action lives in this page yet.
+ * Rental Bookings surfaces for {@code 9000000001}. Read queries plus mutation helpers
+ * for Accept / Decline / Assign / Change / Confirm. Locators are dump-sourced.
  *
- * <p>Dump evidence ({@code /tmp/l2b-rental-flow-0001-20260921/}):
+ * <p>Dump evidence ({@code /tmp/l2b-rental-flow-0001-20260921/} + free-op Assign sheet):
  * <ul>
- *   <li>{@code 11-see-all-upcoming}, {@code 14-bookings-upcoming} — Upcoming list</li>
- *   <li>{@code 12-bookings-active} — empty state {@code No active bookings.}</li>
- *   <li>{@code 13-bookings-completed} — completed card</li>
- *   <li>{@code 16-first-upcoming-card} — View More Details expanded</li>
+ *   <li>{@code 11-see-all-upcoming}, {@code 14-bookings-upcoming}, {@code 16-first-upcoming-card}
+ *       — Upcoming list: {@code Assign} / {@code Change} are clickable TextViews
+ *       ({@code clickable=true} on the label itself, not an outer View)</li>
+ *   <li>{@code 17-see-all-booking-orders} — Booking Orders list: Accept / Decline use the
+ *       Compose clickable outer View pattern (inner TextView is {@code clickable=false}
+ *       decoy). These CTAs are <b>not</b> on Upcoming / Active / Completed tabs</li>
+ *   <li>{@code /tmp/l2b-free-op-ui/12-assign-machine} — Assign machine sheet: title,
+ *       Skip (clickable TextView), Select an operator, Confirm enabled on outer View</li>
  * </ul>
  *
- * <p>Screen identity is the tab triplet plus one of the three headers. Quick Booking
- * (app bar {@code Close}) and Home (greeting / Current Earning) must never satisfy it.
+ * <p>Screen identity for the tabbed list is the tab triplet plus one of the three headers.
+ * Quick Booking (app bar {@code Close}) must never satisfy tabbed identity. Accept /
+ * Decline helpers refuse when the extend-time dialog (#15) is up, and refuse when those
+ * labels are absent (do not invent taps on the tabbed list).
  *
- * <p>Accept, Decline, Assign, Change, and Confirm helpers are deliberately absent.
- * They are added only when the live rental booking seed exists, so no queue can be
- * consumed by accident before then.
+ * <p>Change opens the same Assign machine sheet family in product (operator pick + Confirm).
+ * Sheet chrome is asserted the same way as after Assign; a dedicated Change-sheet dump
+ * was not captured yet — callers should dump on first live Change if the title differs.
  */
 public class RentalBookingsPage extends SplashScreen {
 
@@ -51,12 +61,20 @@ public class RentalBookingsPage extends SplashScreen {
     private static final By VIEW_MORE_DETAILS = ComposeLocators.textView("View More Details");
     private static final By BOOKING_FOR = ComposeLocators.textView("Booking for");
     private static final By OPERATOR_UNASSIGNED = ComposeLocators.textView("Operator Not Assigned");
-    private static final By ASSIGN = ComposeLocators.textView("Assign");
-    private static final By CHANGE = ComposeLocators.textView("Change");
+    /** Dump 14: Assign is a clickable TextView, not an outer View. */
+    private static final By ASSIGN_CLICKABLE = By.xpath(
+            "//android.widget.TextView[@text='Assign'][@clickable='true']");
+    /** Dump 14: Change is a clickable TextView, not an outer View. */
+    private static final By CHANGE_CLICKABLE = By.xpath(
+            "//android.widget.TextView[@text='Change'][@clickable='true']");
     private static final By OPERATOR_ASSIGNED =
             ComposeLocators.textViewContains("Operator : ");
     private static final By AMOUNT = ComposeLocators.textViewContains("Amount · Online Mode");
     private static final By SOURCE_TAG = ComposeLocators.textView("Quick Booking");
+    private static final By ASSIGN_MACHINE = ComposeLocators.textView("Assign machine");
+    private static final By SELECT_OPERATOR = ComposeLocators.textView("Select an operator");
+    private static final By DECLINE_BOOKING = ComposeLocators.textView("Decline Booking?");
+    private static final By EXTEND_TIME = ComposeLocators.textView("Request to extend time");
 
     /** {@code 27 Aug 11:36 AM - 29 Aug 2026 11:36 AM (2 days)} and the date-only variant. */
     private static final Pattern DATE_RANGE =
@@ -65,6 +83,8 @@ public class RentalBookingsPage extends SplashScreen {
     /** Fleet plate, same shape the Home upcoming strip uses. */
     private static final Pattern PLATE =
             Pattern.compile("[A-Z]{2}[0-9]{2}[A-Z]{1,3}[0-9]{4}");
+
+    private boolean lastMenuOptionEnabled = true;
 
     @Override
     @Step("Wait for Rental Bookings list")
@@ -136,12 +156,12 @@ public class RentalBookingsPage extends SplashScreen {
 
     @Step("Count Assign controls (unassigned operator)")
     public int assignCount() {
-        return driver.findElements(ASSIGN).size();
+        return driver.findElements(ASSIGN_CLICKABLE).size();
     }
 
     @Step("Count Change controls (assigned operator)")
     public int changeCount() {
-        return driver.findElements(CHANGE).size();
+        return driver.findElements(CHANGE_CLICKABLE).size();
     }
 
     @Step("Count Operator Not Assigned rows")
@@ -241,6 +261,374 @@ public class RentalBookingsPage extends SplashScreen {
         return out;
     }
 
+    // --- Mutation helpers (Step 1 foundation) ---------------------------------
+
+    /**
+     * Dump 17 Booking Orders / Home Booking Orders card: Accept lives on the clickable
+     * outer View. Not present on Upcoming / Active / Completed tabs (dumps 11/14/16).
+     */
+    @Step("Tap first Accept (Booking Orders / incoming card outer View)")
+    public void tapFirstAccept() {
+        refuseIfExtendTime("Accept");
+        if (isAssignMachineVisible() || isDeclineBookingDialogVisible()) {
+            throw new IllegalStateException("A sheet/dialog is open — refusing Accept");
+        }
+        List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Accept"));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException(
+                    "Accept not on screen — Booking Orders / Quick Booking card required "
+                            + "(Upcoming/Active/Completed tabs have Assign/Change only)");
+        }
+        clickGestureOn(rows.get(0));
+    }
+
+    /**
+     * Dump 17: Decline outer View, same Compose pattern as Accept. Not on tabbed Bookings.
+     */
+    @Step("Tap first Decline (Booking Orders / incoming card outer View)")
+    public void tapFirstDecline() {
+        refuseIfExtendTime("Decline");
+        if (isAssignMachineVisible() || isDeclineBookingDialogVisible()) {
+            throw new IllegalStateException("A sheet/dialog is open — refusing Decline");
+        }
+        List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Decline"));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException(
+                    "Decline not on screen — Booking Orders / Quick Booking card required "
+                            + "(Upcoming/Active/Completed tabs have Assign/Change only)");
+        }
+        clickGestureOn(rows.get(0));
+    }
+
+    @Step("Read first Accept enabled on clickable outer View")
+    public boolean isAcceptEnabled() {
+        return anyOuterEnabled("Accept");
+    }
+
+    @Step("Read first Decline enabled on clickable outer View")
+    public boolean isDeclineEnabled() {
+        return anyOuterEnabled("Decline");
+    }
+
+    @Step("Count Accept outer Views")
+    public int acceptCount() {
+        return driver.findElements(ComposeLocators.clickableWithText("Accept")).size();
+    }
+
+    @Step("Count Decline outer Views")
+    public int declineCount() {
+        return driver.findElements(ComposeLocators.clickableWithText("Decline")).size();
+    }
+
+    /**
+     * Dump 14: {@code Assign} TextView clickable=true on Operator Not Assigned cards.
+     * Opens Assign machine (same sheet family as Quick Booking Accept).
+     */
+    @Step("Tap first Assign on Upcoming (clickable TextView)")
+    public void tapFirstAssign() {
+        refuseIfExtendTime("Assign");
+        if (isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine already open — refusing Assign");
+        }
+        List<WebElement> rows = driver.findElements(ASSIGN_CLICKABLE);
+        if (rows.isEmpty()) {
+            throw new IllegalStateException(
+                    "Assign not on screen — need an Operator Not Assigned Upcoming card");
+        }
+        clickGestureOn(rows.get(0));
+    }
+
+    /**
+     * Dump 14: {@code Change} TextView clickable=true beside {@code Operator : <name>}.
+     */
+    @Step("Tap first Change on Upcoming (clickable TextView)")
+    public void tapFirstChange() {
+        refuseIfExtendTime("Change");
+        if (isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine already open — refusing Change");
+        }
+        List<WebElement> rows = driver.findElements(CHANGE_CLICKABLE);
+        if (rows.isEmpty()) {
+            throw new IllegalStateException(
+                    "Change not on screen — need an assigned-operator Upcoming card");
+        }
+        clickGestureOn(rows.get(0));
+    }
+
+    @Step("Check Assign machine sheet")
+    public boolean isAssignMachineVisible() {
+        return isPresent(ASSIGN_MACHINE);
+    }
+
+    @Step("Check Select an operator on Assign machine")
+    public boolean isSelectOperatorVisible() {
+        return isPresent(SELECT_OPERATOR);
+    }
+
+    @Step("Check Assign machine Skip")
+    public boolean isAssignSkipVisible() {
+        return isPresent(ComposeLocators.textView("Skip"));
+    }
+
+    /**
+     * Free-op dump 12: Confirm enabled lives on the clickable outer View; inner TextView
+     * stays enabled=true decoy.
+     */
+    @Step("Read Assign Confirm enabled on clickable outer View")
+    public boolean isAssignConfirmEnabled() {
+        return anyOuterEnabled("Confirm");
+    }
+
+    @Step("Tap Assign machine Confirm via clickGesture")
+    public void tapAssignConfirm() {
+        dismissDropdownOverlay();
+        if (!isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine not on screen — refusing Confirm");
+        }
+        WebElement target = smallestClickableWithText("Confirm");
+        if (target == null) {
+            throw new IllegalStateException("Confirm not on Assign machine");
+        }
+        clickGestureOn(target);
+    }
+
+    /** Free-op dump 12: Skip is a clickable TextView on the sheet header. */
+    @Step("Tap Assign machine Skip")
+    public void tapAssignSkip() {
+        if (!isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine not on screen — refusing Skip");
+        }
+        List<WebElement> skips = driver.findElements(By.xpath(
+                "//android.widget.TextView[@text='Skip'][@clickable='true']"));
+        if (skips.isEmpty()) {
+            WebElement fallback = smallestClickableWithText("Skip");
+            if (fallback == null) {
+                throw new IllegalStateException("Skip not on Assign machine");
+            }
+            clickGestureOn(fallback);
+            return;
+        }
+        clickGestureOn(skips.get(0));
+    }
+
+    /**
+     * Opens Select an operator and taps the first new menu row. Returns the chosen label.
+     */
+    @Step("Select first operator from Assign machine dropdown")
+    public String selectFirstOperator() {
+        if (!isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine not on screen — refusing operator pick");
+        }
+        String chosen = pickFirstDropdownOption("Select an operator", "Operator dropdown showed no options");
+        dismissDropdownOverlay();
+        return chosen;
+    }
+
+    @Step("Read whether the last dropdown row was enabled")
+    public boolean lastMenuOptionEnabled() {
+        return lastMenuOptionEnabled;
+    }
+
+    @Step("Check Decline Booking? reason dialog")
+    public boolean isDeclineBookingDialogVisible() {
+        return isPresent(DECLINE_BOOKING);
+    }
+
+    @Step("Check Select a reason on Decline Booking?")
+    public boolean isSelectReasonVisible() {
+        return isPresent(ComposeLocators.textView("Select a reason"));
+    }
+
+    @Step("Select first decline reason from dropdown")
+    public String selectFirstDeclineReason() {
+        if (!isDeclineBookingDialogVisible()) {
+            throw new IllegalStateException("Decline Booking? dialog not on screen");
+        }
+        String chosen = pickFirstDropdownOption("Select a reason", "Reason dropdown showed no options");
+        dismissDropdownOverlay();
+        return chosen;
+    }
+
+    @Step("Read Confirm Decline enabled on clickable outer View")
+    public boolean isConfirmDeclineEnabled() {
+        return anyOuterEnabled("Confirm Decline");
+    }
+
+    @Step("Tap Confirm Decline on the reason dialog")
+    public void tapConfirmDecline() {
+        if (!isDeclineBookingDialogVisible()) {
+            throw new IllegalStateException("Decline Booking? dialog not on screen — refusing Confirm Decline");
+        }
+        WebElement target = smallestClickableWithText("Confirm Decline");
+        if (target == null) {
+            List<WebElement> labels = driver.findElements(ComposeLocators.textView("Confirm Decline"));
+            if (labels.isEmpty()) {
+                throw new IllegalStateException("Confirm Decline not on reason dialog");
+            }
+            clickGestureOn(labels.get(0));
+            return;
+        }
+        clickGestureOn(target);
+    }
+
+    @Step("Check Request to extend time dialog")
+    public boolean isExtendTimeDialogVisible() {
+        return isPresent(EXTEND_TIME);
+    }
+
+    /**
+     * Operator/reason menus are a separate window. While open, Assign machine / Decline
+     * Booking? leave the tree. Tap left of the popup — do not press Back from Bookings
+     * without a known Back destination.
+     */
+    @Step("Dismiss dropdown overlay without leaving Bookings")
+    public void dismissDropdownOverlay() {
+        if (isAssignMachineVisible() || isDeclineBookingDialogVisible()) {
+            return;
+        }
+        Dimension size = driver.manage().window().getSize();
+        clickGestureAt((int) (size.width * 0.22), (int) (size.height * 0.42));
+        try {
+            Waits.until(driver,
+                    d -> (isAssignMachineVisible() || isDeclineBookingDialogVisible()) ? Boolean.TRUE : null,
+                    "Dropdown overlay did not dismiss",
+                    Duration.ofSeconds(4));
+        } catch (TimeoutException first) {
+            clickGestureAt((int) (size.width * 0.50), (int) (size.height * 0.28));
+            Waits.until(driver,
+                    d -> (isAssignMachineVisible() || isDeclineBookingDialogVisible()) ? Boolean.TRUE : null,
+                    "Dropdown overlay did not dismiss after second tap",
+                    Duration.ofSeconds(4));
+        }
+    }
+
+    private void refuseIfExtendTime(String action) {
+        if (isExtendTimeDialogVisible()) {
+            throw new IllegalStateException(
+                    "Request to extend time is up (#15) — refusing " + action);
+        }
+    }
+
+    private boolean anyOuterEnabled(String text) {
+        for (WebElement row : driver.findElements(ComposeLocators.clickableWithText(text))) {
+            if (Boolean.parseBoolean(row.getAttribute("enabled"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String pickFirstDropdownOption(String fieldLabel, String emptyMessage) {
+        Set<String> before = visibleTexts();
+        WebElement field = smallestClickableWithText(fieldLabel);
+        if (field == null) {
+            List<WebElement> labels = driver.findElements(ComposeLocators.textView(fieldLabel));
+            if (labels.isEmpty()) {
+                throw new IllegalStateException(fieldLabel + " not on screen");
+            }
+            clickGestureOn(labels.get(0));
+        } else {
+            clickGestureOn(field);
+        }
+        Waits.until(driver,
+                d -> firstNewMenuNode(before) != null ? Boolean.TRUE : null,
+                emptyMessage,
+                Duration.ofSeconds(8));
+        WebElement option = firstNewMenuNode(before);
+        if (option == null) {
+            throw new IllegalStateException(emptyMessage);
+        }
+        String chosen = option.getAttribute("text");
+        if (chosen == null || "null".equalsIgnoreCase(chosen)) {
+            chosen = "";
+        }
+        chosen = chosen.trim();
+        WebElement row = clickableAncestorOrSelf(option);
+        lastMenuOptionEnabled = Boolean.parseBoolean(row.getAttribute("enabled"));
+        clickGestureOn(row);
+        return chosen;
+    }
+
+    private WebElement firstNewMenuNode(Set<String> before) {
+        for (WebElement node : driver.findElements(By.className("android.widget.TextView"))) {
+            String raw = node.getAttribute("text");
+            if (raw == null || raw.isBlank() || "null".equalsIgnoreCase(raw)) {
+                continue;
+            }
+            String text = raw.trim();
+            if (before.contains(text) || text.length() >= 80) {
+                continue;
+            }
+            if (text.contains("operators are busy")
+                    || text.contains("Confirm the machine")
+                    || text.startsWith("Please select")
+                    || text.equalsIgnoreCase("Search")
+                    || text.equalsIgnoreCase("Cancel")) {
+                continue;
+            }
+            return node;
+        }
+        return null;
+    }
+
+    private Set<String> visibleTexts() {
+        LinkedHashSet<String> texts = new LinkedHashSet<>();
+        for (WebElement node : driver.findElements(By.className("android.widget.TextView"))) {
+            String raw = node.getAttribute("text");
+            if (raw != null && !raw.isBlank() && !"null".equalsIgnoreCase(raw)) {
+                texts.add(raw.trim());
+            }
+        }
+        return texts;
+    }
+
+    private WebElement smallestClickableWithText(String text) {
+        List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText(text));
+        WebElement best = null;
+        int bestArea = Integer.MAX_VALUE;
+        for (WebElement row : rows) {
+            org.openqa.selenium.Rectangle box = row.getRect();
+            int area = box.width * box.height;
+            if (area > 0 && area < bestArea) {
+                bestArea = area;
+                best = row;
+            }
+        }
+        return best;
+    }
+
+    private WebElement clickableAncestorOrSelf(WebElement node) {
+        List<WebElement> ancestors = node.findElements(
+                By.xpath("./ancestor-or-self::android.view.View[@clickable='true']"));
+        if (ancestors.isEmpty()) {
+            // Dump Assign/Change: the TextView itself is clickable.
+            if (Boolean.parseBoolean(node.getAttribute("clickable"))) {
+                return node;
+            }
+            return node;
+        }
+        WebElement best = ancestors.get(0);
+        int bestArea = Integer.MAX_VALUE;
+        for (WebElement row : ancestors) {
+            org.openqa.selenium.Rectangle box = row.getRect();
+            int area = box.width * box.height;
+            if (area > 0 && area < bestArea) {
+                bestArea = area;
+                best = row;
+            }
+        }
+        return best;
+    }
+
+    private void clickGestureOn(WebElement element) {
+        org.openqa.selenium.Rectangle box = element.getRect();
+        clickGestureAt(box.x + box.width / 2, box.y + box.height / 2);
+    }
+
+    private void clickGestureAt(int x, int y) {
+        driver.executeScript("mobile: clickGesture", Map.of("x", x, "y", y));
+    }
+
     private static boolean isChromeCopy(String text) {
         return TAB_UPCOMING.equals(text) || TAB_ACTIVE.equals(text) || TAB_COMPLETED.equals(text)
                 || TITLE_UPCOMING.equals(text) || TITLE_ACTIVE.equals(text)
@@ -249,7 +637,10 @@ public class RentalBookingsPage extends SplashScreen {
                 || "Get Direction".equals(text) || "View More Details".equals(text)
                 || "View Less Details".equals(text) || "Assign".equals(text)
                 || "Change".equals(text) || "Quick Booking".equals(text)
-                || EMPTY_ACTIVE.equals(text);
+                || EMPTY_ACTIVE.equals(text)
+                || "Assign machine".equals(text) || "Select an operator".equals(text)
+                || "Confirm".equals(text) || "Skip".equals(text)
+                || "Accept".equals(text) || "Decline".equals(text);
     }
 
     private List<String> textsOf(By locator) {

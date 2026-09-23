@@ -23,11 +23,12 @@
  * <p>82 cases total. Full specification, the user / app / backend activity map,
  * and the execution protocol live in {@code docs/rental-booking-test-plan.md}.
  *
- * <p><b>Status: on hold.</b> Every method is {@code enabled = false} and throws
- * {@link org.testng.SkipException} if forced, so a suite can never report a false
- * pass before the steps are written. Isolated suites exist under
- * {@code src/test/resources/bookings/} and report zero tests until a case is
- * enabled on execution day.
+ * <p><b>Status:</b> Step 1 page helpers are live on {@code RentalBookingsPage}
+ * (Accept / Decline / Assign / Change / Confirm + Assign-machine sheet). All 82
+ * test methods remain {@code enabled = false} and throw
+ * {@link org.testng.SkipException} if forced — Step 2 Landing has not started.
+ * Isolated suites under {@code src/test/resources/bookings/} report zero tests
+ * until a case is enabled on execution day.
  *
  * <p>Running an on-hold suite reports {@code Tests run: 0}, but the Allure TestNG
  * listener still schedules a status-less result per method in the class. Those
