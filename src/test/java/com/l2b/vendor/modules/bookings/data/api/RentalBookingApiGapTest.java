@@ -222,6 +222,58 @@ public class RentalBookingApiGapTest {
                 .isEqualTo(completedDashboard);
     }
 
+    @Test(priority = 12, description = "RB-A12: another vendor's booking id is not reachable")
+    @Severity(SeverityLevel.BLOCKER)
+    @Description("Take a booking id owned by 9000000001 and call detail / accept / decline / assign "
+            + "with a foreign vendor token (9000000017). Expect 403 or 404 on every call — never "
+            + "200. Any success is a cross-tenant authorisation defect.")
+    public void otherVendorBookingIsForbidden() {
+        String ownerToken = vendorToken(Config.get("user.rental.company.phone"));
+        Response list = bookings.list(ownerToken);
+        assertThat(list.statusCode()).isEqualTo(200);
+        List<Map<String, Object>> rows = list.jsonPath().getList("data");
+        assertThat(rows).as("owner must have at least one booking id to probe").isNotEmpty();
+        String foreignId = String.valueOf(rows.get(0).get("id"));
+        Allure.parameter("ownerPhone", Config.get("user.rental.company.phone"));
+        Allure.parameter("foreignBookingId", foreignId);
+        Allure.parameter("foreignBookingNumber", String.valueOf(rows.get(0).get("booking_number")));
+
+        String foreignToken = vendorToken(Config.get("user.material.phone"));
+        Allure.parameter("attackerPhone", Config.get("user.material.phone"));
+
+        Response detail = bookings.detail(foreignToken, foreignId);
+        record("foreign detail", detail);
+        Response accept = bookings.accept(foreignToken, foreignId);
+        record("foreign accept", accept);
+        Response decline = bookings.decline(foreignToken, foreignId, "Machine not available");
+        record("foreign decline", decline);
+        Response assign = bookings.assign(
+                foreignToken,
+                foreignId,
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000002",
+                true);
+        record("foreign assign", assign);
+
+        Allure.parameter("detailStatus", String.valueOf(detail.statusCode()));
+        Allure.parameter("acceptStatus", String.valueOf(accept.statusCode()));
+        Allure.parameter("declineStatus", String.valueOf(decline.statusCode()));
+        Allure.parameter("assignStatus", String.valueOf(assign.statusCode()));
+
+        assertThat(detail.statusCode())
+                .as("Foreign detail must be 403 or 404 — never expose another vendor's booking")
+                .isIn(403, 404);
+        assertThat(accept.statusCode())
+                .as("Foreign accept must be 403 or 404")
+                .isIn(403, 404);
+        assertThat(decline.statusCode())
+                .as("Foreign decline must be 403 or 404")
+                .isIn(403, 404);
+        assertThat(assign.statusCode())
+                .as("Foreign assign must be 403 or 404")
+                .isIn(403, 404);
+    }
+
     private static Instant parseInstant(Object raw) {
         if (raw == null) {
             return null;
@@ -264,10 +316,13 @@ public class RentalBookingApiGapTest {
     }
 
     private String vendorToken() {
-        String phone = Config.get("user.rental.company.phone");
+        return vendorToken(Config.get("user.rental.company.phone"));
+    }
+
+    private String vendorToken(String phone) {
         auth.sendOtp(phone);
         Response verify = auth.verifyOtp(phone, otp());
-        assertThat(verify.statusCode()).as("vendor login").isEqualTo(200);
+        assertThat(verify.statusCode()).as("login " + phone).isEqualTo(200);
         String token = verify.jsonPath().getString("access_token");
         assertThat(token).isNotBlank();
         return token;

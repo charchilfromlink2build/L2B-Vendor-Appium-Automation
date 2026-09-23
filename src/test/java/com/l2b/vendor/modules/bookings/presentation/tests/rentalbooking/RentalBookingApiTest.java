@@ -131,13 +131,11 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 12,
-            description = "RB-A12: another vendor's booking id is not reachable")
+            description = "RB-A12: another vendor's booking id is not reachable — LIVE in ApiGapTest")
     @Severity(SeverityLevel.BLOCKER)
-    @Description("Use a booking id that belongs to a different vendor for detail, accept, "
-            + "decline, and assign. Expect 403 or 404 on every one. Any success is a "
-            + "cross-tenant authorisation defect.")
+    @Description("Implemented in RentalBookingApiGapTest.otherVendorBookingIsForbidden.")
     public void otherVendorBookingIsForbidden() {
-        throw new SkipException(ON_HOLD);
+        throw new SkipException("RB-A12 lives in RentalBookingApiGapTest — use booking-rental-api-a12.xml");
     }
 
     @Test(enabled = false, priority = 13,
