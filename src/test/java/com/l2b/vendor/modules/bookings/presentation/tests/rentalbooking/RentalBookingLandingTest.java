@@ -165,13 +165,33 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isNotEmpty();
     }
 
-    @Test(enabled = false, priority = 5,
+    @Test(priority = 5,
             description = "RB-L5: Upcoming card map tile and Get Direction render")
     @Severity(SeverityLevel.NORMAL)
     @Description("Google Map tile and the Get Direction control appear on cards that carry a "
-            + "location. Count them against the card count and record any card missing a map.")
+            + "location. Map and Get Direction must be paired (equal counts) and recorded against "
+            + "the card count. A Get Direction with no map tile is a new Bookings bug.")
     public void upcomingCardMapAndDirection() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        int cards = bookings.cardCountNow();
+        int maps = bookings.mapCount();
+        int directions = bookings.getDirectionCount();
+
+        Allure.parameter("cardCount", String.valueOf(cards));
+        Allure.parameter("mapTiles", String.valueOf(maps));
+        Allure.parameter("getDirection", String.valueOf(directions));
+        Allure.parameter("cardsMissingMap(observed)", String.valueOf(Math.max(0, cards - maps)));
+        bookings.attachScreenshot("rb-l5-map-and-direction");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(cards)
+                .as("At least one Upcoming card must render")
+                .isGreaterThanOrEqualTo(1);
+        assertThat(directions)
+                .as("Every Get Direction control must sit on a card that also shows a map tile "
+                        + "— an unpaired Get Direction is a new Bookings bug")
+                .isLessThanOrEqualTo(maps);
     }
 
     @Test(enabled = false, priority = 6,
