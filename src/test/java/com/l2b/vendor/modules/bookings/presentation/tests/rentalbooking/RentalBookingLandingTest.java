@@ -59,13 +59,28 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isTrue();
     }
 
-    @Test(enabled = false, priority = 2,
+    @Test(priority = 2,
             description = "RB-L2: Upcoming / Active / Completed tabs exist, Upcoming is default")
     @Severity(SeverityLevel.CRITICAL)
     @Description("All three tab labels are present on first paint and the Upcoming list is the "
             + "one rendered (header Upcoming Booking). Do not tap the tabs here.")
     public void threeTabsWithUpcomingDefault() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        String header = bookings.headerTitleNow();
+        Allure.parameter("tabsVisible", String.valueOf(bookings.areTabsVisible()));
+        Allure.parameter("headerTitle", header);
+        Allure.parameter("activeEmptyOrList",
+                String.valueOf(bookings.isActiveEmptyStateVisible()));
+        bookings.attachScreenshot("rb-l2-three-tabs-upcoming-default");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(bookings.areTabsVisible())
+                .as("Upcoming / Active / Completed tab labels must all render on first paint")
+                .isTrue();
+        assertThat(header)
+                .as("Upcoming must be the default tab — header Upcoming Booking without any tap")
+                .isEqualTo(RentalBookingsPage.TITLE_UPCOMING);
     }
 
     @Test(enabled = false, priority = 3,
