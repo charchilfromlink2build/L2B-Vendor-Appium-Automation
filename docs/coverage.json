@@ -1,403 +1,403 @@
 {
-  "totalScreens": 72,
-  "modules": [
-    {
-      "id": "splash",
-      "name": "Splash",
-      "status": "done",
-      "casesDone": 8,
-      "casesTotal": 8,
-      "screens": 1
-    },
-    {
-      "id": "language",
-      "name": "Language",
-      "status": "done",
-      "casesDone": 10,
-      "casesTotal": 10,
-      "screens": 1
-    },
-    {
-      "id": "onboarding",
-      "name": "Onboarding",
-      "status": "done",
-      "casesDone": 11,
-      "casesTotal": 11,
-      "screens": 2
-    },
-    {
-      "id": "signup",
-      "name": "Sign up",
-      "status": "done",
-      "casesDone": 23,
-      "casesTotal": 23,
-      "screens": 1
-    },
-    {
-      "id": "otp",
-      "name": "OTP",
-      "status": "done",
-      "casesDone": 25,
-      "casesTotal": 25,
-      "screens": 1
-    },
-    {
-      "id": "signupCompleted",
-      "name": "Sign Up Completed",
-      "status": "in-progress",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "role",
-      "name": "Select your role",
-      "status": "in-progress",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "category",
-      "name": "Select category",
-      "status": "in-progress",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "tellUs",
-      "name": "Tell us (Operator)",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "listSkills",
-      "name": "List skills",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "tellUsMaterial",
-      "name": "Tell us (Materials)",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "tellUsRental",
-      "name": "Tell us (Rental)",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "listMachineries",
-      "name": "List machineries",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "kyc",
-      "name": "KYC",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "profileVerification",
-      "name": "Profile Verification",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "quickBooking",
-      "name": "Quick Booking",
-      "status": "done",
-      "casesDone": 55,
-      "casesTotal": 55,
-      "screens": 1,
-      "note": "Includes free-operator UI Accept→Confirm PASS on F7D066 (23 Sep)."
-    },
-    {
-      "id": "home",
-      "name": "Home",
-      "status": "done",
-      "casesDone": 72,
-      "casesTotal": 72,
-      "screens": 1
-    },
-    {
-      "id": "bookings",
-      "name": "Bookings",
-      "status": "in-progress",
-      "casesDone": 8,
-      "casesTotal": 82,
-      "screens": 1,
-      "note": "API lifecycle suite live 23 Sep (7 PASS / 1 SKIP). Free-op UI Accept→Confirm PASS (F7D066). UI 82 still scaffolded — await decision."
-    },
-    {
-      "id": "fleet",
-      "name": "Fleet",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "calendar",
-      "name": "Calendar",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "earning",
-      "name": "Earning",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "team",
-      "name": "Team",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "settings",
-      "name": "Profile / Settings",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    },
-    {
-      "id": "help",
-      "name": "Help & Support",
-      "status": "pending",
-      "casesDone": 0,
-      "casesTotal": 0,
-      "screens": 1
-    }
-  ],
-  "firstLaunch": [
-    "splash",
-    "language",
-    "onboarding",
-    "signup",
-    "otp"
-  ],
-  "firstLaunchEdgeLabels": {},
-  "afterOtp": {
-    "registeredDecision": {
-      "id": "registered",
-      "label": "Mobile already registered?"
-    },
-    "existing": {
-      "edge": "Yes, existing user",
-      "activeDecision": {
-        "id": "activeBooking",
-        "shape": "rect",
-        "label": "Check for active rental or material booking<br>(any assigned machine / material order)"
-      },
-      "yes": {
-        "to": "quickBooking",
-        "label": "Yes, Quick Booking first"
-      },
-      "no": {
-        "to": "home",
-        "label": "No, go to Home"
-      }
-    },
-    "newUser": {
-      "edge": "No, new user",
-      "to": "signupCompleted"
-    }
+ "totalScreens": 72,
+ "modules": [
+  {
+   "id": "splash",
+   "name": "Splash",
+   "status": "done",
+   "casesDone": 8,
+   "casesTotal": 8,
+   "screens": 1
   },
-  "firstLaunchBranches": [
-    {
-      "from": "signupCompleted",
-      "to": "role",
-      "label": "Register Yourself"
-    },
-    {
-      "from": "signupCompleted",
-      "to": "help",
-      "label": "Contact us to Register"
-    },
-    {
-      "from": "quickBooking",
-      "to": "home",
-      "label": "Close / Back"
-    },
-    {
-      "from": "role",
-      "to": "category",
-      "label": "Vendor / Owner"
-    },
-    {
-      "from": "role",
-      "to": "tellUs",
-      "label": "Operator / Driver"
-    },
-    {
-      "from": "tellUs",
-      "to": "listSkills",
-      "label": "Continue"
-    },
-    {
-      "from": "listSkills",
-      "to": "home",
-      "label": "Skip"
-    },
-    {
-      "from": "listSkills",
-      "to": "kyc",
-      "label": "Complete KYC"
-    },
-    {
-      "from": "category",
-      "to": "tellUsMaterial",
-      "label": "Materials Vendor"
-    },
-    {
-      "from": "category",
-      "to": "tellUsRental",
-      "label": "Rental Vendor"
-    },
-    {
-      "from": "tellUsRental",
-      "to": "listMachineries",
-      "label": "Continue"
-    },
-    {
-      "from": "listMachineries",
-      "to": "home",
-      "label": "Skip"
-    },
-    {
-      "from": "listMachineries",
-      "to": "kyc",
-      "label": "Complete KYC"
-    },
-    {
-      "from": "tellUsMaterial",
-      "to": "kyc",
-      "label": "Continue"
-    },
-    {
-      "from": "kyc",
-      "to": "profileVerification",
-      "label": "submit KYC"
-    },
-    {
-      "from": "profileVerification",
-      "to": "home",
-      "label": "skip or after KYC"
-    }
-  ],
-  "linkOtpToHome": false,
-  "loggedInExtra": [
-    "quickBooking"
-  ],
-  "whatsNext": "Decide together: activate 82-case Rental Booking scaffold, or #16 busy-slot UI fix-verification first",
-  "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup \u2014 Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done \u2014 40 isolated cases. Material Vendor Quick Booking (9000000017) is done \u2014 Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done \u2014 Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open bugs #25 (Rental Home Back \u2192 launcher) and #26 (Rental Home rotation opens Account drawer). Rental Booking structure is scaffolded \u2014 82 cases (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14), all enabled=false until activation. Dev blocker #16 remains open for busy-operator Assign Confirm only. Operator Quick Booking / operator Start-End OTP UI deferred. 23 Sep: rental booking API lifecycle suite live \u2014 Accept\u2192Assign\u2192Start OTP\u2192End OTP\u2192completed on L2B-RNT-2026-1837E2 (7 PASS / 1 SKIP). Free-operator UI happy path PASSES on L2B-RNT-2026-F7D066 (FreeOperatorUiAcceptTest) \u2014 Confirm enables after Nauman, Accept completes, status operator_assigned; #16 scoped to busy slots.",
-  "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP. 19 Sep on 9000000017: pending material orders open the same Quick Booking page (material chrome, no timer/operator). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
-  "existingUserEvidence": [
-    {
-      "caption": "Existing user + active rental booking \u2014 Quick Booking (screenshot not captured yet)"
-    },
-    {
-      "caption": "Existing user + active material order \u2014 same Quick Booking pattern (screenshot not captured yet)"
-    },
-    {
-      "src": "assets/screens/home-rental-with-fleet.png",
-      "caption": "Existing user, no active booking/order \u2014 Home"
-    }
-  ],
-  "flowEvidenceNote": "New user only (mobile not already registered). Live-app screenshots, Sep. Contact us opens the same Help & Support chrome as the logged-in Help module.",
-  "flowEvidence": [
-    {
-      "src": "assets/flow/sign-up-completed.jpg",
-      "caption": "1. After first login \u2014 Sign Up Completed"
-    },
-    {
-      "src": "assets/flow/select-your-role.jpg",
-      "caption": "2. Register Yourself \u2014 Select your role"
-    },
-    {
-      "src": "assets/flow/help-and-support.jpg",
-      "caption": "3. Contact us \u2014 Help & Support"
-    }
-  ],
-  "roleEvidenceNote": "Live-app screenshots, Sep. Next on Select your role depends on the role card.",
-  "roleEvidence": [
-    {
-      "src": "assets/flow/select-category.jpg",
-      "caption": "4. Vendor / Owner \u2014 Please select the category"
-    },
-    {
-      "src": "assets/flow/tell-us-about-yourself.jpg",
-      "caption": "5. Operator / Driver \u2014 Tell us about yourself"
-    }
-  ],
-  "categoryEvidenceNote": "Live-app screenshots, Sep. Same title, different fields.",
-  "categoryEvidence": [
-    {
-      "src": "assets/flow/tell-us-materials.jpg",
-      "caption": "6. Materials Vendor \u2014 warehouse location"
-    },
-    {
-      "src": "assets/flow/tell-us-rental.jpg",
-      "caption": "7. Rental Vendor \u2014 company + machinery"
-    }
-  ],
-  "materialEvidenceNote": "Design strip, Sep. After Materials Tell us: KYC (company-type variants) \u2192 Profile Verification \u2192 skip or KYC \u2192 material Home / Inventory.",
-  "materialEvidence": [
-    {
-      "src": "assets/flow/material-vendor-registration.jpg",
-      "caption": "8. Material Vendor registration \u2014 KYC \u2192 Profile Verification \u2192 Home"
-    }
-  ],
-  "rentalEvidenceNote": "Design strip, Sep. After Rental Tell us: List machineries \u2192 Machine successfully added. Skip goes to Home. Complete KYC goes to KYC \u2192 Profile Verification \u2192 Home.",
-  "rentalEvidence": [
-    {
-      "src": "assets/flow/rental-vendor-registration.jpg",
-      "caption": "9. Rental Vendor registration \u2014 machines \u2192 Skip or KYC \u2192 Home"
-    }
-  ],
-  "operatorEvidenceNote": "Design strip, Sep. After Operator Tell us: List skills \u2192 Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC \u2192 Profile Verification \u2192 Home.",
-  "operatorEvidence": [
-    {
-      "src": "assets/flow/operator-registration.jpg",
-      "caption": "10. Operator / Driver registration \u2014 skills \u2192 Skip or KYC \u2192 Home"
-    }
-  ],
-  "postLoginFromHome": [
-    "bookings",
-    "fleet",
-    "calendar",
-    "earning",
-    "settings",
-    "help"
-  ],
-  "postLoginFromSettings": [
-    "team"
-  ]
+  {
+   "id": "language",
+   "name": "Language",
+   "status": "done",
+   "casesDone": 10,
+   "casesTotal": 10,
+   "screens": 1
+  },
+  {
+   "id": "onboarding",
+   "name": "Onboarding",
+   "status": "done",
+   "casesDone": 11,
+   "casesTotal": 11,
+   "screens": 2
+  },
+  {
+   "id": "signup",
+   "name": "Sign up",
+   "status": "done",
+   "casesDone": 23,
+   "casesTotal": 23,
+   "screens": 1
+  },
+  {
+   "id": "otp",
+   "name": "OTP",
+   "status": "done",
+   "casesDone": 25,
+   "casesTotal": 25,
+   "screens": 1
+  },
+  {
+   "id": "signupCompleted",
+   "name": "Sign Up Completed",
+   "status": "in-progress",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "role",
+   "name": "Select your role",
+   "status": "in-progress",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "category",
+   "name": "Select category",
+   "status": "in-progress",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "tellUs",
+   "name": "Tell us (Operator)",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "listSkills",
+   "name": "List skills",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "tellUsMaterial",
+   "name": "Tell us (Materials)",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "tellUsRental",
+   "name": "Tell us (Rental)",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "listMachineries",
+   "name": "List machineries",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "kyc",
+   "name": "KYC",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "profileVerification",
+   "name": "Profile Verification",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "quickBooking",
+   "name": "Quick Booking",
+   "status": "done",
+   "casesDone": 55,
+   "casesTotal": 55,
+   "screens": 1,
+   "note": "Includes free-operator UI Accept→Confirm PASS on F7D066 (23 Sep)."
+  },
+  {
+   "id": "home",
+   "name": "Home",
+   "status": "done",
+   "casesDone": 72,
+   "casesTotal": 72,
+   "screens": 1
+  },
+  {
+   "id": "bookings",
+   "name": "Bookings",
+   "status": "in-progress",
+   "casesDone": 24,
+   "casesTotal": 82,
+   "screens": 1,
+   "note": "API lifecycle suite live 23 Sep (7 PASS / 1 SKIP). Free-op UI Accept→Confirm PASS (F7D066). UI 82 still scaffolded — await decision."
+  },
+  {
+   "id": "fleet",
+   "name": "Fleet",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "calendar",
+   "name": "Calendar",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "earning",
+   "name": "Earning",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "team",
+   "name": "Team",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "settings",
+   "name": "Profile / Settings",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  },
+  {
+   "id": "help",
+   "name": "Help & Support",
+   "status": "pending",
+   "casesDone": 0,
+   "casesTotal": 0,
+   "screens": 1
+  }
+ ],
+ "firstLaunch": [
+  "splash",
+  "language",
+  "onboarding",
+  "signup",
+  "otp"
+ ],
+ "firstLaunchEdgeLabels": {},
+ "afterOtp": {
+  "registeredDecision": {
+   "id": "registered",
+   "label": "Mobile already registered?"
+  },
+  "existing": {
+   "edge": "Yes, existing user",
+   "activeDecision": {
+    "id": "activeBooking",
+    "shape": "rect",
+    "label": "Check for active rental or material booking<br>(any assigned machine / material order)"
+   },
+   "yes": {
+    "to": "quickBooking",
+    "label": "Yes, Quick Booking first"
+   },
+   "no": {
+    "to": "home",
+    "label": "No, go to Home"
+   }
+  },
+  "newUser": {
+   "edge": "No, new user",
+   "to": "signupCompleted"
+  }
+ },
+ "firstLaunchBranches": [
+  {
+   "from": "signupCompleted",
+   "to": "role",
+   "label": "Register Yourself"
+  },
+  {
+   "from": "signupCompleted",
+   "to": "help",
+   "label": "Contact us to Register"
+  },
+  {
+   "from": "quickBooking",
+   "to": "home",
+   "label": "Close / Back"
+  },
+  {
+   "from": "role",
+   "to": "category",
+   "label": "Vendor / Owner"
+  },
+  {
+   "from": "role",
+   "to": "tellUs",
+   "label": "Operator / Driver"
+  },
+  {
+   "from": "tellUs",
+   "to": "listSkills",
+   "label": "Continue"
+  },
+  {
+   "from": "listSkills",
+   "to": "home",
+   "label": "Skip"
+  },
+  {
+   "from": "listSkills",
+   "to": "kyc",
+   "label": "Complete KYC"
+  },
+  {
+   "from": "category",
+   "to": "tellUsMaterial",
+   "label": "Materials Vendor"
+  },
+  {
+   "from": "category",
+   "to": "tellUsRental",
+   "label": "Rental Vendor"
+  },
+  {
+   "from": "tellUsRental",
+   "to": "listMachineries",
+   "label": "Continue"
+  },
+  {
+   "from": "listMachineries",
+   "to": "home",
+   "label": "Skip"
+  },
+  {
+   "from": "listMachineries",
+   "to": "kyc",
+   "label": "Complete KYC"
+  },
+  {
+   "from": "tellUsMaterial",
+   "to": "kyc",
+   "label": "Continue"
+  },
+  {
+   "from": "kyc",
+   "to": "profileVerification",
+   "label": "submit KYC"
+  },
+  {
+   "from": "profileVerification",
+   "to": "home",
+   "label": "skip or after KYC"
+  }
+ ],
+ "linkOtpToHome": false,
+ "loggedInExtra": [
+  "quickBooking"
+ ],
+ "whatsNext": "Decide together: activate 82-case Rental Booking scaffold, or #16 busy-slot UI fix-verification first",
+ "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open bugs #25 (Rental Home Back → launcher) and #26 (Rental Home rotation opens Account drawer). Rental Booking structure is scaffolded — 82 cases (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14), all enabled=false until activation. Dev blocker #16 remains open for busy-operator Assign Confirm only. Operator Quick Booking / operator Start-End OTP UI deferred. 23 Sep: rental booking API lifecycle suite live — Accept→Assign→Start OTP→End OTP→completed on L2B-RNT-2026-1837E2 (7 PASS / 1 SKIP). Free-operator UI happy path PASSES on L2B-RNT-2026-F7D066 (FreeOperatorUiAcceptTest) — Confirm enables after Nauman, Accept completes, status operator_assigned; #16 scoped to busy slots.",
+ "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP. 19 Sep on 9000000017: pending material orders open the same Quick Booking page (material chrome, no timer/operator). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
+ "existingUserEvidence": [
+  {
+   "caption": "Existing user + active rental booking — Quick Booking (screenshot not captured yet)"
+  },
+  {
+   "caption": "Existing user + active material order — same Quick Booking pattern (screenshot not captured yet)"
+  },
+  {
+   "src": "assets/screens/home-rental-with-fleet.png",
+   "caption": "Existing user, no active booking/order — Home"
+  }
+ ],
+ "flowEvidenceNote": "New user only (mobile not already registered). Live-app screenshots, Sep. Contact us opens the same Help & Support chrome as the logged-in Help module.",
+ "flowEvidence": [
+  {
+   "src": "assets/flow/sign-up-completed.jpg",
+   "caption": "1. After first login — Sign Up Completed"
+  },
+  {
+   "src": "assets/flow/select-your-role.jpg",
+   "caption": "2. Register Yourself — Select your role"
+  },
+  {
+   "src": "assets/flow/help-and-support.jpg",
+   "caption": "3. Contact us — Help & Support"
+  }
+ ],
+ "roleEvidenceNote": "Live-app screenshots, Sep. Next on Select your role depends on the role card.",
+ "roleEvidence": [
+  {
+   "src": "assets/flow/select-category.jpg",
+   "caption": "4. Vendor / Owner — Please select the category"
+  },
+  {
+   "src": "assets/flow/tell-us-about-yourself.jpg",
+   "caption": "5. Operator / Driver — Tell us about yourself"
+  }
+ ],
+ "categoryEvidenceNote": "Live-app screenshots, Sep. Same title, different fields.",
+ "categoryEvidence": [
+  {
+   "src": "assets/flow/tell-us-materials.jpg",
+   "caption": "6. Materials Vendor — warehouse location"
+  },
+  {
+   "src": "assets/flow/tell-us-rental.jpg",
+   "caption": "7. Rental Vendor — company + machinery"
+  }
+ ],
+ "materialEvidenceNote": "Design strip, Sep. After Materials Tell us: KYC (company-type variants) → Profile Verification → skip or KYC → material Home / Inventory.",
+ "materialEvidence": [
+  {
+   "src": "assets/flow/material-vendor-registration.jpg",
+   "caption": "8. Material Vendor registration — KYC → Profile Verification → Home"
+  }
+ ],
+ "rentalEvidenceNote": "Design strip, Sep. After Rental Tell us: List machineries → Machine successfully added. Skip goes to Home. Complete KYC goes to KYC → Profile Verification → Home.",
+ "rentalEvidence": [
+  {
+   "src": "assets/flow/rental-vendor-registration.jpg",
+   "caption": "9. Rental Vendor registration — machines → Skip or KYC → Home"
+  }
+ ],
+ "operatorEvidenceNote": "Design strip, Sep. After Operator Tell us: List skills → Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC → Profile Verification → Home.",
+ "operatorEvidence": [
+  {
+   "src": "assets/flow/operator-registration.jpg",
+   "caption": "10. Operator / Driver registration — skills → Skip or KYC → Home"
+  }
+ ],
+ "postLoginFromHome": [
+  "bookings",
+  "fleet",
+  "calendar",
+  "earning",
+  "settings",
+  "help"
+ ],
+ "postLoginFromSettings": [
+  "team"
+ ]
 }
