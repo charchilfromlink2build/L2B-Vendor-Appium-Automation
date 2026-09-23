@@ -259,11 +259,29 @@ Customer `9110981038` → vendor `9000000001` → operator `9000000002`.
 |---|---|
 | Place order | `L2B-RNT-2026-1837E2` Excavator 20T, site `RB-FULL-FLOW`, Juspay captured |
 | Vendor queue | Pending card on Quick Booking after relaunch (Accept / Decline / Timer) |
-| UI Accept | Opens Assign machine; Confirm blocked when `all_operators_busy` (**#16**) |
+| UI Accept (busy) | Opens Assign machine; Confirm blocked when `all_operators_busy` (**#16**) |
 | API Accept | `POST .../accept` → `confirmed` |
 | API Assign | `POST .../assign` + `allow_operator_overlap=true` → `operator_assigned` (Nauman / KA13Z2117) |
 | Start OTP | Customer `9477` → operator `POST .../start` → `in_progress` |
 | End OTP | Customer `5400` → operator `POST .../end` → `completed` (customer shows Job finished) |
+
+### Free-operator UI happy path (23 Sep 2026) — scopes #16
+
+Seed `L2B-RNT-2026-F7D066` / site `RB-FREE-OP-UI` / Oct 12–13 Excavator 20T.  
+API candidates: `all_operators_busy=false`, Nauman `is_available=true`.
+
+| Step | Evidence |
+|---|---|
+| Appium login | `9000000001` + OTP `1234` → Quick Booking with seed card |
+| Accept | Assign machine opens; **no** busy banner; helper = “Select an operator or tap Skip to continue” |
+| Select operator | Nauman Majid Pathan, row enabled |
+| Confirm | `confirmEnabledAfterAssign=true` → sheet closes → toast “Order accepted successfully” |
+| Backend | `GET .../bookings/{id}` → `operator_assigned` |
+
+Suite: `src/test/resources/quickbooking/accept-free-operator.xml`  
+`mvn test -Dsurefire.suiteXmlFiles=src/test/resources/quickbooking/accept-free-operator.xml`
+
+**Verdict:** #16 is busy-slot only. Free-operator Confirm works. Do not treat Confirm as globally broken.
 
 Executable API suite (no Appium): `src/test/resources/bookings/rental-booking-lifecycle-api.xml`  
 `mvn test -Dsurefire.suiteXmlFiles=src/test/resources/bookings/rental-booking-lifecycle-api.xml`  

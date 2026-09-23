@@ -62,7 +62,8 @@ def parse_allure_results(results_dir: Path) -> dict | None:
         "source": "allure-results-unique-latest",
         "note": (
             "Unique latest status per test (retries collapsed). "
-            "Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16). "
+            "Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). "
+            "Free-operator UI Accept→Confirm PASSES (FreeOperatorUiAcceptTest on F7D066, 23 Sep). "
             "OTP 23/24 are retargeted to 9000000003 so Home identity can pass without a 0001 queue intercept."
         ),
     }
@@ -318,9 +319,10 @@ def blocker_banner(bugs: list[dict]) -> str:
     return f"""    <section class="blocker" aria-label="Functional blocker for developers">
       <p><strong>Dev blocker #{html.escape(b["num"])} ({html.escape(b["severity"])}):</strong>
       Assign machine Confirm stays disabled when operators are busy, so a vendor cannot complete
-      Accept on a pending rental. The sheet copy says confirm the machine now and assign an
-      operator later. This is a functional blocker, not cosmetic — treat it separately from
-      the rest of the bug list.</p>
+      Accept on a busy-slot rental. Free-operator Accept→Confirm works (F7D066, 23 Sep) — #16 is
+      busy-slot only. The busy-sheet copy still says confirm the machine now and assign later,
+      but Confirm stays grey. Functional blocker for busy slots — treat separately from the rest
+      of the bug list.</p>
       <p><a href="bugs.html#bug-16">Open #16</a></p>
     </section>"""
 
@@ -357,8 +359,8 @@ def write_bugs_html(bugs: list[dict]) -> None:
         callout = """    <section class="blocker" id="blocker-16">
       <p><strong>Priority for dev — #16 (High).</strong> Vendors cannot finish Accept when
       Assign machine shows busy operators: Confirm stays disabled even though the copy says
-      to confirm the machine now. Functional blocker. Please pick this up separately from
-      the rest of the list.</p>
+      to confirm the machine now. Free-operator path works (scoped 23 Sep). Functional blocker
+      for busy slots only. Please pick this up separately from the rest of the list.</p>
     </section>
 """
     (DOCS / "bugs.html").write_text(

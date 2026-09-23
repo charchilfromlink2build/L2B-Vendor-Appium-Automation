@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Quick Booking free-operator UI accept F7D066" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Free-operator UI Accept → Assign → Confirm" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.quickbooking.presentation.tests.FreeOperatorUiAcceptTest">
+                <methods>
+                    <include name="freeOperatorAcceptAssignConfirm"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
