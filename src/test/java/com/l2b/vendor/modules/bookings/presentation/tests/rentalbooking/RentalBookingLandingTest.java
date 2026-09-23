@@ -122,13 +122,47 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isFalse();
     }
 
-    @Test(enabled = false, priority = 4,
+    @Test(priority = 4,
             description = "RB-L4: Upcoming card core fields render")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Per card: machine title, source tag, amount row (Amount · Online Mode ₹...), "
-            + "and a date range ending in (N day/days). Assert shape, never a pinned value.")
+    @Description("Per card: machine title, amount row (Amount · Online Mode ₹...), and a date "
+            + "range ending in (N day/days). Assert shape, never a pinned value. Amount rows or "
+            + "date ranges missing versus the card count are recorded as a new Bookings bug.")
     public void upcomingCardCoreFields() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        int cards = bookings.cardCountNow();
+        java.util.List<String> amounts = bookings.amountsNow();
+        java.util.List<String> dateRanges = bookings.dateRangesNow();
+        java.util.List<String> machines = bookings.machineTitlesNow();
+        int sourceTags = bookings.sourceTagCount();
+
+        Allure.parameter("cardCount", String.valueOf(cards));
+        Allure.parameter("amountRows", String.valueOf(amounts.size()));
+        Allure.parameter("amountsSample", amounts.toString());
+        Allure.parameter("dateRanges", String.valueOf(dateRanges.size()));
+        Allure.parameter("dateRangesSample", dateRanges.toString());
+        Allure.parameter("sourceTags", String.valueOf(sourceTags));
+        Allure.parameter("machineTitleCount", String.valueOf(machines.size()));
+        bookings.attachScreenshot("rb-l4-upcoming-card-fields");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(cards)
+                .as("At least one Upcoming card must render to check its fields")
+                .isGreaterThanOrEqualTo(1);
+        assertThat(amounts)
+                .as("Every amount row must carry a ₹ figure (Amount · Online Mode ₹...)")
+                .allMatch(a -> a.contains("\u20b9"));
+        assertThat(amounts.size())
+                .as("Amount rows must equal the card count — a missing amount is a new Bookings bug")
+                .isEqualTo(cards);
+        assertThat(dateRanges.size())
+                .as("Every card must show a date range ending in (N day/days) — a missing range "
+                        + "is a new Bookings bug")
+                .isGreaterThanOrEqualTo(cards);
+        assertThat(machines)
+                .as("Each card must show a machine title")
+                .isNotEmpty();
     }
 
     @Test(enabled = false, priority = 5,
