@@ -142,10 +142,10 @@
    "id": "bookings",
    "name": "Bookings",
    "status": "in-progress",
-   "casesDone": 30,
+   "casesDone": 52,
    "casesTotal": 82,
    "screens": 1,
-   "note": "API lifecycle suite live 23 Sep (7 PASS / 1 SKIP). Free-op UI Accept→Confirm PASS (F7D066). UI 82 still scaffolded — await decision."
+   "note": "RB-L16 + API gaps + RB-I1–I16 (I14 SKIP) + RB-S1–S6 PASS on seed L2B-RNT-2026-6419DF (operator_assigned / Randanberno / KA13Z2117). #28 open. Next RB-S7+."
   },
   {
    "id": "fleet",

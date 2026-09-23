@@ -74,6 +74,7 @@ public class RentalBookingsPage extends SplashScreen {
     private static final By AMOUNT = ComposeLocators.textViewContains("Amount \u00b7");
     private static final By SOURCE_TAG = ComposeLocators.textView("Quick Booking");
     private static final By ASSIGN_MACHINE = ComposeLocators.textView("Assign machine");
+    private static final By ASSIGN_OPERATOR = ComposeLocators.textView("Assign Operator");
     private static final By SELECT_OPERATOR = ComposeLocators.textView("Select an operator");
     private static final By DECLINE_BOOKING = ComposeLocators.textView("Decline Booking?");
     private static final By EXTEND_TIME = ComposeLocators.textView("Request to extend time");
@@ -126,9 +127,29 @@ public class RentalBookingsPage extends SplashScreen {
         return isPresent(BACK);
     }
 
+    @Step("Tap header Back")
+    public void tapBack() {
+        refuseIfExtendTime("Back");
+        List<WebElement> rows = driver.findElements(BACK);
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Back affordance not on Bookings — refusing tap");
+        }
+        clickGestureOn(rows.get(0));
+    }
+
     @Step("Check Help affordance is visible")
     public boolean isHelpVisible() {
         return isPresent(HELP);
+    }
+
+    @Step("Tap header Help")
+    public void tapHelp() {
+        refuseIfExtendTime("Help");
+        List<WebElement> rows = driver.findElements(HELP);
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Help not on Bookings — refusing tap");
+        }
+        clickGestureOn(clickableAncestorOrSelf(rows.get(0)));
     }
 
     @Step("Check Active empty state copy")
@@ -264,9 +285,69 @@ public class RentalBookingsPage extends SplashScreen {
         return driver.findElements(VIEW_MORE_DETAILS).size();
     }
 
+    @Step("Count View Less Details rows")
+    public int viewLessDetailsCount() {
+        return driver.findElements(ComposeLocators.textView("View Less Details")).size();
+    }
+
+    /** 0-based index among visible {@code View More Details} rows. */
+    @Step("Tap View More Details at index {index}")
+    public void tapViewMoreDetailsAt(int index) {
+        refuseIfExtendTime("View More Details");
+        List<WebElement> rows = driver.findElements(VIEW_MORE_DETAILS);
+        if (index < 0 || index >= rows.size()) {
+            throw new IllegalStateException(
+                    "View More Details index " + index + " out of range (count=" + rows.size() + ")");
+        }
+        clickGestureOn(rows.get(index));
+        Waits.until(driver,
+                d -> viewLessDetailsCount() > 0 ? Boolean.TRUE : null,
+                "View Less Details did not appear after View More",
+                Duration.ofSeconds(8));
+    }
+
+    @Step("Tap first View Less Details")
+    public void tapFirstViewLessDetails() {
+        refuseIfExtendTime("View Less Details");
+        List<WebElement> rows = driver.findElements(ComposeLocators.textView("View Less Details"));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("View Less Details not on screen — refusing tap");
+        }
+        clickGestureOn(rows.get(0));
+        Waits.until(driver,
+                d -> viewLessDetailsCount() == 0 ? Boolean.TRUE : null,
+                "View Less Details stayed after collapse",
+                Duration.ofSeconds(8));
+    }
+
     @Step("Count Get Direction controls")
     public int getDirectionCount() {
         return driver.findElements(GET_DIRECTION).size();
+    }
+
+    @Step("Tap first Get Direction (clickable outer View)")
+    public void tapFirstGetDirection() {
+        refuseIfExtendTime("Get Direction");
+        List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Get Direction"));
+        if (rows.isEmpty()) {
+            List<WebElement> labels = driver.findElements(GET_DIRECTION);
+            if (labels.isEmpty()) {
+                throw new IllegalStateException("Get Direction not on screen — refusing tap");
+            }
+            clickGestureOn(clickableAncestorOrSelf(labels.get(0)));
+            return;
+        }
+        clickGestureOn(rows.get(0));
+    }
+
+    @Step("Tap first Google Map tile")
+    public void tapFirstMapTile() {
+        refuseIfExtendTime("Google Map");
+        List<WebElement> rows = driver.findElements(MAP);
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Google Map tile not on screen — refusing tap");
+        }
+        clickGestureOn(rows.get(0));
     }
 
     @Step("Count Google Map tiles")
@@ -481,9 +562,9 @@ public class RentalBookingsPage extends SplashScreen {
         clickGestureOn(rows.get(0));
     }
 
-    @Step("Check Assign machine sheet")
+    @Step("Check Assign machine / Assign Operator sheet")
     public boolean isAssignMachineVisible() {
-        return isPresent(ASSIGN_MACHINE);
+        return isPresent(ASSIGN_MACHINE) || isPresent(ASSIGN_OPERATOR);
     }
 
     @Step("Check Select an operator on Assign machine")
@@ -548,6 +629,38 @@ public class RentalBookingsPage extends SplashScreen {
         String chosen = pickFirstDropdownOption("Select an operator", "Operator dropdown showed no options");
         dismissDropdownOverlay();
         return chosen;
+    }
+
+    /**
+     * Prefer an operator row marked {@code Available} (inline Assign Operator list). Falls back
+     * to the Select an operator dropdown when no Available label is on screen.
+     */
+    @Step("Select an Available operator on Assign sheet")
+    public String selectAvailableOperator() {
+        if (!isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine not on screen — refusing operator pick");
+        }
+        List<WebElement> available = driver.findElements(ComposeLocators.textView("Available"));
+        if (!available.isEmpty()) {
+            // Prefer a known free primary operator when listed.
+            for (String name : new String[] {"Randanberno Ezung", "Randanberno"}) {
+                List<WebElement> named = driver.findElements(ComposeLocators.textViewContains(name));
+                if (!named.isEmpty()) {
+                    clickGestureOn(clickableAncestorOrSelf(named.get(0)));
+                    lastMenuOptionEnabled = true;
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    return safeText(named.get(0));
+                }
+            }
+            clickGestureOn(clickableAncestorOrSelf(available.get(0)));
+            lastMenuOptionEnabled = true;
+            return "Available";
+        }
+        return selectFirstOperator();
     }
 
     @Step("Read whether the last dropdown row was enabled")

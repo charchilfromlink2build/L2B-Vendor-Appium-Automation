@@ -292,11 +292,11 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 10,
-            description = "RB-A10: accept expired — needs seed")
+            description = "RB-A10 — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Needs an expired booking seed from customer web.")
+    @Description("Implemented in RentalBookingApiGapTest.acceptExpiredBookingRefused (#28).")
     public void acceptExpiredBookingRefused() {
-        throw new SkipException("RB-A10 needs an expired booking seed");
+        throw new SkipException("RB-A10 lives in RentalBookingApiGapTest");
     }
 
     @Test(enabled = false, priority = 11,

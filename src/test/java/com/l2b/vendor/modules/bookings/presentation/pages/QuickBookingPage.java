@@ -71,6 +71,15 @@ public class QuickBookingPage extends SplashScreen {
         return isPresent(ComposeLocators.textView("Accept"));
     }
 
+    @Step("Tap first Accept (clickable outer View)")
+    public void tapFirstAccept() {
+        java.util.List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Accept"));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Accept not on Quick Booking — refusing tap");
+        }
+        tap(rows.get(0));
+    }
+
     @Step("Check Decline is visible")
     public boolean isDeclineVisible() {
         return isPresent(ComposeLocators.textView("Decline"));
@@ -86,9 +95,20 @@ public class QuickBookingPage extends SplashScreen {
         return isPresent(ComposeLocators.textView("Booking for"));
     }
 
-    @Step("Check rental amount chrome (Amount · Online Mode)")
+    @Step("Check rental amount chrome (Amount · …)")
     public boolean isRentalAmountChromeVisible() {
-        return isPresent(ComposeLocators.textViewContains("Amount · Online Mode"));
+        return isPresent(ComposeLocators.textViewContains("Amount \u00b7"));
+    }
+
+    @Step("Read first Amount · line (any payment mode)")
+    public String firstAmountLine() {
+        java.util.List<WebElement> rows = driver.findElements(
+                ComposeLocators.textViewContains("Amount \u00b7"));
+        if (rows.isEmpty()) {
+            return "";
+        }
+        String raw = rows.get(0).getAttribute("text");
+        return raw == null || "null".equalsIgnoreCase(raw) ? "" : raw;
     }
 
     @Step("Check rental Timer label is visible")
@@ -170,17 +190,6 @@ public class QuickBookingPage extends SplashScreen {
             return "";
         }
         String raw = values.get(0).getAttribute("text");
-        return raw == null || "null".equalsIgnoreCase(raw) ? "" : raw;
-    }
-
-    @Step("Read first Amount · Online Mode line")
-    public String firstAmountLine() {
-        java.util.List<WebElement> rows = driver.findElements(
-                ComposeLocators.textViewContains("Amount · Online Mode"));
-        if (rows.isEmpty()) {
-            return "";
-        }
-        String raw = rows.get(0).getAttribute("text");
         return raw == null || "null".equalsIgnoreCase(raw) ? "" : raw;
     }
 

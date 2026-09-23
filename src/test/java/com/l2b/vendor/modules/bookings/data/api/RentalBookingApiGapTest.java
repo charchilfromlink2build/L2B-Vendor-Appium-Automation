@@ -407,6 +407,77 @@ public class RentalBookingApiGapTest {
         assertThat(projected.doubleValue()).isGreaterThanOrEqualTo(0);
     }
 
+    /**
+     * RB-A10 — accept after the QB Timer window. Seed: any pending booking whose
+     * {@code created_at} is older than 30 minutes (QB Timer shows ~30:00). Expected: Accept
+     * refused (4xx) and/or status already {@code expired}. A 200 confirm is BUGS_FOUND #28.
+     */
+    @Test(priority = 10, description = "RB-A10: accept after Timer window must be refused")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Find a pending vendor booking older than 30 minutes (QB Timer window). POST "
+            + "accept must not return 200 confirmed — expect 4xx / expired. A successful accept "
+            + "after the window is BUGS_FOUND #28.")
+    public void acceptExpiredBookingRefused() {
+        String token = vendorToken();
+        Response list = bookings.list(token);
+        assertThat(list.statusCode()).isEqualTo(200);
+        List<Map<String, Object>> rows = list.jsonPath().getList("data");
+
+        Instant cutoff = Instant.now().minusSeconds(30 * 60L);
+        Map<String, Object> aged = null;
+        for (Map<String, Object> row : rows) {
+            if (!"pending".equals(String.valueOf(row.get("status")))) {
+                continue;
+            }
+            Instant created = parseInstant(row.get("created_at"));
+            if (created != null && created.isBefore(cutoff)) {
+                aged = row;
+                break;
+            }
+        }
+        if (aged == null) {
+            throw new org.testng.SkipException(
+                    "No pending booking older than 30 minutes — seed E0B0FF and wait for Timer");
+        }
+
+        String id = String.valueOf(aged.get("id"));
+        String number = String.valueOf(aged.get("booking_number"));
+        Instant created = parseInstant(aged.get("created_at"));
+        long ageMin = (Instant.now().getEpochSecond() - created.getEpochSecond()) / 60L;
+        Allure.parameter("bookingId", id);
+        Allure.parameter("bookingNumber", number);
+        Allure.parameter("createdAt", String.valueOf(created));
+        Allure.parameter("ageMinutes", String.valueOf(ageMin));
+
+        Response before = bookings.detail(token, id);
+        record("before accept", before);
+        String statusBefore = before.jsonPath().getString("data.status");
+        Allure.parameter("statusBefore", statusBefore);
+
+        if ("expired".equals(statusBefore)) {
+            Response acceptExpired = bookings.accept(token, id);
+            record("accept on expired", acceptExpired);
+            assertThat(acceptExpired.statusCode())
+                    .as("Accept on status=expired must be refused (BUGS_FOUND #28 if 200)")
+                    .isIn(400, 403, 404, 409, 422);
+            return;
+        }
+
+        assertThat(statusBefore).as("seed must still be pending to probe Timer gate").isEqualTo("pending");
+        Response accept = bookings.accept(token, id);
+        record("accept after timer window", accept);
+        Allure.parameter("acceptStatus", String.valueOf(accept.statusCode()));
+        String statusAfter = accept.jsonPath().getString("data.status");
+        Allure.parameter("statusAfter", String.valueOf(statusAfter));
+
+        assertThat(accept.statusCode())
+                .as("BUGS_FOUND #28: Accept after QB Timer (~30m) must be refused — not 200 confirmed")
+                .isIn(400, 403, 404, 409, 422);
+        assertThat(statusAfter)
+                .as("Must not confirm a Timer-elapsed pending booking")
+                .isNotEqualTo("confirmed");
+    }
+
     private static Instant parseInstant(Object raw) {
         if (raw == null) {
             return null;

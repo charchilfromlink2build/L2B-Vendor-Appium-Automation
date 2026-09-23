@@ -85,6 +85,10 @@ public abstract class RentalBookingBaseTest extends RentalHomeBaseTest {
                 : home.isDisplayedNow() ? "home" : "extend-time");
 
         if (viaQuickBooking) {
+            // Read-only seed/timer observation for pending Accept queue (RB-A10).
+            Allure.parameter("qbTimerVisible", String.valueOf(qb.isTimerVisible()));
+            Allure.parameter("qbTimer", qb.firstTimerValue());
+            Allure.parameter("qbAcceptCount", String.valueOf(qb.acceptCount()));
             qb.tapClose();
             Waits.until(DriverManager.get(),
                     d -> (!qb.isDisplayedNow() || landing.isExtendTimeDialogVisible()
@@ -117,6 +121,44 @@ public abstract class RentalBookingBaseTest extends RentalHomeBaseTest {
             home.attachScreenshot("rental-home-skeleton-timeout");
         }
         return home;
+    }
+
+    /**
+     * OTP → Quick Booking queue for {@code 9000000001}. Does not Close — for lifecycle cases
+     * that must inspect the incoming Accept/Decline card. Fails as #15 if extend-time owns
+     * the window instead of the queue.
+     */
+    protected QuickBookingPage reachQuickBookingQueue() {
+        assertThat(rentalCompanyPhone()).isEqualTo("9000000001");
+        OtpPage otp = openOtp(rentalCompanyPhone());
+        otp.focusOtpField();
+        if (!otp.otpFieldText().isEmpty()) {
+            otp.clearOtp();
+        }
+        otp.pressDigitKeys("1234");
+
+        QuickBookingPage qb = new QuickBookingPage();
+        HomePage home = new HomePage();
+        QuickBookingLandingPage landing = new QuickBookingLandingPage();
+
+        Waits.until(DriverManager.get(),
+                d -> (qb.isDisplayedNow() || home.isDisplayedNow()
+                        || landing.isExtendTimeDialogVisible()) ? Boolean.TRUE : null,
+                "After OTP, neither Quick Booking nor Home nor extend-time appeared",
+                Duration.ofSeconds(20));
+
+        boolean extend = landing.isExtendTimeDialogVisible();
+        Allure.parameter("extendTime", String.valueOf(extend));
+        if (extend) {
+            landing.attachScreenshot("rental-qb-extend-time-blocks-queue");
+        }
+        assertThat(extend)
+                .as("BUGS_FOUND #15: Request to extend time blocks the queue")
+                .isFalse();
+        assertThat(qb.isDisplayedNow())
+                .as("Pending seed must intercept with Quick Booking (title + Close)")
+                .isTrue();
+        return qb;
     }
 
     /**
