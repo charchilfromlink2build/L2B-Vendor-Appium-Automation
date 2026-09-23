@@ -1,5 +1,10 @@
 package com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.l2b.vendor.environment.Config;
+import com.l2b.vendor.modules.bookings.presentation.pages.RentalBookingsPage;
+import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -20,14 +25,38 @@ import org.testng.annotations.Test;
 @Feature("Rental Booking landing — rental vendor 9000000001")
 public class RentalBookingLandingTest extends RentalBookingBaseTest {
 
-    @Test(enabled = false, priority = 1,
+    @Test(priority = 1,
             description = "RB-L1: Home Upcoming See all opens the Bookings list")
     @Severity(SeverityLevel.CRITICAL)
     @Description("From usable Home, tap See all on the Upcoming Booking section. Expect the "
-            + "Bookings screen: Back affordance, a bookings header, and no Home bottom nav. "
-            + "Record the landing name. Dump 11-see-all-upcoming.")
+            + "Bookings screen: Back affordance, three tabs, a bookings header, and not the "
+            + "Quick Booking Close app bar. Record the landing. Dump 11-see-all-upcoming.")
     public void seeAllOpensBookingsList() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        String header = bookings.headerTitleNow();
+        Allure.parameter("headerTitle", header);
+        Allure.parameter("tabsVisible", String.valueOf(bookings.areTabsVisible()));
+        Allure.parameter("backVisible", String.valueOf(bookings.isBackVisible()));
+        Allure.parameter("helpVisible", String.valueOf(bookings.isHelpVisible()));
+        Allure.parameter("cardCount", String.valueOf(bookings.cardCountNow()));
+        bookings.attachScreenshot("rb-l1-see-all-bookings");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(bookings.isDisplayedNow())
+                .as("See all must land on the Bookings screen (tabs + a bookings header)")
+                .isTrue();
+        assertThat(bookings.areTabsVisible())
+                .as("Upcoming / Active / Completed tabs must be present")
+                .isTrue();
+        assertThat(header)
+                .as("A bookings header (Upcoming Booking / Active Order / Completed Order) must render")
+                .isIn(RentalBookingsPage.TITLE_UPCOMING,
+                        RentalBookingsPage.TITLE_ACTIVE,
+                        RentalBookingsPage.TITLE_COMPLETED);
+        assertThat(bookings.isBackVisible())
+                .as("Back affordance must be present on the Bookings screen")
+                .isTrue();
     }
 
     @Test(enabled = false, priority = 2,
