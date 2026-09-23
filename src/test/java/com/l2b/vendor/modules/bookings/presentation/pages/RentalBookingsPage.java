@@ -224,6 +224,28 @@ public class RentalBookingsPage extends SplashScreen {
         }
     }
 
+    /** Scroll the current tab top-to-bottom collecting every well-formed plate seen. */
+    @Step("Collect plates across the whole list by scrolling")
+    public Set<String> collectPlatesByScrolling(int maxSwipes) {
+        Set<String> plates = new LinkedHashSet<>(platesNow());
+        for (int i = 0; i < maxSwipes; i++) {
+            int before = plates.size();
+            swipeListUp();
+            try {
+                Thread.sleep(600);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+            plates.addAll(platesNow());
+            // Keep scrolling a couple of extra times even if no new plate, in case a screenful
+            // had no plate (unassigned card). Stop only after two barren swipes.
+            if (plates.size() == before && i > 0) {
+                break;
+            }
+        }
+        return plates;
+    }
+
     /** Scroll the list body down by one screenful (content moves up). */
     @Step("Swipe the list up (scroll down one screenful)")
     public void swipeListUp() {

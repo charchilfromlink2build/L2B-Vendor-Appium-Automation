@@ -24,16 +24,12 @@
  * and the execution protocol live in {@code docs/rental-booking-test-plan.md}.
  *
  * <p><b>Status:</b> Step 1 page helpers are live on {@code RentalBookingsPage}
- * (Accept / Decline / Assign / Change / Confirm + Assign-machine sheet). All 82
- * test methods remain {@code enabled = false} and throw
- * {@link org.testng.SkipException} if forced — Step 2 Landing has not started.
- * Isolated suites under {@code src/test/resources/bookings/} report zero tests
- * until a case is enabled on execution day.
- *
- * <p>Running an on-hold suite reports {@code Tests run: 0}, but the Allure TestNG
- * listener still schedules a status-less result per method in the class. Those
- * entries surface as {@code unknown} in a generated report and must be dropped
- * from {@code target/allure-results} before publishing, until the cases are live.
+ * (Accept / Decline / Assign / Change / Confirm + Assign-machine sheet, tab
+ * navigation, LazyColumn-aware scroll counters). Step 2 Landing is COMPLETE — all
+ * 16 RB-L cases are live and passing on {@code 9000000001}. RB-L13 found
+ * BUGS_FOUND #27 (mixed rupee grouping across Bookings tabs); RB-L14 recorded a
+ * Home-stat vs list watch-item to confirm in RB-A3. RB-I / RB-S / RB-E / RB-A
+ * (66 cases) remain {@code enabled = false} pending Steps 3–4.
  *
  * <p>Rules carried over from Quick Booking and Rental Home: never tap Accept,
  * Decline, or Assign on the pre-existing 0001 queue; never tap Log Out; a new

@@ -12,7 +12,6 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
-import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 /**
@@ -20,8 +19,10 @@ import org.testng.annotations.Test;
  * taps (RB-I) and no state change (RB-S). Isolated
  * {@code bookings/booking-rental-landing-l*.xml}.
  *
- * <p>Every method is {@code enabled = false} and skips if forced. Bodies are filled
- * one at a time during execution day.
+ * <p>All 16 RB-L cases are live and passing against {@code 9000000001} on
+ * {@code com.l2b.app.qa}. Tab switches are navigation only (no state change). RB-L13
+ * documents BUGS_FOUND #27 (mixed rupee grouping); RB-L14 records a Home-stat vs list
+ * watch-item to confirm against the list API in RB-A3.
  */
 @Epic("Vendor app")
 @Feature("Rental Booking landing — rental vendor 9000000001")
@@ -586,13 +587,40 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isTrue();
     }
 
-    @Test(enabled = false, priority = 16,
+    @Test(priority = 16,
             description = "RB-L16: booking seeded on customer web appears in the right bucket")
     @Severity(SeverityLevel.BLOCKER)
-    @Description("After the accepted seed booking exists, it appears under Upcoming with the "
-            + "machine, dates, and address entered on the customer site — not under Active or "
-            + "Completed. This is the anchor case for execution day.")
+    @Description("The free-operator seed (plate KA13Z2117, operator Nauman, RB-FREE-OP-UI) is an "
+            + "accepted + operator-assigned rental. It must appear under Upcoming and NOT under "
+            + "Active or Completed. Anchor case: identity is checked by fleet plate across the "
+            + "full scrolled list of each tab.")
     public void seededBookingLandsInCorrectBucket() {
-        throw new SkipException(ON_HOLD);
+        final String seedPlate = "KA13Z2117";
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        java.util.Set<String> upcomingPlates = bookings.collectPlatesByScrolling(12);
+        bookings.attachScreenshot("rb-l16-upcoming-plates");
+
+        bookings.tapTab(RentalBookingsPage.TAB_ACTIVE);
+        java.util.Set<String> activePlates = bookings.collectPlatesByScrolling(12);
+
+        bookings.tapTab(RentalBookingsPage.TAB_COMPLETED);
+        java.util.Set<String> completedPlates = bookings.collectPlatesByScrolling(12);
+
+        Allure.parameter("seedPlate", seedPlate);
+        Allure.parameter("upcomingPlates", upcomingPlates.toString());
+        Allure.parameter("activePlates", activePlates.toString());
+        Allure.parameter("completedPlates", completedPlates.toString());
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(upcomingPlates)
+                .as("Seed booking (plate " + seedPlate + ") must appear under Upcoming")
+                .contains(seedPlate);
+        assertThat(activePlates)
+                .as("Seed booking must NOT appear under Active (it is upcoming, not active)")
+                .doesNotContain(seedPlate);
+        assertThat(completedPlates)
+                .as("Seed booking must NOT appear under Completed (it is upcoming, not completed)")
+                .doesNotContain(seedPlate);
     }
 }
