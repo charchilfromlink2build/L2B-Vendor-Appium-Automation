@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-L3 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-L3 — LIVE. Read-only: Bookings is its own screen (not Home / Quick Booking). -->
 <suite name="L2B RB-L3" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>

@@ -3,7 +3,9 @@ package com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.l2b.vendor.environment.Config;
+import com.l2b.vendor.modules.bookings.presentation.pages.QuickBookingPage;
 import com.l2b.vendor.modules.bookings.presentation.pages.RentalBookingsPage;
+import com.l2b.vendor.modules.home.presentation.pages.HomePage;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -83,13 +85,41 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isEqualTo(RentalBookingsPage.TITLE_UPCOMING);
     }
 
-    @Test(enabled = false, priority = 3,
+    @Test(priority = 3,
             description = "RB-L3: Bookings is not Home and not Quick Booking")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("No Close app bar (Quick Booking identity), no greeting / Current Earning, and "
-            + "no Calendar-Home-Earning-Fleet bar. Prevents a false pass from the wrong screen.")
+    @Description("No Close app bar (Quick Booking identity) and no greeting / Current Earning "
+            + "(Home identity), while the Bookings tabs + header render. Prevents a false pass "
+            + "from the wrong screen. The bottom nav bar is recorded as an observation, not "
+            + "hard-asserted, because it may be shared chrome.")
     public void bookingsIsItsOwnScreen() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+        QuickBookingPage qb = new QuickBookingPage();
+        HomePage home = new HomePage();
+
+        boolean closeAppBar = qb.isCloseVisible();
+        boolean greeting = home.isGreetingVisible();
+        boolean currentEarning = home.isCurrentEarningVisible();
+        boolean rentalBottomBar = home.isRentalBottomTabsVisible();
+
+        Allure.parameter("headerTitle", bookings.headerTitleNow());
+        Allure.parameter("tabsVisible", String.valueOf(bookings.areTabsVisible()));
+        Allure.parameter("quickBookingClose", String.valueOf(closeAppBar));
+        Allure.parameter("homeGreeting", String.valueOf(greeting));
+        Allure.parameter("homeCurrentEarning", String.valueOf(currentEarning));
+        Allure.parameter("rentalBottomBar(observed)", String.valueOf(rentalBottomBar));
+        bookings.attachScreenshot("rb-l3-bookings-own-screen");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(bookings.isDisplayedNow())
+                .as("Bookings identity (tabs + a bookings header) must render")
+                .isTrue();
+        assertThat(closeAppBar)
+                .as("Bookings must NOT show the Quick Booking Close app bar")
+                .isFalse();
+        assertThat(greeting || currentEarning)
+                .as("Bookings must NOT show the Home greeting or Current Earning")
+                .isFalse();
     }
 
     @Test(enabled = false, priority = 4,
