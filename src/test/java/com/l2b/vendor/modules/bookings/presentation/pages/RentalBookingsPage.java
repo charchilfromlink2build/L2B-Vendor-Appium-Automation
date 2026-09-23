@@ -294,6 +294,12 @@ public class RentalBookingsPage extends SplashScreen {
         return driver.findElements(OPERATOR_ASSIGNED).size();
     }
 
+    /** Labels like {@code Operator : Nauman Majid Pathan} (prefix stripped for callers that want the name). */
+    @Step("Visible assigned operator rows")
+    public List<String> assignedOperatorRowsNow() {
+        return textsOf(OPERATOR_ASSIGNED);
+    }
+
     @Step("Count Booking for rows")
     public int bookingForCount() {
         return driver.findElements(BOOKING_FOR).size();
