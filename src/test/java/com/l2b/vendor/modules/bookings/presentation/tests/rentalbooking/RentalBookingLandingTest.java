@@ -259,14 +259,42 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isGreaterThanOrEqualTo(assigned);
     }
 
-    @Test(enabled = false, priority = 8,
+    @Test(priority = 8,
             description = "RB-L8: Booking for address line is present and non-empty")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Each card has a Booking for label plus an address line. Dump 16 shows 'Address "
-            + "not provided' on one card. Record empty / placeholder addresses as a new Bookings "
-            + "bug — do not fold into Home #20.")
+            + "not provided' on one card. The label must render on every card and never leave a "
+            + "blank line. Placeholder addresses ('Address not provided') are recorded as a "
+            + "watch/new Bookings bug — not folded into Home #20.")
     public void bookingForAddressPresent() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        int cards = bookings.cardCountNow();
+        int bookingForLabels = bookings.bookingForCount();
+        java.util.List<String> addresses = bookings.bookingForAddressesNow();
+        java.util.List<String> blanks = addresses.stream()
+                .filter(a -> a == null || a.trim().isEmpty())
+                .collect(java.util.stream.Collectors.toList());
+        java.util.List<String> placeholders = addresses.stream()
+                .filter(a -> a != null && (a.equalsIgnoreCase("Address not provided")
+                        || a.equalsIgnoreCase("N/A") || a.equals("-")))
+                .collect(java.util.stream.Collectors.toList());
+
+        Allure.parameter("cardCount", String.valueOf(cards));
+        Allure.parameter("bookingForLabels", String.valueOf(bookingForLabels));
+        Allure.parameter("addresses", addresses.toString());
+        Allure.parameter("blankAddresses", String.valueOf(blanks.size()));
+        Allure.parameter("placeholderAddresses", placeholders.toString());
+        bookings.attachScreenshot("rb-l8-booking-for-address");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(bookingForLabels)
+                .as("Every card must carry a 'Booking for' label")
+                .isGreaterThanOrEqualTo(cards);
+        assertThat(blanks)
+                .as("No card may leave a blank line under 'Booking for' — a blank address is a "
+                        + "new Bookings bug")
+                .isEmpty();
     }
 
     @Test(enabled = false, priority = 9,
