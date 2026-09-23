@@ -177,6 +177,66 @@ public class RentalBookingsPage extends SplashScreen {
         return driver.findElements(AMOUNT).size();
     }
 
+    /**
+     * Scroll the list top-to-bottom and count DISTINCT cards. A LazyColumn only renders the
+     * visible window, so {@link #cardCountNow()} alone undercounts. Cards are de-duplicated by
+     * their amount row plus the date range printed just below it. Stops when a swipe reveals no
+     * new card key or after {@code maxSwipes}.
+     */
+    @Step("Count distinct cards by scrolling the list")
+    public int distinctCardCountByScrolling(int maxSwipes) {
+        Set<String> keys = new LinkedHashSet<>();
+        collectCardKeysInto(keys);
+        for (int i = 0; i < maxSwipes; i++) {
+            int before = keys.size();
+            swipeListUp();
+            try {
+                Thread.sleep(600);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+            collectCardKeysInto(keys);
+            if (keys.size() == before) {
+                break;
+            }
+        }
+        return keys.size();
+    }
+
+    private void collectCardKeysInto(Set<String> keys) {
+        List<WebElement> all = driver.findElements(By.className("android.widget.TextView"));
+        List<String> texts = new ArrayList<>();
+        for (WebElement el : all) {
+            texts.add(safeText(el));
+        }
+        for (int i = 0; i < texts.size(); i++) {
+            if (texts.get(i).startsWith("Amount \u00b7")) {
+                String amount = texts.get(i);
+                String dr = "";
+                for (int j = i + 1; j < Math.min(i + 6, texts.size()); j++) {
+                    if (DATE_RANGE.matcher(texts.get(j)).matches()) {
+                        dr = texts.get(j);
+                        break;
+                    }
+                }
+                keys.add(amount + "|" + dr);
+            }
+        }
+    }
+
+    /** Scroll the list body down by one screenful (content moves up). */
+    @Step("Swipe the list up (scroll down one screenful)")
+    public void swipeListUp() {
+        Dimension size = driver.manage().window().getSize();
+        driver.executeScript("mobile: swipeGesture", Map.of(
+                "left", size.width / 2 - 5,
+                "top", (int) (size.height * 0.30),
+                "width", 10,
+                "height", (int) (size.height * 0.45),
+                "direction", "up",
+                "percent", 0.85));
+    }
+
     @Step("Count View More Details rows")
     public int viewMoreDetailsCount() {
         return driver.findElements(VIEW_MORE_DETAILS).size();

@@ -165,6 +165,40 @@ public class HomePage extends SplashScreen {
     }
 
     /**
+     * Read the integer count printed on a stat card (e.g. the number on the
+     * {@code Upcoming Booking} card). Heuristic: locate the label TextView in document
+     * order, then return the nearest pure-integer TextView among its immediate neighbours
+     * (the count sits just above/below the label). Returns {@code -1} if not found.
+     */
+    @Step("Read integer value on the {label} stat card")
+    public int rentalStatValue(String label) {
+        List<WebElement> all = driver.findElements(By.className("android.widget.TextView"));
+        int idx = -1;
+        for (int i = 0; i < all.size(); i++) {
+            String t = safeText(all.get(i));
+            if (label.equals(t)) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx < 0) {
+            return -1;
+        }
+        int[] offsets = {-1, 1, -2, 2, -3, 3};
+        for (int off : offsets) {
+            int j = idx + off;
+            if (j < 0 || j >= all.size()) {
+                continue;
+            }
+            String t = safeText(all.get(j));
+            if (t.matches("\\d{1,4}")) {
+                return Integer.parseInt(t);
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Dump 21 Sep {@code 01-after-close} 2×2: Active Fleet, Total Completed Task,
      * Upcoming Booking, Earning Projected. Counts and rupees change — labels only.
      */
