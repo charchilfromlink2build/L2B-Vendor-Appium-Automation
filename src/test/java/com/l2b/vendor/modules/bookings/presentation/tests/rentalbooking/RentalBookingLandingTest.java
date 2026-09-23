@@ -432,14 +432,74 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
         }
     }
 
-    @Test(enabled = false, priority = 13,
+    @Test(priority = 13,
             description = "RB-L13: rupee formatting is consistent across tabs")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Dump shows Upcoming '₹102,150' (Western) against Completed '₹1,02,000' "
-            + "(Indian). Capture both tabs in one run. A mixed convention is a new Bookings bug "
-            + "— do not fold into Home #24.")
+    @Description("Capture the ₹ amounts on Upcoming and Completed in one run and classify the "
+            + "grouping convention (Western #,###,### vs Indian #,##,###). A mixed convention "
+            + "across the two tabs is a new Bookings bug — recorded separately from Home #24.")
     public void rupeeGroupingConsistentAcrossTabs() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        java.util.List<String> upcoming = bookings.amountsNow();
+        bookings.tapTab(RentalBookingsPage.TAB_COMPLETED);
+        java.util.List<String> completed = bookings.rupeeFiguresNow();
+
+        java.util.Set<String> conventions = new java.util.LinkedHashSet<>();
+        java.util.List<String> classified = new java.util.ArrayList<>();
+        for (String amt : upcoming) {
+            classify("Upcoming", amt, conventions, classified);
+        }
+        for (String amt : completed) {
+            classify("Completed", amt, conventions, classified);
+        }
+
+        Allure.parameter("upcomingAmounts", upcoming.toString());
+        Allure.parameter("completedAmounts", completed.toString());
+        Allure.parameter("classified", classified.toString());
+        Allure.parameter("distinctConventions", conventions.toString());
+        boolean mixed = conventions.contains("Western") && conventions.contains("Indian");
+        Allure.parameter("mixedConvention", String.valueOf(mixed));
+        // Record the defect in the sheet (BUGS_FOUND #27) without failing the read-only
+        // landing suite, matching how the Rental Home formatting findings (#24) are handled.
+        if (mixed) {
+            Allure.parameter("bug", "27");
+            Allure.parameter("knownIssue",
+                    "BUGS_FOUND #27 — Bookings mixes Western and Indian rupee grouping across "
+                            + "tabs (Upcoming Western vs Completed Indian). classified=" + classified);
+        }
+        bookings.attachScreenshot("rb-l13-rupee-grouping");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        // Sanity: both tabs must actually yield ₹ amounts for the comparison to be meaningful.
+        assertThat(upcoming)
+                .as("Upcoming tab must show ₹ amount rows to compare grouping")
+                .isNotEmpty();
+        assertThat(completed)
+                .as("Completed tab must show ₹ figures to compare grouping")
+                .isNotEmpty();
+    }
+
+    /** Classify a ₹ amount string as Western (#,###,###), Indian (#,##,###), or Ambiguous. */
+    private static void classify(String tab, String raw, java.util.Set<String> conventions,
+            java.util.List<String> classified) {
+        int rs = raw.indexOf('\u20b9');
+        String tail = rs >= 0 ? raw.substring(rs + 1).trim() : raw.trim();
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("[0-9][0-9,]*[0-9]").matcher(tail);
+        if (!m.find()) {
+            return;
+        }
+        String num = m.group();
+        boolean western = num.matches("\\d{1,3}(,\\d{3})+");
+        boolean indian = num.matches("\\d{1,2}(,\\d{2})+,\\d{3}");
+        String conv = (western && !indian) ? "Western"
+                : (indian && !western) ? "Indian"
+                : num.contains(",") ? "Ambiguous" : "NoGrouping";
+        if ("Western".equals(conv) || "Indian".equals(conv)) {
+            conventions.add(conv);
+        }
+        classified.add(tab + ":" + num + "=" + conv);
     }
 
     @Test(enabled = false, priority = 14,
