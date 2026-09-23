@@ -194,13 +194,43 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isLessThanOrEqualTo(maps);
     }
 
-    @Test(enabled = false, priority = 6,
+    @Test(priority = 6,
             description = "RB-L6: operator row is assigned-or-unassigned, never both")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Each card shows either 'Operator : <name>' with Change, or 'Operator Not "
-            + "Assigned' with Assign. assignedCount + unassignedCount must equal the card count.")
+            + "Assigned' with Assign. assignedCount + unassignedCount must equal the card count, "
+            + "Change pairs with assigned, Assign pairs with unassigned. Any mismatch is a new "
+            + "Bookings bug.")
     public void operatorRowIsExclusive() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        int cards = bookings.cardCountNow();
+        int assigned = bookings.operatorAssignedCount();
+        int unassigned = bookings.operatorUnassignedCount();
+        int changeCtas = bookings.changeCount();
+        int assignCtas = bookings.assignCount();
+
+        Allure.parameter("cardCount", String.valueOf(cards));
+        Allure.parameter("operatorAssigned", String.valueOf(assigned));
+        Allure.parameter("operatorUnassigned", String.valueOf(unassigned));
+        Allure.parameter("changeCtas", String.valueOf(changeCtas));
+        Allure.parameter("assignCtas", String.valueOf(assignCtas));
+        bookings.attachScreenshot("rb-l6-operator-row-exclusive");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(cards)
+                .as("At least one Upcoming card must render")
+                .isGreaterThanOrEqualTo(1);
+        assertThat(assigned + unassigned)
+                .as("Every card must be exactly one of assigned / unassigned — the sum must "
+                        + "equal the card count")
+                .isEqualTo(cards);
+        assertThat(changeCtas)
+                .as("Change must appear once per assigned-operator card")
+                .isEqualTo(assigned);
+        assertThat(assignCtas)
+                .as("Assign must appear once per Operator-Not-Assigned card")
+                .isEqualTo(unassigned);
     }
 
     @Test(enabled = false, priority = 7,
