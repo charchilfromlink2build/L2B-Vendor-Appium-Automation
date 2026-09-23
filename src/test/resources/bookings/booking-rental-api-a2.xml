@@ -1,12 +1,12 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-A2 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-A2 — LIVE. Pure API: status → tab mapping. -->
 <suite name="L2B RB-A2" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
     <test name="RB-A2 statusToTabMapping" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingApiTest">
+            <class name="com.l2b.vendor.modules.bookings.data.api.RentalBookingApiGapTest">
                 <methods>
                     <include name="statusToTabMapping"/>
                 </methods>

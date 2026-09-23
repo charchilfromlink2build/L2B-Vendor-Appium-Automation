@@ -34,13 +34,13 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 2,
-            description = "RB-A2: API statuses map onto the three app tabs")
+            description = "RB-A2: API statuses map onto the three app tabs — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Group the list by status and compare with Upcoming / Active / Completed in the "
-            + "app. Every status must land in exactly one tab; an unmapped status that silently "
-            + "disappears from the UI is a new Bookings bug.")
+    @Description("Implemented in RentalBookingApiGapTest.statusToTabMapping (pure API). Suite "
+            + "booking-rental-api-a2.xml points there. Scaffold method kept disabled to avoid "
+            + "Appium session overhead.")
     public void statusToTabMapping() {
-        throw new SkipException(ON_HOLD);
+        throw new SkipException("RB-A2 lives in RentalBookingApiGapTest — use booking-rental-api-a2.xml");
     }
 
     @Test(enabled = false, priority = 3,
