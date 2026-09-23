@@ -233,13 +233,30 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isEqualTo(unassigned);
     }
 
-    @Test(enabled = false, priority = 7,
+    @Test(priority = 7,
             description = "RB-L7: plate format matches the fleet plate shape")
     @Severity(SeverityLevel.NORMAL)
     @Description("Every assigned card shows a plate matching [A-Z]{2}[0-9]{2}[A-Z]{1,3}[0-9]{4} "
-            + "(dump: KA13Z2117, MH12SD4444). A blank or malformed plate is a new Bookings bug.")
+            + "(dump: KA13Z2117, MH12SD4444). platesNow() returns only well-formed plates, so a "
+            + "count below the assigned-card count means a blank or malformed plate — a new "
+            + "Bookings bug.")
     public void plateFormatOnCards() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        int assigned = bookings.operatorAssignedCount();
+        java.util.List<String> plates = bookings.platesNow();
+
+        Allure.parameter("operatorAssigned", String.valueOf(assigned));
+        Allure.parameter("wellFormedPlates", String.valueOf(plates.size()));
+        Allure.parameter("platesSample", plates.toString());
+        bookings.attachScreenshot("rb-l7-plate-format");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(plates.size())
+                .as("Every assigned-operator card must show a well-formed fleet plate "
+                        + "([A-Z]{2}[0-9]{2}[A-Z]{1,3}[0-9]{4}); a shortfall means a blank or "
+                        + "malformed plate — a new Bookings bug")
+                .isGreaterThanOrEqualTo(assigned);
     }
 
     @Test(enabled = false, priority = 8,
