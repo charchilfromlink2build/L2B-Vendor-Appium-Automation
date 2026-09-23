@@ -297,13 +297,29 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isEmpty();
     }
 
-    @Test(enabled = false, priority = 9,
+    @Test(priority = 9,
             description = "RB-L9: View More Details exists once per Upcoming card")
     @Severity(SeverityLevel.NORMAL)
     @Description("viewMoreDetailsCount equals cardCount on the Upcoming tab. Missing rows are a "
             + "new Bookings bug, separate from Home #22 (no View More on the Home feed card).")
     public void viewMoreDetailsPerCard() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        int cards = bookings.cardCountNow();
+        int viewMore = bookings.viewMoreDetailsCount();
+
+        Allure.parameter("cardCount", String.valueOf(cards));
+        Allure.parameter("viewMoreDetails", String.valueOf(viewMore));
+        bookings.attachScreenshot("rb-l9-view-more-details");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(cards)
+                .as("At least one Upcoming card must render")
+                .isGreaterThanOrEqualTo(1);
+        assertThat(viewMore)
+                .as("View More Details must appear exactly once per Upcoming card — a shortfall "
+                        + "is a new Bookings bug (not Home #22)")
+                .isEqualTo(cards);
     }
 
     @Test(enabled = false, priority = 10,
