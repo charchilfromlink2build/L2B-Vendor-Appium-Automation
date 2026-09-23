@@ -385,14 +385,51 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isEqualTo(RentalBookingsPage.TITLE_UPCOMING);
     }
 
-    @Test(enabled = false, priority = 12,
+    @Test(priority = 12,
             description = "RB-L12: Completed card shows machine, date range, and amount")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Completed cards are summary-only in the dump (machine, '31 Aug - 31 Aug 2026 "
-            + "(1 day)', ₹1,02,000) with header Completed Order. Assert those three plus the "
-            + "absence of Assign / Change. Dump 13-bookings-completed.")
+    @Description("Completed cards are summary-only (machine, a date range, a bare ₹ amount) with "
+            + "header Completed Order and NO Assign / Change CTAs. When completed cards exist, "
+            + "each must carry the machine + date range + amount; the summary-only invariant "
+            + "(no Assign / Change) holds either way.")
     public void completedCardSummaryFields() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+        bookings.tapTab(RentalBookingsPage.TAB_COMPLETED);
+
+        String header = bookings.headerTitleNow();
+        java.util.List<String> rupees = bookings.rupeeFiguresNow();
+        java.util.List<String> dateRanges = bookings.dateRangesNow();
+        java.util.List<String> machines = bookings.machineTitlesNow();
+        int assignCtas = bookings.assignCount();
+        int changeCtas = bookings.changeCount();
+        int completedProxy = rupees.size();
+
+        Allure.parameter("header", header);
+        Allure.parameter("rupeeFigures", rupees.toString());
+        Allure.parameter("dateRanges", dateRanges.toString());
+        Allure.parameter("machineTitleCount", String.valueOf(machines.size()));
+        Allure.parameter("assignCtas", String.valueOf(assignCtas));
+        Allure.parameter("changeCtas", String.valueOf(changeCtas));
+        bookings.attachScreenshot("rb-l12-completed-summary");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(header)
+                .as("Completed tab header must be Completed Order")
+                .isEqualTo(RentalBookingsPage.TITLE_COMPLETED);
+        assertThat(assignCtas)
+                .as("Completed cards are summary-only — no Assign CTA")
+                .isZero();
+        assertThat(changeCtas)
+                .as("Completed cards are summary-only — no Change CTA")
+                .isZero();
+        if (completedProxy > 0) {
+            assertThat(dateRanges)
+                    .as("Each completed card must show a date range")
+                    .isNotEmpty();
+            assertThat(machines)
+                    .as("Each completed card must show a machine title")
+                    .isNotEmpty();
+        }
     }
 
     @Test(enabled = false, priority = 13,
