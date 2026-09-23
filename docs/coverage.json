@@ -142,7 +142,7 @@
    "id": "bookings",
    "name": "Bookings",
    "status": "in-progress",
-   "casesDone": 24,
+   "casesDone": 29,
    "casesTotal": 82,
    "screens": 1,
    "note": "API lifecycle suite live 23 Sep (7 PASS / 1 SKIP). Free-op UI Accept→Confirm PASS (F7D066). UI 82 still scaffolded — await decision."

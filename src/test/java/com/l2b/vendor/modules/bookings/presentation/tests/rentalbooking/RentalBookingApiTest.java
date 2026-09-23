@@ -147,12 +147,10 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 14,
-            description = "RB-A14: accepted booking propagates to schedule and earnings")
+            description = "RB-A14: accepted booking propagates — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("After acceptance, /api/v1/rentals/vendor/schedule shows the slot and the "
-            + "wallet earning summary reflects the projected amount, matching Calendar and "
-            + "Earning in the app. Read-only cross-module consistency.")
+    @Description("Implemented in RentalBookingApiGapTest.acceptedBookingPropagates.")
     public void acceptedBookingPropagates() {
-        throw new SkipException(ON_HOLD);
+        throw new SkipException("RB-A14 lives in RentalBookingApiGapTest — use booking-rental-api-a14.xml");
     }
 }

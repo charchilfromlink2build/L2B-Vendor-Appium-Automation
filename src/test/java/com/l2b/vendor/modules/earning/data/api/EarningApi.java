@@ -27,4 +27,9 @@ public class EarningApi {
     public Response wallet(String token) {
         return http.get(WALLET, token);
     }
+
+    @Step("GET wallet earning-summary")
+    public Response earningSummary(String token) {
+        return http.get(SUMMARY, token);
+    }
 }

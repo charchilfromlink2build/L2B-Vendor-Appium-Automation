@@ -23,4 +23,9 @@ public class CalendarApi {
     public Response schedule(String token) {
         return http.get(SCHEDULE, token);
     }
+
+    @Step("GET vendor schedule year={year} month={month}")
+    public Response schedule(String token, int year, int month) {
+        return http.get(SCHEDULE + "?year=" + year + "&month=" + month, token);
+    }
 }

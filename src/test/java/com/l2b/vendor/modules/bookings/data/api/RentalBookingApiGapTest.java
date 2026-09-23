@@ -3,6 +3,8 @@ package com.l2b.vendor.modules.bookings.data.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.l2b.vendor.environment.Config;
+import com.l2b.vendor.modules.calendar.data.api.CalendarApi;
+import com.l2b.vendor.modules.earning.data.api.EarningApi;
 import com.l2b.vendor.modules.home.data.api.HomeApi;
 import com.l2b.vendor.modules.onboarding.data.api.AuthApi;
 import io.qameta.allure.Allure;
@@ -55,6 +57,8 @@ public class RentalBookingApiGapTest {
     private final AuthApi auth = new AuthApi();
     private final BookingsApi bookings = new BookingsApi();
     private final HomeApi homeApi = new HomeApi();
+    private final CalendarApi calendarApi = new CalendarApi();
+    private final EarningApi earningApi = new EarningApi();
 
     @Test(priority = 2, description = "RB-A2: API statuses map onto the three app tabs")
     @Severity(SeverityLevel.CRITICAL)
@@ -326,6 +330,81 @@ public class RentalBookingApiGapTest {
                     .as("Non-completed invoice must not 500 — refuse or return a draft")
                     .isNotEqualTo(500);
         }
+    }
+
+    @Test(priority = 14, description = "RB-A14: accepted booking propagates to schedule and earnings")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("For an accepted (operator_assigned) booking, GET schedule?year&month marks the "
+            + "scheduled day as upcoming, and wallet earning-summary + dashboard earnings return "
+            + "usable projected figures (read-only cross-module consistency).")
+    public void acceptedBookingPropagates() {
+        String token = vendorToken();
+        Response list = bookings.list(token);
+        assertThat(list.statusCode()).isEqualTo(200);
+        List<Map<String, Object>> rows = list.jsonPath().getList("data");
+
+        Map<String, Object> accepted = null;
+        for (Map<String, Object> row : rows) {
+            if ("operator_assigned".equals(String.valueOf(row.get("status")))
+                    && "direct".equals(String.valueOf(row.get("booking_type")))) {
+                accepted = row;
+                break;
+            }
+        }
+        assertThat(accepted)
+                .as("Need an operator_assigned direct booking to check schedule propagation")
+                .isNotNull();
+
+        Instant start = parseInstant(accepted.get("scheduled_start"));
+        assertThat(start).as("scheduled_start").isNotNull();
+        int year = start.atZone(java.time.ZoneOffset.UTC).getYear();
+        int month = start.atZone(java.time.ZoneOffset.UTC).getMonthValue();
+        int day = start.atZone(java.time.ZoneOffset.UTC).getDayOfMonth();
+        String dayKey = String.valueOf(day);
+
+        Allure.parameter("bookingNumber", String.valueOf(accepted.get("booking_number")));
+        Allure.parameter("scheduledStart", start.toString());
+        Allure.parameter("scheduleYearMonthDay", year + "-" + month + "-" + day);
+
+        Response schedule = calendarApi.schedule(token, year, month);
+        record("vendor schedule", schedule);
+        assertThat(schedule.statusCode()).isEqualTo(200);
+        assertThat(schedule.jsonPath().getBoolean("success")).isTrue();
+        List<String> markers = schedule.jsonPath().getList("day_markers.'" + dayKey + "'");
+        if (markers == null) {
+            markers = schedule.jsonPath().getList("day_markers." + dayKey);
+        }
+        Allure.parameter("dayMarkers", String.valueOf(markers));
+        assertThat(markers)
+                .as("Schedule day_markers for the booking's scheduled day must include an "
+                        + "upcoming (or in_progress) marker")
+                .isNotNull()
+                .isNotEmpty();
+        assertThat(markers)
+                .as("Day marker must signal an upcoming/active slot")
+                .anyMatch(m -> "upcoming".equalsIgnoreCase(m)
+                        || "in_progress".equalsIgnoreCase(m)
+                        || "active".equalsIgnoreCase(m));
+
+        Response summary = earningApi.earningSummary(token);
+        record("earning summary", summary);
+        assertThat(summary.statusCode()).isEqualTo(200);
+        Number salesTotal = (Number) summary.jsonPath().get("sales.total");
+        Number available = (Number) summary.jsonPath().get("available_balance");
+        Allure.parameter("earningSalesTotal", String.valueOf(salesTotal));
+        Allure.parameter("earningAvailableBalance", String.valueOf(available));
+        assertThat(salesTotal).as("earning-summary sales.total").isNotNull();
+        assertThat(available).as("earning-summary available_balance").isNotNull();
+
+        Response dash = homeApi.rentalDashboard(token);
+        record("rental dashboard earnings", dash);
+        assertThat(dash.statusCode()).isEqualTo(200);
+        Number projected = (Number) dash.jsonPath().get("data.stats.earnings.value");
+        Allure.parameter("dashboardEarningsProjected", String.valueOf(projected));
+        assertThat(projected)
+                .as("dashboard.stats.earnings.value (Home Earning Projected) must be present")
+                .isNotNull();
+        assertThat(projected.doubleValue()).isGreaterThanOrEqualTo(0);
     }
 
     private static Instant parseInstant(Object raw) {
