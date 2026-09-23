@@ -44,13 +44,12 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 3,
-            description = "RB-A3: list counts agree with the dashboard and Home")
+            description = "RB-A3: list counts agree with dashboard — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Compare the bookings list against /api/v1/rentals/vendor/dashboard and "
-            + "/stats, and against the Home Upcoming Booking tile (RB-L14). All three must "
-            + "agree at the same instant.")
+    @Description("Implemented in RentalBookingApiGapTest.countsAgreeAcrossSurfaces. Settles "
+            + "RB-L14: Home tile = dashboard.stats.upcoming; period-filtered list must match.")
     public void countsAgreeAcrossSurfaces() {
-        throw new SkipException(ON_HOLD);
+        throw new SkipException("RB-A3 lives in RentalBookingApiGapTest — use booking-rental-api-a3.xml");
     }
 
     @Test(enabled = false, priority = 4,
