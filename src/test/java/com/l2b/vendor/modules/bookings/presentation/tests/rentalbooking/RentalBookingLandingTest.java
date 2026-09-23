@@ -350,13 +350,39 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isFalse();
     }
 
-    @Test(enabled = false, priority = 11,
+    @Test(priority = 11,
             description = "RB-L11: header switches to Active Order on the Active tab")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Header title tracks the selected tab: Upcoming Booking / Active Order / "
-            + "Completed Order. Stale titles are a new Bookings bug.")
+    @Description("Header title tracks the selected tab across the full cycle: Upcoming Booking / "
+            + "Active Order / Completed Order / back to Upcoming Booking. A stale title is a new "
+            + "Bookings bug.")
     public void activeTabHeaderTitle() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        bookings.tapTab(RentalBookingsPage.TAB_ACTIVE);
+        String activeHeader = bookings.headerTitleNow();
+        bookings.attachScreenshot("rb-l11-active-header");
+
+        bookings.tapTab(RentalBookingsPage.TAB_COMPLETED);
+        String completedHeader = bookings.headerTitleNow();
+
+        bookings.tapTab(RentalBookingsPage.TAB_UPCOMING);
+        String backToUpcoming = bookings.headerTitleNow();
+
+        Allure.parameter("activeHeader", activeHeader);
+        Allure.parameter("completedHeader", completedHeader);
+        Allure.parameter("backToUpcomingHeader", backToUpcoming);
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(activeHeader)
+                .as("Active tab header must be Active Order")
+                .isEqualTo(RentalBookingsPage.TITLE_ACTIVE);
+        assertThat(completedHeader)
+                .as("Completed tab header must be Completed Order")
+                .isEqualTo(RentalBookingsPage.TITLE_COMPLETED);
+        assertThat(backToUpcoming)
+                .as("Returning to Upcoming must restore Upcoming Booking — no stale title")
+                .isEqualTo(RentalBookingsPage.TITLE_UPCOMING);
     }
 
     @Test(enabled = false, priority = 12,
