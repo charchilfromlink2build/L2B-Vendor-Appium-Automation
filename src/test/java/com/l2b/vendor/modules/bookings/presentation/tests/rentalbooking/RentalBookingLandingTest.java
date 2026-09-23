@@ -545,13 +545,45 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isGreaterThanOrEqualTo(1);
     }
 
-    @Test(enabled = false, priority = 15,
+    @Test(priority = 15,
             description = "RB-L15: vertical scroll keeps tabs and header pinned")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Scroll the list body to the last card. Tabs and header must remain, and the "
-            + "list must not bounce back to the first card.")
+    @Description("Scroll the Upcoming list body down several screenfuls. The three tabs and the "
+            + "Upcoming Booking header must stay pinned throughout, and the view must not bounce "
+            + "back to the first card.")
     public void scrollKeepsTabsAndHeader() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+
+        String headerBefore = bookings.headerTitleNow();
+        java.util.List<String> amountsBefore = bookings.amountsNow();
+
+        boolean tabsPinned = true;
+        boolean headerPinned = true;
+        for (int i = 0; i < 4; i++) {
+            bookings.swipeListUp();
+            if (!bookings.areTabsVisible()) {
+                tabsPinned = false;
+            }
+            if (!RentalBookingsPage.TITLE_UPCOMING.equals(bookings.headerTitleNow())) {
+                headerPinned = false;
+            }
+        }
+        java.util.List<String> amountsAfter = bookings.amountsNow();
+
+        Allure.parameter("headerBefore", headerBefore);
+        Allure.parameter("tabsPinnedThroughScroll", String.valueOf(tabsPinned));
+        Allure.parameter("headerPinnedThroughScroll", String.valueOf(headerPinned));
+        Allure.parameter("amountsBefore", amountsBefore.toString());
+        Allure.parameter("amountsAfter", amountsAfter.toString());
+        bookings.attachScreenshot("rb-l15-scroll-pinned");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(tabsPinned)
+                .as("Upcoming / Active / Completed tabs must stay pinned while the list scrolls")
+                .isTrue();
+        assertThat(headerPinned)
+                .as("Upcoming Booking header must stay pinned while the list scrolls")
+                .isTrue();
     }
 
     @Test(enabled = false, priority = 16,
