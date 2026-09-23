@@ -274,6 +274,60 @@ public class RentalBookingApiGapTest {
                 .isIn(403, 404);
     }
 
+    @Test(priority = 13, description = "RB-A13: invoice is available for a completed booking")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("GET /api/v1/rentals/bookings/{id}/invoice for a completed booking returns 200 and "
+            + "gross_amount matches the booking total_amount. A non-completed booking must not "
+            + "500 — current QA behaviour (200 draft) is recorded.")
+    public void invoiceForCompletedBooking() {
+        String token = vendorToken();
+        Response list = bookings.list(token);
+        assertThat(list.statusCode()).isEqualTo(200);
+        List<Map<String, Object>> rows = list.jsonPath().getList("data");
+
+        Map<String, Object> completed = null;
+        Map<String, Object> incomplete = null;
+        for (Map<String, Object> row : rows) {
+            String status = String.valueOf(row.get("status"));
+            if (completed == null && "completed".equals(status)) {
+                completed = row;
+            }
+            if (incomplete == null && !"completed".equals(status)) {
+                incomplete = row;
+            }
+        }
+        assertThat(completed).as("Need at least one completed booking for invoice").isNotNull();
+
+        String completedId = String.valueOf(completed.get("id"));
+        Number listAmount = (Number) completed.get("total_amount");
+        Response invoice = bookings.invoice(token, completedId);
+        record("completed invoice", invoice);
+        Allure.parameter("completedBooking", String.valueOf(completed.get("booking_number")));
+        Allure.parameter("listTotalAmount", String.valueOf(listAmount));
+        Allure.parameter("invoiceStatus", String.valueOf(invoice.statusCode()));
+
+        assertThat(invoice.statusCode()).isEqualTo(200);
+        assertThat(invoice.jsonPath().getBoolean("success")).isTrue();
+        Number gross = (Number) invoice.jsonPath().get("data.gross_amount");
+        Allure.parameter("invoiceGrossAmount", String.valueOf(gross));
+        assertThat(gross).as("invoice gross_amount").isNotNull();
+        assertThat(gross.doubleValue())
+                .as("Invoice gross_amount must match the completed booking total_amount")
+                .isEqualTo(listAmount.doubleValue());
+
+        if (incomplete != null) {
+            String incompleteId = String.valueOf(incomplete.get("id"));
+            Response draft = bookings.invoice(token, incompleteId);
+            record("non-completed invoice", draft);
+            Allure.parameter("incompleteBooking", String.valueOf(incomplete.get("booking_number")));
+            Allure.parameter("incompleteStatus", String.valueOf(incomplete.get("status")));
+            Allure.parameter("incompleteInvoiceHttp", String.valueOf(draft.statusCode()));
+            assertThat(draft.statusCode())
+                    .as("Non-completed invoice must not 500 — refuse or return a draft")
+                    .isNotEqualTo(500);
+        }
+    }
+
     private static Instant parseInstant(Object raw) {
         if (raw == null) {
             return null;

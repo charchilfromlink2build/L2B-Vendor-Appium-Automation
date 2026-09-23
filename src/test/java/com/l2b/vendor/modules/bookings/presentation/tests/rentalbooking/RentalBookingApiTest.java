@@ -139,13 +139,11 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 13,
-            description = "RB-A13: invoice is available for a completed booking")
+            description = "RB-A13: invoice for completed booking — LIVE in ApiGapTest")
     @Severity(SeverityLevel.NORMAL)
-    @Description("GET /api/v1/rentals/bookings/{booking_id}/invoice for a completed booking. The "
-            + "invoice total matches the amount shown on the Completed card, and the endpoint "
-            + "behaves predictably for a booking that is not yet complete.")
+    @Description("Implemented in RentalBookingApiGapTest.invoiceForCompletedBooking.")
     public void invoiceForCompletedBooking() {
-        throw new SkipException(ON_HOLD);
+        throw new SkipException("RB-A13 lives in RentalBookingApiGapTest — use booking-rental-api-a13.xml");
     }
 
     @Test(enabled = false, priority = 14,
