@@ -322,13 +322,32 @@ public class RentalBookingLandingTest extends RentalBookingBaseTest {
                 .isEqualTo(cards);
     }
 
-    @Test(enabled = false, priority = 10,
+    @Test(priority = 10,
             description = "RB-L10: Active tab renders a list or the empty state")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Exactly one of: at least one active card, or the copy 'No active bookings.' "
-            + "A blank body with neither is a new Bookings bug. Dump 12-bookings-active.")
+    @Description("Tap the Active tab (navigation only). Exactly one of: at least one active card, "
+            + "or the copy 'No active bookings.' A blank body with neither is a new Bookings bug.")
     public void activeTabListOrEmptyState() {
-        throw new SkipException(ON_HOLD);
+        RentalBookingsPage bookings = openBookingsFromHomeSeeAll();
+        bookings.tapTab(RentalBookingsPage.TAB_ACTIVE);
+
+        int activeCards = bookings.cardCountNow();
+        boolean emptyState = bookings.isActiveEmptyStateVisible();
+        String header = bookings.headerTitleNow();
+
+        Allure.parameter("header", header);
+        Allure.parameter("activeCards", String.valueOf(activeCards));
+        Allure.parameter("emptyStateVisible", String.valueOf(emptyState));
+        bookings.attachScreenshot("rb-l10-active-list-or-empty");
+
+        assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
+        assertThat(activeCards > 0 || emptyState)
+                .as("Active tab must show at least one card OR the 'No active bookings.' empty "
+                        + "state — a blank body with neither is a new Bookings bug")
+                .isTrue();
+        assertThat(activeCards > 0 && emptyState)
+                .as("Active tab must not show cards AND the empty state at the same time")
+                .isFalse();
     }
 
     @Test(enabled = false, priority = 11,

@@ -69,7 +69,9 @@ public class RentalBookingsPage extends SplashScreen {
             "//android.widget.TextView[@text='Change'][@clickable='true']");
     private static final By OPERATOR_ASSIGNED =
             ComposeLocators.textViewContains("Operator : ");
-    private static final By AMOUNT = ComposeLocators.textViewContains("Amount · Online Mode");
+    /** Amount row prefix is payment-mode agnostic: {@code Amount · Online Mode ₹...} and
+     * {@code Amount · Cash on Delivery ₹...} both start with {@code Amount ·}. */
+    private static final By AMOUNT = ComposeLocators.textViewContains("Amount \u00b7");
     private static final By SOURCE_TAG = ComposeLocators.textView("Quick Booking");
     private static final By ASSIGN_MACHINE = ComposeLocators.textView("Assign machine");
     private static final By SELECT_OPERATOR = ComposeLocators.textView("Select an operator");
@@ -132,6 +134,42 @@ public class RentalBookingsPage extends SplashScreen {
     @Step("Check Active empty state copy")
     public boolean isActiveEmptyStateVisible() {
         return isPresent(ComposeLocators.textView(EMPTY_ACTIVE));
+    }
+
+    /**
+     * Tap a top tab (Upcoming / Active / Completed) and wait for the header to switch.
+     * Navigation only — no booking state changes. Refuses if extend-time (#15) is up.
+     */
+    @Step("Tap the {tab} tab")
+    public void tapTab(String tab) {
+        refuseIfExtendTime("tab " + tab);
+        String expectedHeader = headerForTab(tab);
+        WebElement el = smallestClickableWithText(tab);
+        if (el == null) {
+            List<WebElement> labels = driver.findElements(ComposeLocators.textView(tab));
+            if (labels.isEmpty()) {
+                throw new IllegalStateException("Tab not on screen: " + tab);
+            }
+            el = clickableAncestorOrSelf(labels.get(0));
+        }
+        clickGestureOn(el);
+        Waits.until(driver,
+                d -> expectedHeader.equals(headerTitleNow()) ? Boolean.TRUE : null,
+                "Header did not switch to " + expectedHeader + " after tapping " + tab,
+                Duration.ofSeconds(10));
+    }
+
+    private static String headerForTab(String tab) {
+        switch (tab) {
+            case TAB_UPCOMING:
+                return TITLE_UPCOMING;
+            case TAB_ACTIVE:
+                return TITLE_ACTIVE;
+            case TAB_COMPLETED:
+                return TITLE_COMPLETED;
+            default:
+                throw new IllegalArgumentException("Unknown tab: " + tab);
+        }
     }
 
     @Step("Count booking cards by amount rows")
