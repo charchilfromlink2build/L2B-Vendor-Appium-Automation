@@ -140,7 +140,7 @@
   },
   {
    "id": "bookings",
-   "name": "Bookings",
+   "name": "Rental Booking",
    "status": "in-progress",
    "casesDone": 52,
    "casesTotal": 82,
