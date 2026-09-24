@@ -13,6 +13,10 @@ public class BookingsApi {
     public static final String ACCEPT = "/api/v1/rentals/vendor/bookings/{booking_id}/accept";
     public static final String DECLINE = "/api/v1/rentals/vendor/bookings/{booking_id}/decline";
     public static final String ASSIGN = "/api/v1/rentals/vendor/bookings/{booking_id}/assign";
+    public static final String EXTENSION_ACCEPT =
+            "/api/v1/rentals/vendor/bookings/{booking_id}/extension/accept";
+    public static final String EXTENSION_DECLINE =
+            "/api/v1/rentals/vendor/bookings/{booking_id}/extension/decline";
     public static final String CANDIDATES =
             "/api/v1/rentals/vendor/bookings/{booking_id}/assignment-candidates";
     public static final String DETAIL = "/api/v1/rentals/bookings/{booking_id}";
@@ -81,6 +85,16 @@ public class BookingsApi {
         body.put("operator_id", operatorId);
         body.put("allow_operator_overlap", allowOperatorOverlap);
         return http.post(ASSIGN.replace("{booking_id}", bookingId), body, token);
+    }
+
+    @Step("POST extension accept {bookingId}")
+    public Response acceptExtension(String token, String bookingId) {
+        return http.post(EXTENSION_ACCEPT.replace("{booking_id}", bookingId), Map.of(), token);
+    }
+
+    @Step("POST extension decline {bookingId}")
+    public Response declineExtension(String token, String bookingId) {
+        return http.post(EXTENSION_DECLINE.replace("{booking_id}", bookingId), Map.of(), token);
     }
 
     @Step("GET invoice {bookingId}")

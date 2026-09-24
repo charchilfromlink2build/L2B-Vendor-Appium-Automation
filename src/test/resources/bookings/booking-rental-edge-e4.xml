@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-E4 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-E4 — expect SKIP/BLOCKED without near-00:00 rental Timer session. -->
 <suite name="L2B RB-E4" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>

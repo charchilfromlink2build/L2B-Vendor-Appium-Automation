@@ -60,6 +60,32 @@ public class RentalBookingApiGapTest {
     private final CalendarApi calendarApi = new CalendarApi();
     private final EarningApi earningApi = new EarningApi();
 
+    @Test(priority = 1, description = "RB-A1: list returns 200 with a usable shape")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("GET /api/v1/rentals/vendor/bookings must be 200 with success=true and row objects "
+            + "carrying id, booking_number, status, and total_amount.")
+    public void listReturnsUsableShape() {
+        String token = vendorToken();
+        Response response = bookings.list(token);
+        record("vendor bookings list", response);
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getBoolean("success")).isTrue();
+        List<Map<String, Object>> rows = response.jsonPath().getList("data");
+        assertThat(rows).as("vendor list data array").isNotNull();
+        Allure.parameter("rowCount", String.valueOf(rows.size()));
+        assertThat(rows).as("Need at least one booking row to validate shape").isNotEmpty();
+        Map<String, Object> first = rows.get(0);
+        Allure.parameter("sampleId", String.valueOf(first.get("id")));
+        Allure.parameter("sampleNumber", String.valueOf(first.get("booking_number")));
+        Allure.parameter("sampleStatus", String.valueOf(first.get("status")));
+        assertThat(first.get("id")).as("id").isNotNull();
+        assertThat(String.valueOf(first.get("booking_number"))).as("booking_number").isNotBlank();
+        assertThat(String.valueOf(first.get("status"))).as("status").isNotBlank();
+        assertThat(first.containsKey("total_amount") || first.containsKey("amounts"))
+                .as("row must expose an amount field")
+                .isTrue();
+    }
+
     @Test(priority = 2, description = "RB-A2: API statuses map onto the three app tabs")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Group GET /api/v1/rentals/vendor/bookings by status. Every status must land in "
@@ -517,6 +543,216 @@ public class RentalBookingApiGapTest {
             return "Hidden";
         }
         return "UNMAPPED";
+    }
+
+    @Test(priority = 7, description = "RB-A7: decline persists the reason")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("POST decline with a required reason. Vendor list must drop the row, and the "
+            + "reason must remain readable for audit (customer order / cancellation_reason / "
+            + "decline response). A silent drop with no stored reason is a new Bookings bug.")
+    public void declinePersistsReason() throws Exception {
+        java.nio.file.Path seedPath = java.nio.file.Path.of("/tmp/l2b-a7-seed.json");
+        if (!java.nio.file.Files.isRegularFile(seedPath)) {
+            throw new org.testng.SkipException(
+                    "Missing /tmp/l2b-a7-seed.json — place RB-A7 customer pending seed first");
+        }
+        io.restassured.path.json.JsonPath seed =
+                new io.restassured.path.json.JsonPath(java.nio.file.Files.readString(seedPath));
+        String bookingId = seed.getString("booking_id");
+        String bookingNumber = seed.getString("booking_number");
+        Allure.parameter("bookingId", bookingId);
+        Allure.parameter("bookingNumber", bookingNumber);
+
+        String token = vendorToken();
+        Response before = bookings.detail(token, bookingId);
+        record("before decline", before);
+        assertThat(before.statusCode()).isEqualTo(200);
+        assertThat(before.jsonPath().getString("data.status")).isEqualTo("pending");
+
+        String reason = "Machine not available — RB-A7-" + System.currentTimeMillis();
+        Allure.parameter("declineReason", reason);
+        Response decline = bookings.decline(token, bookingId, reason);
+        record("decline", decline);
+        assertThat(decline.statusCode()).as("Decline must succeed").isEqualTo(200);
+
+        String declineStatus = decline.jsonPath().getString("data.status");
+        String declineCancelReason = decline.jsonPath().getString("data.cancellation_reason");
+        String declineDeclineReason = decline.jsonPath().getString("data.decline_reason");
+        Allure.parameter("declineResponseStatus", String.valueOf(declineStatus));
+        Allure.parameter("declineResponseCancellationReason", String.valueOf(declineCancelReason));
+        Allure.parameter("declineResponseDeclineReason", String.valueOf(declineDeclineReason));
+
+        Response vendorDetail = bookings.detail(token, bookingId);
+        record("vendor detail after decline", vendorDetail);
+        Response list = bookings.list(token);
+        List<Map<String, Object>> rows = list.jsonPath().getList("data");
+        boolean stillOnList = rows.stream()
+                .anyMatch(r -> bookingId.equals(String.valueOf(r.get("id"))));
+        Allure.parameter("stillOnVendorList", String.valueOf(stillOnList));
+        assertThat(stillOnList)
+                .as("Declined booking must leave the vendor list")
+                .isFalse();
+
+        // Customer-facing persistence of the reason (audit / support).
+        String customerToken = customerToken();
+        Response customerOrder = io.restassured.RestAssured.given()
+                .baseUri(Config.get("api.base.url"))
+                .header("Authorization", "Bearer " + customerToken)
+                .header("Accept", "application/json")
+                .get("/api/v1/customer/orders/" + bookingId);
+        record("customer order after decline", customerOrder);
+        assertThat(customerOrder.statusCode())
+                .as("Customer must still see the declined order for history")
+                .isEqualTo(200);
+
+        String custStatus = customerOrder.jsonPath().getString("data.status");
+        String custCancelReason = customerOrder.jsonPath().getString("data.cancellation_reason");
+        String custDeclineReason = customerOrder.jsonPath().getString("data.decline_reason");
+        String custBody = customerOrder.asString();
+        Allure.parameter("customerStatus", String.valueOf(custStatus));
+        Allure.parameter("customerCancellationReason", String.valueOf(custCancelReason));
+        Allure.parameter("customerDeclineReason", String.valueOf(custDeclineReason));
+
+        boolean reasonOnDeclineResponse = reason.equals(declineCancelReason)
+                || reason.equals(declineDeclineReason)
+                || (decline.asString() != null && decline.asString().contains(reason));
+        boolean reasonOnCustomer = reason.equals(custCancelReason)
+                || reason.equals(custDeclineReason)
+                || custBody.contains(reason);
+        boolean statusLeftPending = "pending".equals(custStatus)
+                && "pending".equals(String.valueOf(declineStatus));
+        Allure.parameter("reasonPersisted", String.valueOf(reasonOnDeclineResponse || reasonOnCustomer));
+        Allure.parameter("customerStillPending", String.valueOf(statusLeftPending));
+
+        if (!reasonOnDeclineResponse && !reasonOnCustomer) {
+            assertThat(false)
+                    .as("NEW BUG: Vendor decline returns 200 and removes the booking from the "
+                            + "vendor list, but the required decline reason is not persisted "
+                            + "(customer status=" + custStatus + ", cancellation_reason="
+                            + custCancelReason + ", decline response status=" + declineStatus
+                            + "). Audit/support cannot see why it was declined. Seed "
+                            + bookingNumber + ".")
+                    .isTrue();
+        }
+        if (statusLeftPending) {
+            assertThat(false)
+                    .as("NEW BUG: After vendor decline, customer order stays status=pending "
+                            + "(can still look active) instead of declined/cancelled. Seed "
+                            + bookingNumber + ".")
+                    .isTrue();
+        }
+        assertThat(reasonOnDeclineResponse || reasonOnCustomer)
+                .as("Decline reason must be stored somewhere readable after decline")
+                .isTrue();
+    }
+
+    @Test(priority = 11, description = "RB-A11: endpoints reject missing and expired tokens")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Missing token already covered by lifecycle. This case invalidates via "
+            + "logout-all then retries list/detail/accept — expect 401, not 200 with data.")
+    public void endpointsRejectExpiredToken() {
+        String token = vendorToken();
+        Response listOk = bookings.list(token);
+        assertThat(listOk.statusCode()).isEqualTo(200);
+        List<Map<String, Object>> rows = listOk.jsonPath().getList("data");
+        assertThat(rows).as("Need a booking id to probe detail/accept after revoke").isNotEmpty();
+        String bookingId = String.valueOf(rows.get(0).get("id"));
+        Allure.parameter("probeBookingId", bookingId);
+
+        Response logoutAll = io.restassured.RestAssured.given()
+                .baseUri(Config.get("api.base.url"))
+                .header("Authorization", "Bearer " + token)
+                .header("Accept", "application/json")
+                .contentType("application/json")
+                .body("{}")
+                .post("/api/v1/auth/logout-all");
+        record("logout-all", logoutAll);
+        assertThat(logoutAll.statusCode()).isEqualTo(200);
+
+        Response listDenied = bookings.list(token);
+        record("list with revoked token", listDenied);
+        Response detailDenied = bookings.detail(token, bookingId);
+        record("detail with revoked token", detailDenied);
+        Response acceptDenied = bookings.accept(token, bookingId);
+        record("accept with revoked token", acceptDenied);
+
+        Allure.parameter("listStatus", String.valueOf(listDenied.statusCode()));
+        Allure.parameter("detailStatus", String.valueOf(detailDenied.statusCode()));
+        Allure.parameter("acceptStatus", String.valueOf(acceptDenied.statusCode()));
+
+        assertThat(listDenied.statusCode())
+                .as("List with revoked token must be 401")
+                .isEqualTo(401);
+        assertThat(detailDenied.statusCode())
+                .as("Detail with revoked token must be 401")
+                .isEqualTo(401);
+        assertThat(acceptDenied.statusCode())
+                .as("Accept with revoked token must be 401 (not 200)")
+                .isEqualTo(401);
+
+        // Missing token (reinforce lifecycle RB-API-2).
+        Response listMissing = bookings.listUnauthenticated();
+        record("list missing token", listMissing);
+        assertThat(listMissing.statusCode())
+                .as("List without Authorization must be 401")
+                .isIn(401, 403);
+    }
+
+    private String customerToken() {
+        // Prefer a live customer token file (customer OTP is SMS / not static 1234 on QA).
+        java.nio.file.Path tokenFile = java.nio.file.Path.of("/tmp/l2b-customer-token.txt");
+        if (java.nio.file.Files.isRegularFile(tokenFile)) {
+            try {
+                String cached = java.nio.file.Files.readString(tokenFile).trim();
+                if (!cached.isBlank()) {
+                    Response me = io.restassured.RestAssured.given()
+                            .baseUri(Config.get("api.base.url"))
+                            .header("Authorization", "Bearer " + cached)
+                            .header("Accept", "application/json")
+                            .get("/api/v1/customer/me");
+                    if (me.statusCode() == 200) {
+                        Allure.parameter("customerTokenSource", "cached-file");
+                        return cached;
+                    }
+                }
+            } catch (Exception ignored) {
+                // fall through to login challenge
+            }
+        }
+
+        String phone = "9110981038";
+        Response login = io.restassured.RestAssured.given()
+                .baseUri(Config.get("api.base.url"))
+                .header("Accept", "application/json")
+                .contentType("application/json")
+                .body(java.util.Map.of("phone", phone))
+                .post("/api/v1/customer/auth/login");
+        record("customer login challenge", login);
+        assertThat(login.statusCode()).as("customer login challenge").isEqualTo(200);
+        String devOtp = login.jsonPath().getString("dev_otp");
+        if (devOtp == null || devOtp.isBlank()) {
+            throw new org.testng.SkipException(
+                    "BLOCKED RB-A7 customer half: no cached /tmp/l2b-customer-token.txt and "
+                            + "customer auth login returned no dev_otp (SMS OTP required for "
+                            + phone + "). Vendor decline half already asserted before this call.");
+        }
+        Response verify = io.restassured.RestAssured.given()
+                .baseUri(Config.get("api.base.url"))
+                .header("Accept", "application/json")
+                .contentType("application/json")
+                .body(java.util.Map.of("phone", phone, "otp_code", devOtp))
+                .post("/api/v1/customer/auth/verify");
+        record("customer verify", verify);
+        assertThat(verify.statusCode()).as("customer verify").isEqualTo(200);
+        String token = verify.jsonPath().getString("access_token");
+        assertThat(token).as("customer access_token").isNotBlank();
+        try {
+            java.nio.file.Files.writeString(tokenFile, token);
+        } catch (Exception ignored) {
+            // best-effort cache
+        }
+        Allure.parameter("customerTokenSource", "dev_otp");
+        return token;
     }
 
     private String vendorToken() {

@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-E6 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-E6 LIVE — Decline while offline (/tmp/l2b-e6-seed.json 0DDCEC). -->
 <suite name="L2B RB-E6" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>

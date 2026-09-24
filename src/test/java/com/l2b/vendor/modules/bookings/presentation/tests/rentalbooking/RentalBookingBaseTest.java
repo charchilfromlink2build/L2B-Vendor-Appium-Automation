@@ -162,12 +162,23 @@ public abstract class RentalBookingBaseTest extends RentalHomeBaseTest {
     }
 
     /**
-     * Home → Booking Orders {@code See all} → Quick Booking queue, the surface an
-     * incoming rental request lands on.
-     *
-     * @throws UnsupportedOperationException while the module is on hold
+     * Home → Booking Orders {@code See all} → Quick Booking queue (when a pending seed exists).
      */
-    protected void openIncomingQueueFromHomeSeeAll() {
-        throw new UnsupportedOperationException(ON_HOLD);
+    protected QuickBookingPage openIncomingQueueFromHomeSeeAll() {
+        HomePage home = new HomePage();
+        assertThat(home.isDisplayedNow())
+                .as("Must be on Home before Booking Orders See all")
+                .isTrue();
+        home.tapNthSeeAll(2);
+        QuickBookingPage qb = new QuickBookingPage();
+        RentalBookingsPage bookings = new RentalBookingsPage();
+        Waits.until(DriverManager.get(),
+                d -> (qb.isDisplayedNow() || bookings.isDisplayedNow()) ? Boolean.TRUE : null,
+                "Booking Orders See all opened neither Quick Booking nor Bookings",
+                Duration.ofSeconds(12));
+        assertThat(qb.isDisplayedNow())
+                .as("Pending seed via Booking Orders See all must open Quick Booking")
+                .isTrue();
+        return qb;
     }
 }

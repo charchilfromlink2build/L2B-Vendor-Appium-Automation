@@ -36,11 +36,11 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     private final BookingsApi bookingsApi = new BookingsApi();
 
     @Test(enabled = false, priority = 1,
-            description = "RB-A1: list shape — covered by lifecycle")
+            description = "RB-A1 — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Covered by RentalBookingLifecycleApiTest.listReturnsUsableShape (RB-API-1).")
+    @Description("Implemented in RentalBookingApiGapTest.listReturnsUsableShape.")
     public void listReturnsUsableShape() {
-        throw new SkipException("RB-A1 covered by RentalBookingLifecycleApiTest");
+        throw new SkipException("RB-A1 lives in RentalBookingApiGapTest");
     }
 
     @Test(enabled = false, priority = 2,
@@ -268,11 +268,11 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 7,
-            description = "RB-A7 — partial in lifecycle")
+            description = "RB-A7 — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Lifecycle covers removal; reason-store strengthen deferred.")
+    @Description("Implemented in RentalBookingApiGapTest.declinePersistsReason.")
     public void declinePersistsReason() {
-        throw new SkipException("RB-A7 partial in lifecycle");
+        throw new SkipException("RB-A7 lives in RentalBookingApiGapTest");
     }
 
     @Test(enabled = false, priority = 8,
@@ -300,11 +300,11 @@ public class RentalBookingApiTest extends RentalBookingBaseTest {
     }
 
     @Test(enabled = false, priority = 11,
-            description = "RB-A11 — missing token covered by lifecycle")
+            description = "RB-A11 — LIVE in ApiGapTest")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Missing-token covered by lifecycle; expired-token deferred.")
+    @Description("Implemented in RentalBookingApiGapTest.endpointsRejectExpiredToken.")
     public void endpointsRejectBadToken() {
-        throw new SkipException("RB-A11 missing-token covered by lifecycle");
+        throw new SkipException("RB-A11 lives in RentalBookingApiGapTest");
     }
 
     @Test(enabled = false, priority = 12,

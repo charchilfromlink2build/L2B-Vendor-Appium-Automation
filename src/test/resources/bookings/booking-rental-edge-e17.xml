@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-E17 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-E17 — LIVE. Missing / placeholder field values on Bookings cards. -->
 <suite name="L2B RB-E17" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
-    <test name="RB-E17 missingFieldValues" preserve-order="true">
+    <test name="RB-E17 missingPlaceholderFieldsSafe" preserve-order="true">
         <classes>
             <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingEdgeTest">
                 <methods>
-                    <include name="missingFieldValues"/>
+                    <include name="missingPlaceholderFieldsSafe"/>
                 </methods>
             </class>
         </classes>

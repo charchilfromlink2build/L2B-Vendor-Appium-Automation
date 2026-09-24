@@ -141,11 +141,11 @@
   {
    "id": "bookings",
    "name": "Rental Booking",
-   "status": "in-progress",
-   "casesDone": 52,
+   "status": "done",
+   "casesDone": 82,
    "casesTotal": 82,
    "screens": 1,
-   "note": "RB-L16 + API gaps + RB-I1–I16 (I14 SKIP) + RB-S1–S6 PASS on seed L2B-RNT-2026-6419DF (operator_assigned / Randanberno / KA13Z2117). #28 open. Next RB-S7+."
+   "note": "82/82 executed 24 Sep. L16+I16+S16+E20+A14. BLOCKED only S15+E4 (near-expiry Timer seed; timer restarts on relaunch #28). Open Bookings bugs #27–#34."
   },
   {
    "id": "fleet",
@@ -316,8 +316,8 @@
  "loggedInExtra": [
   "quickBooking"
  ],
- "whatsNext": "Rental Booking in progress — 52/82 done; next RB-S7–S16 then RB-E1–E20 (#28 QB timer still open)",
- "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open bugs #25 (Rental Home Back → launcher) and #26 (Rental Home rotation opens Account drawer). Rental Booking structure is scaffolded — 82 cases (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14), all enabled=false until activation. Dev blocker #16 remains open for busy-operator Assign Confirm only. Operator Quick Booking / operator Start-End OTP UI deferred. 23 Sep: rental booking API lifecycle suite live — Accept→Assign→Start OTP→End OTP→completed on L2B-RNT-2026-1837E2 (7 PASS / 1 SKIP). Free-operator UI happy path PASSES on L2B-RNT-2026-F7D066 (FreeOperatorUiAcceptTest) — Confirm enables after Nauman, Accept completes, status operator_assigned; #16 scoped to busy slots.",
+ "whatsNext": "Fleet — Rental Booking 82/82 done (S15/E4 BLOCKED). Open bugs #28–#34",
+ "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back → launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE — 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch — #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27–#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred.",
  "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP. 19 Sep on 9000000017: pending material orders open the same Quick Booking page (material chrome, no timer/operator). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
  "existingUserEvidence": [
   {

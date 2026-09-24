@@ -562,6 +562,92 @@ public class RentalBookingsPage extends SplashScreen {
         clickGestureOn(rows.get(0));
     }
 
+    /**
+     * Scroll until {@code needle} is on screen, then tap the Change CTA nearest that label
+     * (same card). Used when multiple assigned Upcoming cards exist.
+     */
+    @Step("Tap Change near card text {needle}")
+    public void tapChangeNearText(String needle) {
+        refuseIfExtendTime("Change near " + needle);
+        if (isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine already open — refusing Change");
+        }
+        WebElement label = null;
+        for (int i = 0; i < 8; i++) {
+            List<WebElement> hits = driver.findElements(ComposeLocators.textViewContains(needle));
+            if (!hits.isEmpty()) {
+                label = hits.get(0);
+                break;
+            }
+            swipeListUp();
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        if (label == null) {
+            throw new IllegalStateException("Card text not found for Change: " + needle);
+        }
+        org.openqa.selenium.Rectangle labelBox = label.getRect();
+        List<WebElement> changes = driver.findElements(CHANGE_CLICKABLE);
+        WebElement best = null;
+        int bestDist = Integer.MAX_VALUE;
+        for (WebElement ch : changes) {
+            org.openqa.selenium.Rectangle b = ch.getRect();
+            int dist = Math.abs(b.getY() - labelBox.getY());
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = ch;
+            }
+        }
+        if (best == null || bestDist > 600) {
+            throw new IllegalStateException(
+                    "No Change CTA near card text '" + needle + "' (bestDist=" + bestDist + ")");
+        }
+        clickGestureOn(best);
+    }
+
+    /**
+     * Prefer an Available operator whose name contains {@code nameFragment} (case-insensitive).
+     * Falls back to {@link #selectAvailableOperator()} when no matching Available row exists.
+     */
+    @Step("Select Available operator containing {nameFragment}")
+    public String selectAvailableOperatorContaining(String nameFragment) {
+        if (!isAssignMachineVisible()) {
+            throw new IllegalStateException("Assign machine not on screen — refusing operator pick");
+        }
+        if (nameFragment == null || nameFragment.isBlank()) {
+            return selectAvailableOperator();
+        }
+        String needle = nameFragment.trim().toLowerCase();
+        List<WebElement> available = driver.findElements(ComposeLocators.textView("Available"));
+        List<WebElement> named = driver.findElements(ComposeLocators.textViewContains(nameFragment.trim()));
+        for (WebElement nameEl : named) {
+            String text = safeText(nameEl);
+            if (text.toLowerCase().indexOf(needle) < 0) {
+                continue;
+            }
+            org.openqa.selenium.Rectangle nameBox = nameEl.getRect();
+            boolean rowAvailable = false;
+            for (WebElement badge : available) {
+                org.openqa.selenium.Rectangle b = badge.getRect();
+                if (Math.abs(b.getY() - nameBox.getY()) < 80) {
+                    rowAvailable = true;
+                    break;
+                }
+            }
+            if (!rowAvailable) {
+                continue;
+            }
+            clickGestureOn(clickableAncestorOrSelf(nameEl));
+            lastMenuOptionEnabled = true;
+            pauseBriefly();
+            return text;
+        }
+        return selectAvailableOperator();
+    }
+
     @Step("Check Assign machine / Assign Operator sheet")
     public boolean isAssignMachineVisible() {
         return isPresent(ASSIGN_MACHINE) || isPresent(ASSIGN_OPERATOR);
@@ -642,22 +728,33 @@ public class RentalBookingsPage extends SplashScreen {
         }
         List<WebElement> available = driver.findElements(ComposeLocators.textView("Available"));
         if (!available.isEmpty()) {
-            // Prefer a known free primary operator when listed.
-            for (String name : new String[] {"Randanberno Ezung", "Randanberno"}) {
+            // Prefer a known free primary operator only when that row is Available.
+            for (String name : new String[] {"Randanberno Ezung", "Randanberno", "Nauman Majid Pathan", "Nauman"}) {
                 List<WebElement> named = driver.findElements(ComposeLocators.textViewContains(name));
-                if (!named.isEmpty()) {
-                    clickGestureOn(clickableAncestorOrSelf(named.get(0)));
-                    lastMenuOptionEnabled = true;
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    return safeText(named.get(0));
+                if (named.isEmpty()) {
+                    continue;
                 }
+                // Same vertical band as an Available badge → treat as free.
+                org.openqa.selenium.Rectangle nameBox = named.get(0).getRect();
+                boolean rowAvailable = false;
+                for (WebElement badge : available) {
+                    org.openqa.selenium.Rectangle b = badge.getRect();
+                    if (Math.abs(b.getY() - nameBox.getY()) < 80) {
+                        rowAvailable = true;
+                        break;
+                    }
+                }
+                if (!rowAvailable) {
+                    continue;
+                }
+                clickGestureOn(clickableAncestorOrSelf(named.get(0)));
+                lastMenuOptionEnabled = true;
+                pauseBriefly();
+                return safeText(named.get(0));
             }
             clickGestureOn(clickableAncestorOrSelf(available.get(0)));
             lastMenuOptionEnabled = true;
+            pauseBriefly();
             return "Available";
         }
         return selectFirstOperator();
@@ -683,36 +780,160 @@ public class RentalBookingsPage extends SplashScreen {
         if (!isDeclineBookingDialogVisible()) {
             throw new IllegalStateException("Decline Booking? dialog not on screen");
         }
-        String chosen = pickFirstDropdownOption("Select a reason", "Reason dropdown showed no options");
+        Set<String> before = visibleTexts();
+        WebElement field = smallestClickableWithText("Select a reason");
+        if (field == null) {
+            List<WebElement> labels = driver.findElements(ComposeLocators.textView("Select a reason"));
+            if (labels.isEmpty()) {
+                throw new IllegalStateException("Select a reason not on screen");
+            }
+            clickGestureOn(labels.get(0));
+        } else {
+            clickGestureOn(field);
+        }
+        Waits.until(driver,
+                d -> firstNewMenuNode(before) != null ? Boolean.TRUE : null,
+                "Reason dropdown showed no options",
+                Duration.ofSeconds(8));
+
+        // Prefer the live rental decline reason used in prior vendor QA.
+        for (String prefer : new String[] {
+                "Machine not available",
+                "Operator not available",
+                "Slot already booked",
+                "Other"
+        }) {
+            List<WebElement> named = driver.findElements(ComposeLocators.textView(prefer));
+            if (!named.isEmpty()) {
+                WebElement row = clickableAncestorOrSelf(named.get(0));
+                lastMenuOptionEnabled = Boolean.parseBoolean(row.getAttribute("enabled"));
+                clickGestureOn(row);
+                pauseBriefly();
+                dismissDropdownOverlay();
+                return prefer;
+            }
+        }
+
+        WebElement option = firstNewMenuNode(before);
+        if (option == null) {
+            throw new IllegalStateException("Reason dropdown showed no options");
+        }
+        String chosen = safeText(option);
+        WebElement row = clickableAncestorOrSelf(option);
+        lastMenuOptionEnabled = Boolean.parseBoolean(row.getAttribute("enabled"));
+        clickGestureOn(row);
+        pauseBriefly();
         dismissDropdownOverlay();
         return chosen;
     }
 
-    @Step("Read Confirm Decline enabled on clickable outer View")
-    public boolean isConfirmDeclineEnabled() {
-        return anyOuterEnabled("Confirm Decline");
+    private void pauseBriefly() {
+        try {
+            Thread.sleep(600);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
-    @Step("Tap Confirm Decline on the reason dialog")
+    @Step("Read Confirm Decline / dialog Decline enabled on clickable outer View")
+    public boolean isConfirmDeclineEnabled() {
+        if (isPresent(ComposeLocators.textView("Confirm Decline"))) {
+            return anyOuterEnabled("Confirm Decline");
+        }
+        // Rental Decline Booking? sheet uses Cancel + Decline (not "Confirm Decline").
+        return smallestEnabledDeclineOnDialog() != null;
+    }
+
+    @Step("Tap Confirm Decline / dialog Decline on the reason dialog")
     public void tapConfirmDecline() {
         if (!isDeclineBookingDialogVisible()) {
             throw new IllegalStateException("Decline Booking? dialog not on screen — refusing Confirm Decline");
         }
-        WebElement target = smallestClickableWithText("Confirm Decline");
-        if (target == null) {
-            List<WebElement> labels = driver.findElements(ComposeLocators.textView("Confirm Decline"));
-            if (labels.isEmpty()) {
-                throw new IllegalStateException("Confirm Decline not on reason dialog");
+        if (isPresent(ComposeLocators.textView("Confirm Decline"))) {
+            WebElement target = smallestClickableWithText("Confirm Decline");
+            if (target == null) {
+                List<WebElement> labels = driver.findElements(ComposeLocators.textView("Confirm Decline"));
+                if (labels.isEmpty()) {
+                    throw new IllegalStateException("Confirm Decline not on reason dialog");
+                }
+                clickGestureOn(labels.get(0));
+                return;
             }
-            clickGestureOn(labels.get(0));
+            clickGestureOn(target);
             return;
         }
-        clickGestureOn(target);
+        WebElement dialogDecline = smallestEnabledDeclineOnDialog();
+        if (dialogDecline == null) {
+            throw new IllegalStateException("Dialog Decline not enabled on Decline Booking? sheet");
+        }
+        clickGestureOn(dialogDecline);
+    }
+
+    /**
+     * On the rental Decline Booking? sheet the primary CTA is {@code Decline} (orange), not
+     * {@code Confirm Decline}. Prefer the smallest enabled Decline outer View so the card-level
+     * Decline behind the dimmed scrim is not tapped.
+     */
+    private WebElement smallestEnabledDeclineOnDialog() {
+        WebElement best = null;
+        int bestArea = Integer.MAX_VALUE;
+        for (WebElement row : driver.findElements(ComposeLocators.clickableWithText("Decline"))) {
+            if (!Boolean.parseBoolean(row.getAttribute("enabled"))) {
+                continue;
+            }
+            org.openqa.selenium.Rectangle box = row.getRect();
+            int area = Math.max(1, box.getWidth()) * Math.max(1, box.getHeight());
+            // Card-level Decline is typically full-width; dialog CTA is a compact button.
+            if (area < bestArea && box.getWidth() < driver.manage().window().getSize().width * 0.55) {
+                bestArea = area;
+                best = row;
+            }
+        }
+        if (best != null) {
+            return best;
+        }
+        // Fallback: any enabled Decline while the dialog title is present.
+        for (WebElement row : driver.findElements(ComposeLocators.clickableWithText("Decline"))) {
+            if (Boolean.parseBoolean(row.getAttribute("enabled"))) {
+                return row;
+            }
+        }
+        return null;
     }
 
     @Step("Check Request to extend time dialog")
     public boolean isExtendTimeDialogVisible() {
         return isPresent(EXTEND_TIME);
+    }
+
+    @Step("Tap Accept on Request to extend time dialog")
+    public void tapExtendTimeAccept() {
+        if (!isExtendTimeDialogVisible()) {
+            throw new IllegalStateException("Request to extend time dialog not visible");
+        }
+        List<WebElement> accepts = driver.findElements(ComposeLocators.clickableWithText("Accept"));
+        if (accepts.isEmpty()) {
+            accepts = driver.findElements(ComposeLocators.textView("Accept"));
+        }
+        if (accepts.isEmpty()) {
+            throw new IllegalStateException("Accept not on extend-time dialog");
+        }
+        clickGestureOn(clickableAncestorOrSelf(accepts.get(0)));
+    }
+
+    @Step("Tap Decline on Request to extend time dialog")
+    public void tapExtendTimeDecline() {
+        if (!isExtendTimeDialogVisible()) {
+            throw new IllegalStateException("Request to extend time dialog not visible");
+        }
+        List<WebElement> declines = driver.findElements(ComposeLocators.clickableWithText("Decline"));
+        if (declines.isEmpty()) {
+            declines = driver.findElements(ComposeLocators.textView("Decline"));
+        }
+        if (declines.isEmpty()) {
+            throw new IllegalStateException("Decline not on extend-time dialog");
+        }
+        clickGestureOn(clickableAncestorOrSelf(declines.get(0)));
     }
 
     /**

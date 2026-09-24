@@ -10,6 +10,7 @@ import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.qameta.allure.Step;
 import java.time.Duration;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -76,6 +77,121 @@ public class QuickBookingPage extends SplashScreen {
         java.util.List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Accept"));
         if (rows.isEmpty()) {
             throw new IllegalStateException("Accept not on Quick Booking — refusing tap");
+        }
+        tap(rows.get(0));
+    }
+
+    /**
+     * Scroll until {@code needle} is visible, then tap the Accept CTA nearest that label
+     * (same card). Avoids accepting a material interloper when multiple QB cards exist.
+     */
+    @Step("Tap Accept near card text {needle}")
+    public void tapAcceptNearText(String needle) {
+        WebElement label = findCardLabel(needle);
+        WebElement accept = nearestClickable("Accept", label.getRect());
+        tap(accept);
+    }
+
+    /** Two (or more) rapid Accept taps on the card matching {@code needle}. */
+    @Step("Tap Accept near {needle} rapidly {times} times")
+    public void tapAcceptNearTextRapidly(String needle, int times) {
+        WebElement label = findCardLabel(needle);
+        WebElement accept = nearestClickable("Accept", label.getRect());
+        org.openqa.selenium.Rectangle box = accept.getRect();
+        int x = box.x + box.width / 2;
+        int y = box.y + box.height / 2;
+        for (int i = 0; i < times; i++) {
+            driver.executeScript("mobile: clickGesture", java.util.Map.of("x", x, "y", y));
+        }
+    }
+
+    @Step("Tap Decline near card text {needle}")
+    public void tapDeclineNearText(String needle) {
+        WebElement label = findCardLabel(needle);
+        WebElement decline = nearestClickable("Decline", label.getRect());
+        tap(decline);
+    }
+
+    @Step("Tap Decline near {needle} rapidly {times} times")
+    public void tapDeclineNearTextRapidly(String needle, int times) {
+        WebElement label = findCardLabel(needle);
+        WebElement decline = nearestClickable("Decline", label.getRect());
+        org.openqa.selenium.Rectangle box = decline.getRect();
+        int x = box.x + box.width / 2;
+        int y = box.y + box.height / 2;
+        for (int i = 0; i < times; i++) {
+            driver.executeScript("mobile: clickGesture", java.util.Map.of("x", x, "y", y));
+        }
+    }
+
+    /** Tap Decline then Accept on the same card with no wait (race). */
+    @Step("Race Decline then Accept near {needle}")
+    public void raceDeclineThenAcceptNearText(String needle) {
+        WebElement label = findCardLabel(needle);
+        org.openqa.selenium.Rectangle near = label.getRect();
+        WebElement decline = nearestClickable("Decline", near);
+        WebElement accept = nearestClickable("Accept", near);
+        org.openqa.selenium.Rectangle dBox = decline.getRect();
+        org.openqa.selenium.Rectangle aBox = accept.getRect();
+        int dx = dBox.x + dBox.width / 2;
+        int dy = dBox.y + dBox.height / 2;
+        int ax = aBox.x + aBox.width / 2;
+        int ay = aBox.y + aBox.height / 2;
+        driver.executeScript("mobile: clickGesture", java.util.Map.of("x", dx, "y", dy));
+        driver.executeScript("mobile: clickGesture", java.util.Map.of("x", ax, "y", ay));
+    }
+
+    private WebElement findCardLabel(String needle) {
+        for (int i = 0; i < 6; i++) {
+            java.util.List<WebElement> hits =
+                    driver.findElements(ComposeLocators.textViewContains(needle));
+            if (!hits.isEmpty()) {
+                return hits.get(0);
+            }
+            Dimension size = driver.manage().window().getSize();
+            driver.executeScript("mobile: swipeGesture", java.util.Map.of(
+                    "left", (int) (size.width * 0.2),
+                    "top", (int) (size.height * 0.55),
+                    "width", (int) (size.width * 0.6),
+                    "height", (int) (size.height * 0.25),
+                    "direction", "up",
+                    "percent", 0.75));
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        throw new IllegalStateException("Card text not found on Quick Booking: " + needle);
+    }
+
+    private WebElement nearestClickable(String label, org.openqa.selenium.Rectangle near) {
+        java.util.List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText(label));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException(label + " not on Quick Booking near card");
+        }
+        WebElement best = null;
+        int bestDist = Integer.MAX_VALUE;
+        for (WebElement row : rows) {
+            org.openqa.selenium.Rectangle b = row.getRect();
+            int dist = Math.abs(b.getY() - near.getY());
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = row;
+            }
+        }
+        if (best == null || bestDist > 900) {
+            throw new IllegalStateException(
+                    label + " not near card (bestDist=" + bestDist + ")");
+        }
+        return best;
+    }
+
+    @Step("Tap first Decline (clickable outer View)")
+    public void tapFirstDecline() {
+        java.util.List<WebElement> rows = driver.findElements(ComposeLocators.clickableWithText("Decline"));
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Decline not on Quick Booking — refusing tap");
         }
         tap(rows.get(0));
     }

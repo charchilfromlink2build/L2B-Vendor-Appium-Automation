@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-A9 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-A9 — covered by acceptWithoutAssignThenSecondAcceptSafe (same suite as A5/A6). -->
 <suite name="L2B RB-A9" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
     <test name="RB-A9 acceptWithoutAssign" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingApiTest">
+            <class name="com.l2b.vendor.modules.bookings.data.api.RentalBookingLifecycleApiTest">
                 <methods>
-                    <include name="acceptWithoutAssign"/>
+                    <include name="acceptWithoutAssignThenSecondAcceptSafe"/>
                 </methods>
             </class>
         </classes>

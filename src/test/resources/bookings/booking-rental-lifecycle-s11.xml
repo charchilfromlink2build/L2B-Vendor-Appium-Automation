@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-S11 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-S11 LIVE — Change operator on /tmp/l2b-s11-seed.json (710328 Nauman→Randanberno). -->
 <suite name="L2B RB-S11" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>

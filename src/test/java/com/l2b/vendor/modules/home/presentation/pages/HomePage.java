@@ -199,6 +199,37 @@ public class HomePage extends SplashScreen {
     }
 
     /**
+     * Read the rupee TextView nearest a stat label (e.g. {@code Earning Projected}).
+     * Returns the raw text (e.g. {@code ₹6,63,000}) or empty when not found.
+     */
+    @Step("Read rupee amount near the {label} stat card")
+    public String rentalStatRupeeNear(String label) {
+        List<WebElement> all = driver.findElements(By.className("android.widget.TextView"));
+        int idx = -1;
+        for (int i = 0; i < all.size(); i++) {
+            if (label.equals(safeText(all.get(i)))) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx < 0) {
+            return "";
+        }
+        int[] offsets = {-1, 1, -2, 2, -3, 3, -4, 4};
+        for (int off : offsets) {
+            int j = idx + off;
+            if (j < 0 || j >= all.size()) {
+                continue;
+            }
+            String t = safeText(all.get(j));
+            if (t.contains("₹")) {
+                return t;
+            }
+        }
+        return "";
+    }
+
+    /**
      * Dump 21 Sep {@code 01-after-close} 2×2: Active Fleet, Total Completed Task,
      * Upcoming Booking, Earning Projected. Counts and rupees change — labels only.
      */

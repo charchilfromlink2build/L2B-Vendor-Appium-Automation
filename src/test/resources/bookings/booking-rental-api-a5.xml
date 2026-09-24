@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-A5 — on hold. The method is enabled=false until execution day. -->
-<suite name="L2B RB-A5" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+<!-- RB-A5 + RB-A6 + RB-A9 — LIVE via LifecycleApi accept without assign + second accept. -->
+<suite name="L2B RB-A5-A6-A9" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
-    <test name="RB-A5 acceptTransitionsStatus" preserve-order="true">
+    <test name="RB-A5/A6/A9 acceptWithoutAssignThenSecondAcceptSafe" preserve-order="true">
         <classes>
-            <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingApiTest">
+            <class name="com.l2b.vendor.modules.bookings.data.api.RentalBookingLifecycleApiTest">
                 <methods>
-                    <include name="acceptTransitionsStatus"/>
+                    <include name="acceptWithoutAssignThenSecondAcceptSafe"/>
                 </methods>
             </class>
         </classes>

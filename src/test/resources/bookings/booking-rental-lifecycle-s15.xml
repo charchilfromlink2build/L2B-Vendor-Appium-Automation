@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-S15 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-S15 — expect SKIP/BLOCKED unless /tmp/l2b-s15-seed.json near-expiry rental exists. -->
 <suite name="L2B RB-S15" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>

@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-S12 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-S12 LIVE — Upcoming→Active (/tmp/l2b-s12-seed.json 710328 in_progress). -->
 <suite name="L2B RB-S12" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
-    <test name="RB-S12 upcomingBecomesActive" preserve-order="true">
+    <test name="RB-S12 upcomingBecomesActiveAtStart" preserve-order="true">
         <classes>
             <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingLifecycleTest">
                 <methods>
-                    <include name="upcomingBecomesActive"/>
+                    <include name="upcomingBecomesActiveAtStart"/>
                 </methods>
             </class>
         </classes>

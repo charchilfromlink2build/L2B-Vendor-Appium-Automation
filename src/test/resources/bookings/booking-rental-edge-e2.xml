@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-E2 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-E2 LIVE — double-tap Decline (/tmp/l2b-e2-seed.json 6BB088). -->
 <suite name="L2B RB-E2" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>

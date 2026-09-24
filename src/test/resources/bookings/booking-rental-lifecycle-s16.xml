@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-S16 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-S16 LIVE — extend-time Accept (/tmp/l2b-s16-seed.json 84C8FE). -->
 <suite name="L2B RB-S16" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
-    <test name="RB-S16 extendTimeDecisionUpdatesBooking" preserve-order="true">
+    <test name="RB-S16 extendTimeUpdatesEndDate" preserve-order="true">
         <classes>
             <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingLifecycleTest">
                 <methods>
-                    <include name="extendTimeDecisionUpdatesBooking"/>
+                    <include name="extendTimeUpdatesEndDate"/>
                 </methods>
             </class>
         </classes>

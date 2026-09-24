@@ -62,9 +62,11 @@ def parse_allure_results(results_dir: Path) -> dict | None:
         "source": "allure-results-unique-latest",
         "note": (
             "Unique latest status per test (retries collapsed). "
+            "Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). "
             "Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). "
-            "Free-operator UI Accept→Confirm PASSES (FreeOperatorUiAcceptTest on F7D066, 23 Sep). "
-            "OTP 23/24 are retargeted to 9000000003 so Home identity can pass without a 0001 queue intercept."
+            "Open Bookings bugs #27–#34 (Timer gate, Skip stuck, offline/stale Accept, Address not provided, "
+            "decline reason). Free-operator UI Accept→Confirm PASSES (F7D066). "
+            "OTP 23/24 retargeted to 9000000003."
         ),
     }
 

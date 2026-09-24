@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-E7 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-E7 LIVE — Accept already resolved (/tmp/l2b-e7-seed.json D355FA). -->
 <suite name="L2B RB-E7" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
-    <test name="RB-E7 acceptStaleBooking" preserve-order="true">
+    <test name="RB-E7 acceptAlreadyResolvedElsewhere" preserve-order="true">
         <classes>
             <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingEdgeTest">
                 <methods>
-                    <include name="acceptStaleBooking"/>
+                    <include name="acceptAlreadyResolvedElsewhere"/>
                 </methods>
             </class>
         </classes>

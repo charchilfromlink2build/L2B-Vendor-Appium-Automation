@@ -1,9 +1,12 @@
 # Rental Booking — test plan (Vendor app)
 
-**Prepared** 22 Sep 2026 · **Status** on hold, nothing executed
+**Prepared** 22 Sep 2026 · **Status** executed complete 24 Sep 2026 — **82/82** (S15 + E4 BLOCKED)
 **Account** `9000000001` (rental company, OTP `1234`) · **Package** `com.l2b.app.qa` · **Env** `https://qa.waardian.com`
 **Zero-booking control** `9000000003`
 **Execution** one isolated suite at a time, against real bookings placed from the customer web.
+
+**Result summary (24 Sep):** RB-L 16 · RB-I 16 · RB-S 16 (S15 BLOCKED) · RB-E 20 (E4 BLOCKED) · RB-A 14.
+Open Bookings bugs **#27–#34**. S15/E4 need a near-expiry rental Timer seed (Timer restarts on relaunch — #28).
 
 This plan covers the rental booking lifecycle from the **vendor** side only. Material orders
 (`9000000017`) stay out of this track. Quick Booking screen ownership stays with the Quick Booking
@@ -26,8 +29,10 @@ module; this plan uses it only as the surface where an incoming rental request a
 | Existing API surface | `.../modules/bookings/data/api/BookingsApi.java` (unchanged) |
 | Existing environment | `.../modules/bookings/domain/BookingsEnvironment.java` (unchanged) |
 
-Every test method is `enabled = false` and throws `SkipException` if forced, so a suite cannot report
-a false pass before its steps are written.
+All 82 plan cases are implemented and have been run (isolated suites). `RentalBookingApiTest`
+stubs remain `enabled = false` only as redirects to `RentalBookingApiGapTest` /
+`RentalBookingLifecycleApiTest`. S15 and E4 throw `SkipException` BLOCKED until a near-expiry
+Timer seed exists.
 
 ---
 

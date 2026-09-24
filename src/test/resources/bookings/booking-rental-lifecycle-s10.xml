@@ -1,14 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<!-- RB-S10 — on hold. The method is enabled=false until execution day. -->
+<!-- RB-S10 LIVE — Assign on unassigned Upcoming (/tmp/l2b-s10-seed.json F64370). -->
 <suite name="L2B RB-S10" verbose="1" parallel="none" thread-count="1" preserve-order="true">
     <listeners>
         <listener class-name="com.l2b.vendor.environment.TestListener"/>
     </listeners>
-    <test name="RB-S10 assignOperatorFromUpcoming" preserve-order="true">
+    <test name="RB-S10 assignOnUpcomingFlipsRow" preserve-order="true">
         <classes>
             <class name="com.l2b.vendor.modules.bookings.presentation.tests.rentalbooking.RentalBookingLifecycleTest">
                 <methods>
-                    <include name="assignOperatorFromUpcoming"/>
+                    <include name="assignOnUpcomingFlipsRow"/>
                 </methods>
             </class>
         </classes>
