@@ -34,3 +34,9 @@ First-login evidence (Sep)
 Canonical unique screens (from APPscreenshots review)
   Folder: docs/assets/screens/  — INDEX.md lists every unique Vendor screen kept.
   Not used: APPscreenshots/_SAMPLE_LAYOUT_ONLY.jpg (Customer app poster, May 2025).
+
+Existing-user Quick Booking evidence (live QA Appium / Allure)
+  docs/assets/screens/quick-booking-rental.png
+    — 9000000001 pending rentals after OTP (QuickBookingLandingTest.appearsAfterLoginWhenPendingRentalsExist / landing-1-after-login)
+  docs/assets/screens/quick-booking-material.png
+    — 9000000017 pending material orders after OTP (MaterialQuickBookingLandingTest.pendingLandsOnQuickBooking / material-landing-1-after-login)

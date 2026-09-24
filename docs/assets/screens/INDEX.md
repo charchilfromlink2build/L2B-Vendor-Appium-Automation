@@ -33,7 +33,8 @@ Invalid / wrong OTP stays on the OTP screen with an error.
 
 | File | When |
 |---|---|
-| *(not captured yet)* | **Existing vendor + active rental/material job** — Quick Booking |
+| quick-booking-rental.png | **Existing vendor + active rental booking** — Quick Booking (9000000001, live Allure Landing-1) |
+| quick-booking-material.png | **Existing vendor + active material order** — Quick Booking (9000000017, live Allure Material-Landing-1) |
 | home-rental-with-fleet.png | **Existing vendor, no active job** — Home |
 | ../flow/sign-up-completed.jpg | **New vendor** — Sign Up Completed dialog |
 | ../flow/select-your-role.jpg | Register Yourself → Select your role |

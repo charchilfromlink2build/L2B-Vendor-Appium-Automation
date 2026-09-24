@@ -318,13 +318,15 @@
  ],
  "whatsNext": "Fleet — Rental Booking 82/82 done (S15/E4 BLOCKED). Open bugs #28–#34",
  "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back → launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE — 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch — #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27–#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred.",
- "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP. 19 Sep on 9000000017: pending material orders open the same Quick Booking page (material chrome, no timer/operator). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
+ "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP (screenshot: assets/screens/quick-booking-rental.png). 19 Sep on 9000000017: pending material orders open the same Quick Booking page — material chrome, no timer/operator (screenshot: assets/screens/quick-booking-material.png). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
  "existingUserEvidence": [
   {
-   "caption": "Existing user + active rental booking — Quick Booking (screenshot not captured yet)"
+   "src": "assets/screens/quick-booking-rental.png",
+   "caption": "Existing user + active rental booking — Quick Booking (9000000001)"
   },
   {
-   "caption": "Existing user + active material order — same Quick Booking pattern (screenshot not captured yet)"
+   "src": "assets/screens/quick-booking-material.png",
+   "caption": "Existing user + active material order — same Quick Booking pattern (9000000017)"
   },
   {
    "src": "assets/screens/home-rental-with-fleet.png",
