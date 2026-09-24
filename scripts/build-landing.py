@@ -147,13 +147,19 @@ def module_cards(modules: list[dict]) -> str:
     for mod in modules:
         status = mod.get("status", "pending")
         badge = STATUS_LABEL.get(status, status)
+        note = (mod.get("note") or "").strip()
+        note_html = (
+            f'\n        <p class="card-note">{html.escape(note)}</p>'
+            if note and status == "in-progress"
+            else ""
+        )
         parts.append(
             f"""      <article class="card status-{html.escape(STATUS_CLASS[status])}">
         <div class="card-top">
           <h3>{html.escape(mod["name"])}</h3>
           <span class="badge {html.escape(STATUS_CLASS[status])}">{html.escape(badge)}</span>
         </div>
-        <p class="cases">{html.escape(cases_label(mod))}</p>
+        <p class="cases">{html.escape(cases_label(mod))}</p>{note_html}
       </article>"""
         )
     return "\n".join(parts)
@@ -252,7 +258,7 @@ def mermaid_graph(coverage: dict) -> str:
     if decision_ids:
         lines.append(f"  class {','.join(decision_ids)} decision")
     lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
-    lines.append("  classDef progress fill:#FFF6E5,stroke:#D4970A,color:#7A5200,stroke-width:2px")
+    lines.append("  classDef progress fill:#FFE4A8,stroke:#E39A1C,color:#5C3D00,stroke-width:3px")
     lines.append("  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px")
     lines.append("  classDef decision fill:#FFF8E1,stroke:#F9A825,color:#7A5200,stroke-width:2px")
     return "\n".join(lines)
@@ -636,10 +642,39 @@ INDEX_HTML = r"""<!DOCTYPE html>
       white-space: nowrap;
     }
     .badge.done { background: var(--done-bg); color: var(--done); }
-    .badge.progress { background: var(--progress-bg); color: var(--progress); }
+    .badge.progress {
+      background: var(--brand);
+      color: #3D2800;
+      box-shadow: 0 0 0 1px rgba(227, 154, 28, 0.45);
+    }
     .badge.pending { background: var(--pending-bg); color: var(--pending); }
     .card.status-done { border-color: rgba(46, 125, 50, 0.28); }
-    .card.status-progress { border-color: rgba(212, 151, 10, 0.35); }
+    .card.status-progress {
+      border-color: rgba(227, 154, 28, 0.85);
+      background: linear-gradient(145deg, rgba(255, 228, 168, 0.92), rgba(255, 254, 249, 0.78));
+      box-shadow:
+        0 0 0 3px rgba(254, 182, 55, 0.32),
+        0 12px 30px rgba(212, 151, 10, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .card.status-progress::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      border-radius: 14px 0 0 14px;
+      background: linear-gradient(180deg, #FEB637, #E39A1C);
+    }
+    .card.status-progress h3 { color: #7A5200; }
+    .card.status-progress .cases { color: #7A5200; font-weight: 600; }
+    .card-note {
+      margin: 8px 0 0;
+      font-size: 0.76rem;
+      line-height: 1.35;
+      color: #7A5200;
+    }
     .shots {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -993,6 +1028,12 @@ INDEX_HTML = r"""<!DOCTYPE html>
       paintFill("progress", "url(#l2b-grad-progress)");
       paintFill("pending", "url(#l2b-grad-pending)");
       paintFill("decision", "url(#l2b-grad-decision)");
+      svg.querySelectorAll(".node.progress .label-container > path").forEach((el) => {
+        el.setAttribute("stroke", "#E39A1C");
+        el.style.setProperty("stroke", "#E39A1C", "important");
+        el.setAttribute("stroke-width", "3.5");
+        el.style.setProperty("stroke-width", "3.5", "important");
+      });
       svg.querySelectorAll(".node").forEach((node) => {
         if (node.querySelector(":scope > .node-visual")) return;
         const wrap = document.createElementNS(ns, "g");
