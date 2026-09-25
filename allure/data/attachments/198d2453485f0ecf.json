@@ -1,0 +1,11 @@
+{
+  "case": "RB-E4",
+  "result": "BLOCKED",
+  "reason": "No pending rental with Timer at/near 00:00 in an unbroken session",
+  "pending_rentals_age_min": [
+    "7EE539~3",
+    "86A32F~9",
+    "37A712~16"
+  ],
+  "note": "Opening app restarts Timer ~29:5x (#28). Need continuous watch to real 00:00 or \u22643:00 remaining seed."
+}

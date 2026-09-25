@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vendor App — Automation Testing</title>
+  <link rel="icon" href="assets/ic_launcher.png">
+  <style>
+    :root {
+      --brand: #FEB637;
+      --brand-dark: #E39A1C;
+      --cream: #FFFEF9;
+      --bg: #F3E6D4;
+      --card: rgba(255, 254, 249, 0.64);
+      --text: #1A1A1A;
+      --muted: #4F4F4F;
+      --line: rgba(255, 255, 255, 0.48);
+      --done: #145218;
+      --done-bg: #E8F5E9;
+      --progress: #7A5200;
+      --progress-bg: #FFF6E5;
+      --pending: #3D3D3D;
+      --pending-bg: #F3F3F3;
+      --fail: #B71C1C;
+      --glass-blur: blur(14px) saturate(140%);
+      --glass-shadow: 0 8px 28px rgba(80, 50, 10, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.45;
+      background:
+        radial-gradient(900px 420px at 8% -8%, rgba(254, 182, 55, 0.28), transparent 55%),
+        radial-gradient(820px 400px at 100% 0%, rgba(20, 82, 24, 0.10), transparent 52%),
+        radial-gradient(720px 380px at 78% 100%, rgba(254, 164, 5, 0.12), transparent 50%),
+        linear-gradient(180deg, #F7EFE3 0%, #F3E6D4 100%);
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 20px 64px; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 0 20px;
+      border-bottom: 1px solid rgba(80, 50, 10, 0.10);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; min-height: 0; }
+    .brand img {
+      height: 72px;
+      width: auto;
+      max-width: 200px;
+      max-height: 72px;
+      object-fit: contain;
+      flex-shrink: 0;
+      min-width: 0;
+      min-height: 0;
+    }
+    .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; font-weight: 400; max-width: 36em; line-height: 1.4; }
+    .role-banners {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+      align-items: stretch;
+    }
+    .role-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 214px;
+      padding: 8px 12px 8px 8px;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .role-banner:hover {
+      transform: translateY(-2px);
+      border-color: var(--brand);
+    }
+    .role-banner img {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 12px;
+      flex-shrink: 0;
+      background: #F3E6D4;
+    }
+    .role-banner small {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .role-banner strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.98rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+    }
+    .role-banner .go {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--progress);
+    }
+    .next,
+    .stat,
+    .card,
+    .flow {
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--glass-shadow);
+    }
+    .next {
+      margin: 18px 0 0;
+      padding: 12px 16px;
+      font-size: 0.98rem;
+    }
+    .next strong { color: var(--progress); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin: 22px 0 8px;
+    }
+    .stat { padding: 16px 16px 14px; }
+    .stat .num { font-size: 1.85rem; font-weight: 750; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); }
+    .stat .num span { color: var(--muted); font-size: 1.1rem; font-weight: 600; }
+    .stat .label { margin-top: 6px; color: var(--muted); font-size: 0.85rem; }
+    .stat.fail .num { color: var(--fail); }
+    .stat.ok .num { color: var(--done); }
+    .stat.bugs {
+      background: #FDECEA;
+      border-color: rgba(183, 28, 28, 0.38);
+      box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.10), var(--glass-shadow);
+    }
+    .stat.bugs .num { color: var(--fail); }
+    .stat.bugs .label { color: var(--fail); font-weight: 700; }
+    h2 { font-size: 1.05rem; margin: 32px 0 12px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 28px;
+      row-gap: 12px;
+    }
+    .card { padding: 14px 14px 12px; position: relative; }
+    .grid .card:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: 28px;
+      transform: translateY(-50%);
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #8A5A00;
+      pointer-events: none;
+    }
+    .grid .card:nth-child(4n)::after {
+      content: none;
+    }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .card h3 { margin: 0; font-size: 1rem; color: var(--text); }
+    .cases { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .badge.done { background: var(--done-bg); color: var(--done); }
+    .badge.progress {
+      background: var(--brand);
+      color: #3D2800;
+      box-shadow: 0 0 0 1px rgba(227, 154, 28, 0.45);
+    }
+    .badge.pending { background: var(--pending-bg); color: var(--pending); }
+    .card.status-done { border-color: rgba(46, 125, 50, 0.28); }
+    .card.status-progress {
+      border-color: rgba(227, 154, 28, 0.85);
+      background: linear-gradient(145deg, rgba(255, 228, 168, 0.92), rgba(255, 254, 249, 0.78));
+      box-shadow:
+        0 0 0 3px rgba(254, 182, 55, 0.32),
+        0 12px 30px rgba(212, 151, 10, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .card.status-progress::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      border-radius: 14px 0 0 14px;
+      background: linear-gradient(180deg, #FEB637, #E39A1C);
+    }
+    .card.status-progress h3 { color: #7A5200; }
+    .card.status-progress .cases { color: #7A5200; font-weight: 600; }
+    .card-note {
+      margin: 8px 0 0;
+      font-size: 0.76rem;
+      line-height: 1.35;
+      color: #7A5200;
+    }
+    .shots {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .shots figure {
+      margin: 0;
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--glass-shadow);
+      overflow: hidden;
+    }
+    .shots img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      object-position: top;
+      background: #111;
+      display: block;
+    }
+    .shots figcaption {
+      padding: 10px 12px 12px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .shots .placeholder {
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.04);
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 16px;
+    }
+    .shots.filmstrip {
+      grid-template-columns: 1fr;
+    }
+    .shots.filmstrip img {
+      max-height: 240px;
+      object-fit: contain;
+      background: #1a1a1a;
+    }
+    .note { color: var(--muted); margin: 0 0 10px; font-size: 0.92rem; }
+    .note.bugs-open {
+      margin: 14px 0 10px;
+      padding: 12px 16px;
+      color: var(--fail);
+      background: #FDECEA;
+      border: 1.5px solid rgba(183, 28, 28, 0.38);
+      border-radius: 14px;
+      font-size: 1.02rem;
+      font-weight: 750;
+      box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.08);
+    }
+    .note.bugs-open a { color: var(--fail); font-weight: 800; }
+    .blocker {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      background: rgba(183, 28, 28, 0.10);
+      border: 1px solid rgba(183, 28, 28, 0.28);
+      border-radius: 12px;
+    }
+    .blocker p { margin: 0 0 8px; }
+    .blocker p:last-child { margin: 0; }
+    .blocker a { color: #8A1C1C; font-weight: 800; }
+    .run-note { color: var(--muted); margin: 0 0 16px; font-size: 0.88rem; }
+    .flow { padding: 12px; overflow: auto; max-height: none; }
+    .flow svg { background: transparent !important; max-width: none !important; width: auto !important; height: auto !important; }
+    .flow .node { cursor: default; }
+    .flow .node-visual {
+      transition: transform 0.18s ease, filter 0.18s ease;
+      transform-box: fill-box;
+      transform-origin: center;
+      filter: drop-shadow(0 2px 3px rgba(26, 26, 26, 0.12));
+    }
+    .flow .node:hover .node-visual {
+      transform: translateY(-3px) scale(1.03);
+      filter: drop-shadow(0 8px 12px rgba(26, 26, 26, 0.18));
+    }
+    .flow .node .label-container > path[stroke]:not([stroke="none"]) {
+      stroke-width: 2.25px !important;
+    }
+    .flow .node:hover .label-container > path[stroke]:not([stroke="none"]) {
+      stroke-width: 2.85px !important;
+    }
+    .flow .node .nodeLabel,
+    .flow .node span,
+    .flow .node p {
+      font-weight: 650;
+    }
+    .flow .node.done .nodeLabel { color: #145218; }
+    .flow .node.progress .nodeLabel { color: #7A5200; }
+    .flow .node.pending .nodeLabel { color: #3D3D3D; }
+    .flow .node.decision .nodeLabel { color: #7A5200; }
+    .flow .node#activeBooking .nodeLabel p,
+    .flow .node.decision .nodeLabel p,
+    .flow .node.decision .nodeLabel span {
+      white-space: normal;
+      text-align: center;
+      line-height: 1.35;
+      font-size: 13px;
+      max-width: 260px;
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--muted); font-size: 0.85rem; }
+    .flow-note-more { margin: 0 0 14px; }
+    .flow-note-more summary {
+      cursor: pointer; font-weight: 650; color: var(--muted); font-size: 0.88rem;
+    }
+    .flow-explorer {
+      margin: 0 0 28px;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+    .flow-tabs {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .flow-tabs button {
+      appearance: none; border-radius: 14px; padding: 8px 14px;
+      font-weight: 650; font-size: 0.88rem; cursor: pointer;
+      border: 2px solid transparent; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    /* Done tabs (First launch / After OTP / On Home): light green → dark green */
+    .flow-tabs button.status-done {
+      background: #E8F5E9; border-color: #81C784; color: #2E7D32;
+    }
+    .flow-tabs button.status-done.is-active,
+    .flow-tabs button.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    /* Pending tabs: light orange → dark orange */
+    .flow-tabs button.status-pending {
+      background: #FFF3E0; border-color: #FFCC80; color: #E65100;
+    }
+    .flow-tabs button.status-pending.is-active,
+    .flow-tabs button.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .flow-tabs button.status-progress {
+      background: #FFF8E1; border-color: #FFD54F; color: #7A5200;
+    }
+    .flow-tabs button.status-progress.is-active,
+    .flow-tabs button.status-progress:focus-visible {
+      background: #F9A825; border-color: #F57F17; color: #1A1A1A;
+    }
+    .flow-lead { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
+    .flow-steps {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    }
+    .flow-chip {
+      appearance: none; cursor: pointer;
+      display: inline-flex; align-items: center; padding: 7px 12px;
+      border-radius: 14px; font-size: 0.84rem; font-weight: 650;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .flow-chip.status-done {
+      background: #E8F5E9; color: #2E7D32; border-color: #81C784;
+    }
+    .flow-chip.status-done.is-active,
+    .flow-chip.status-done:focus-visible {
+      background: #1B5E20; color: #E8F5E9; border-color: #0D3B12;
+    }
+    .flow-chip.status-progress {
+      background: #FFF8E1; color: #7A5200; border-color: #FFD54F;
+    }
+    .flow-chip.status-progress.is-active,
+    .flow-chip.status-progress:focus-visible {
+      background: #F9A825; color: #1A1A1A; border-color: #F57F17;
+    }
+    .flow-chip.status-pending {
+      background: #FFF3E0; color: #E65100; border-color: #FFCC80;
+    }
+    .flow-chip.status-pending.is-active,
+    .flow-chip.status-pending:focus-visible {
+      background: #EF6C00; color: #fff; border-color: #E65100;
+    }
+    .flow-arrow { color: var(--muted); font-weight: 700; }
+    .flow-branch-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+    }
+    .flow-branch {
+      appearance: none; cursor: pointer; text-align: left; width: 100%;
+      margin: 0; padding: 14px 16px; border-radius: 14px;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      font: inherit; color: inherit;
+    }
+    .flow-branch.status-done {
+      background: #E8F5E9; border-color: #81C784; color: #1A1A1A;
+    }
+    .flow-branch.status-done.is-active,
+    .flow-branch.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .flow-branch.status-done.is-active h3,
+    .flow-branch.status-done:focus-visible h3,
+    .flow-branch.status-done.is-active strong,
+    .flow-branch.status-done:focus-visible strong {
+      color: #E8F5E9;
+    }
+    .flow-branch h3 { margin: 0 0 8px; font-size: 1rem; color: #2E7D32; }
+    .flow-branch ol { margin: 0; padding-left: 18px; }
+    .flow-branch li { margin: 6px 0; font-size: 0.9rem; }
+    .flow-home-layout {
+      display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: 16px; align-items: start;
+    }
+    .phone-chrome {
+      border-radius: 22px; border: 1px solid rgba(80,50,10,0.16);
+      background: linear-gradient(180deg, #FFFDF8, #F7EFE3);
+      overflow: hidden; box-shadow: 0 10px 28px rgba(80,50,10,0.08);
+    }
+    .phone-top, .phone-tabs {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 10px 12px; background: rgba(255,255,255,0.72);
+    }
+    .phone-title { font-weight: 750; font-size: 0.95rem; }
+    .phone-body { padding: 12px; display: grid; gap: 10px; min-height: 160px; }
+    .phone-tabs { border-top: 1px solid rgba(80,50,10,0.10); }
+    .flow-hotspot {
+      appearance: none; width: 100%; text-align: left; cursor: pointer;
+      border: 2px solid transparent; border-radius: 14px;
+      padding: 10px 12px; color: var(--text);
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .flow-hotspot.icon, .flow-hotspot.tab {
+      width: auto; flex: 1; text-align: center; font-size: 0.78rem; font-weight: 700; padding: 8px 6px;
+    }
+    .flow-hotspot.icon {
+      display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+      min-width: 40px; padding: 8px 10px;
+    }
+    .flow-bell-icon { display: block; }
+    .flow-notif-hint {
+      margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.35;
+    }
+    /* Pending: light orange → dark orange */
+    .flow-hotspot.status-pending {
+      background: #FFF3E0; border-color: #FFCC80; color: #E65100;
+    }
+    .flow-hotspot.status-pending:hover {
+      background: #FFE0B2; border-color: #FFB74D;
+    }
+    .flow-hotspot.status-pending.is-active,
+    .flow-hotspot.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .flow-hotspot.status-pending.is-active .flow-hotspot-how,
+    .flow-hotspot.status-pending:focus-visible .flow-hotspot-how {
+      color: rgba(255,255,255,0.85);
+    }
+    /* Progress: light amber → deep amber */
+    .flow-hotspot.status-progress {
+      background: #FFF8E1; border-color: #FFD54F; color: #7A5200;
+    }
+    .flow-hotspot.status-progress.is-active,
+    .flow-hotspot.status-progress:focus-visible {
+      background: #F9A825; border-color: #F57F17; color: #1A1A1A;
+    }
+    /* Done: light green → dark green */
+    .flow-hotspot.status-done {
+      background: #E8F5E9; border-color: #81C784; color: #2E7D32;
+    }
+    .flow-hotspot.status-done:hover {
+      background: #C8E6C9; border-color: #66BB6A;
+    }
+    .flow-hotspot.status-done.is-active,
+    .flow-hotspot.status-done.is-here.is-active,
+    .flow-hotspot.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .flow-hotspot.status-done.is-active .flow-hotspot-how,
+    .flow-hotspot.status-done:focus-visible .flow-hotspot-how {
+      color: rgba(232,245,233,0.85);
+    }
+    .flow-hotspot.tab.status-done.is-here:not(.is-active) {
+      background: #E8F5E9; border-color: #81C784; color: #2E7D32;
+    }
+    .flow-home-sections { margin-top: 12px; }
+    .home-section-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .home-section-btn {
+      appearance: none; cursor: pointer; text-align: left;
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 10px 12px; border-radius: 14px;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .home-section-btn.status-done {
+      border-color: #81C784; background: #E8F5E9; color: #2E7D32;
+    }
+    .home-section-btn.status-done.is-active,
+    .home-section-btn.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .home-section-btn.status-pending {
+      border-color: #FFCC80; background: #FFF3E0; color: #E65100;
+    }
+    .home-section-btn.status-pending.is-active,
+    .home-section-btn.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .home-section-badge {
+      align-self: flex-start;
+      font-size: 0.68rem; font-weight: 750; letter-spacing: 0.03em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+    }
+    .home-section-btn.status-done .home-section-badge {
+      background: #81C784; color: #0D3B12;
+    }
+    .home-section-btn.status-done.is-active .home-section-badge,
+    .home-section-btn.status-done:focus-visible .home-section-badge {
+      background: #E8F5E9; color: #1B5E20;
+    }
+    .home-section-btn.status-pending .home-section-badge {
+      background: #FFE0B2; color: #E65100;
+    }
+    .home-section-btn.status-pending.is-active .home-section-badge,
+    .home-section-btn.status-pending:focus-visible .home-section-badge {
+      background: rgba(255,255,255,0.25); color: #fff;
+    }
+    .home-section-label { font-size: 0.86rem; font-weight: 700; line-height: 1.25; }
+    @media (max-width: 800px) {
+      .home-section-grid { grid-template-columns: 1fr; }
+    }
+    .flow-explorer-legend { margin: -6px 0 12px; }
+    .flow-return {
+      margin: 12px 0 0; padding: 8px 10px; border-radius: 10px;
+      background: #FFF6E5; border: 1px solid rgba(254,182,55,0.45);
+      font-size: 0.88rem; font-weight: 650; color: #7A5200;
+    }
+    .flow-booking-tabs { margin-top: 12px; }
+    .flow-hotspot-title { display: block; font-weight: 750; font-size: 0.92rem; }
+    .flow-hotspot-how { display: block; margin-top: 3px; color: var(--muted); font-size: 0.78rem; }
+    .flow-detail {
+      padding: 14px 16px; border-radius: 14px;
+      background: rgba(255,255,255,0.55); border: 1px solid rgba(80,50,10,0.10);
+      min-height: 180px;
+    }
+    .flow-detail-kicker {
+      margin: 0 0 4px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .flow-detail-title { margin: 0 0 6px; font-size: 1.15rem; }
+    .flow-detail-how { margin: 0 0 8px; color: #7A5200; font-weight: 650; font-size: 0.9rem; }
+    .flow-detail-body { margin: 0; color: var(--text); font-size: 0.92rem; }
+    .flow-drawer-list { margin-top: 12px; }
+    .drawer-chip-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .drawer-chip {
+      appearance: none; cursor: pointer; text-align: left;
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 10px 12px; border-radius: 14px;
+      border: 2px solid transparent;
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      box-shadow: 0 6px 18px rgba(80, 50, 10, 0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .drawer-chip.status-pending {
+      background: rgba(255, 243, 224, 0.85); border-color: #FFCC80; color: #E65100;
+    }
+    .drawer-chip.status-pending.is-active,
+    .drawer-chip.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .drawer-chip.status-progress {
+      background: rgba(255, 248, 225, 0.9); border-color: #FFD54F; color: #7A5200;
+    }
+    .drawer-chip.status-progress.is-active,
+    .drawer-chip.status-progress:focus-visible {
+      background: #F9A825; border-color: #F57F17; color: #1A1A1A;
+    }
+    .drawer-chip.status-done {
+      background: rgba(232, 245, 233, 0.9); border-color: #81C784; color: #2E7D32;
+    }
+    .drawer-chip.status-done.is-active,
+    .drawer-chip.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .drawer-chip-badge {
+      align-self: flex-start;
+      font-size: 0.68rem; font-weight: 750; letter-spacing: 0.03em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+    }
+    .drawer-chip.status-pending .drawer-chip-badge { background: #FFE0B2; color: #E65100; }
+    .drawer-chip.status-progress .drawer-chip-badge { background: #FFECB3; color: #7A5200; }
+    .drawer-chip.status-done .drawer-chip-badge { background: #C8E6C9; color: #1B5E20; }
+    .drawer-chip.status-pending.is-active .drawer-chip-badge,
+    .drawer-chip.status-pending:focus-visible .drawer-chip-badge {
+      background: rgba(255,255,255,0.25); color: #fff;
+    }
+    .drawer-chip.status-done.is-active .drawer-chip-badge,
+    .drawer-chip.status-done:focus-visible .drawer-chip-badge {
+      background: #E8F5E9; color: #1B5E20;
+    }
+    .drawer-chip-label { font-size: 0.88rem; font-weight: 700; }
+    .flow-page-meta { margin-top: 12px; }
+    .flow-page-label {
+      margin: 10px 0 0; font-size: 0.72rem; font-weight: 750;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+    }
+    .flow-page-sections, .flow-page-actions, .flow-page-tabs {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+    }
+    .flow-page-pill {
+      display: inline-flex; padding: 5px 10px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 650;
+      background: rgba(255,255,255,0.7); border: 1px solid rgba(80,50,10,0.12);
+    }
+    .flow-page-pill.kind-action { background: #FFF3E0; border-color: #FFCC80; color: #E65100; }
+    .flow-page-pill.kind-section { background: #E8F5E9; border-color: #81C784; color: #2E7D32; }
+    .flow-page-pill.kind-tab { background: #E8F5E9; border-color: #81C784; color: #2E7D32; }
+    @media (max-width: 800px) {
+      .drawer-chip-grid { grid-template-columns: 1fr; }
+    }
+    .flow-how {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+    .flow-map { margin-top: 14px; }
+    .flow-map summary {
+      cursor: pointer; font-weight: 650; color: var(--muted); font-size: 0.9rem;
+    }
+    .flow-map-canvas {
+      margin-top: 12px; max-height: 70vh; overflow: auto;
+      border: 1px solid rgba(80,50,10,0.10); border-radius: 12px; padding: 10px;
+      background: rgba(255,255,255,0.35);
+    }
+    .flow-map-canvas .flow { overflow: auto; }
+    @media (max-width: 800px) {
+      .flow-home-layout, .flow-branch-grid { grid-template-columns: 1fr; }
+    }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot.done { background: var(--done); }
+    .dot.progress { background: var(--brand); }
+    .dot.pending { background: #8D8D8D; }
+    .dot.decision { background: #F9A825; border-radius: 2px; transform: rotate(45deg); }
+    footer {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(80, 50, 10, 0.10);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+    .btn.primary { background: var(--brand); color: #1A1A1A; }
+    .btn.primary:hover { background: var(--brand-dark); }
+    .btn.ghost {
+      background: var(--card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .btn.ghost:hover { border-color: var(--brand); }
+    .btn.bugs {
+      color: var(--fail);
+      border-color: rgba(183, 28, 28, 0.4);
+      background: #FDECEA;
+    }
+    .btn.bugs:hover { border-color: var(--fail); }
+    @media (prefers-reduced-motion: reduce) {
+      .flow .node-visual, .flow .node:hover .node-visual { transition: none; transform: none; }
+    }
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      header { flex-direction: column; align-items: flex-start; }
+      .brand img { height: 56px; max-height: 56px; }
+      .role-banners { width: 100%; }
+      .role-banner { flex: 1; width: auto; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid .card:nth-child(4n)::after { content: "→"; }
+      .grid .card:nth-child(2n)::after { content: none; }
+      .shots { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .wrap { padding: 16px 14px 48px; }
+      .stats { grid-template-columns: 1fr; }
+      .brand h1 { font-size: 1.15rem; }
+      .purpose { font-size: 0.88rem; }
+      .grid {
+        grid-template-columns: 1fr;
+        row-gap: 28px;
+      }
+      .grid .card:not(:last-child)::after {
+        content: "↓";
+        left: 50%;
+        top: 100%;
+        width: auto;
+        transform: translate(-50%, 4px);
+      }
+      .grid .card:nth-child(2n)::after { content: "↓"; }
+      .grid .card:last-child::after { content: none; }
+      .btn { width: 100%; text-align: center; }
+      .role-banners { flex-direction: column; }
+      .role-banner { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img src="assets/ic_splash_logo.png" alt="L2B Partner App">
+        <div>
+          <h1>Vendor App — Automation Testing</h1>
+          <p class="purpose">L2B Vendor is the partner app where vendors receive rental and material orders from customers, fulfil those jobs, and manage machines, bookings, fleet, team, and earnings in one place.</p>
+        </div>
+      </div>
+      <nav class="role-banners" aria-label="Vendor testing reports">
+        <a class="role-banner" href="rental-flow.html">
+          <img src="assets/banner-excavator.png" alt="Excavator">
+          <span>
+            <small>Testing report</small>
+            <strong>Rental Vendor</strong>
+            <span class="go">Open excavator flow →</span>
+          </span>
+        </a>
+        <a class="role-banner" href="material-flow.html">
+          <img src="assets/banner-cement.png" alt="Cement bags">
+          <span>
+            <small>Testing report</small>
+            <strong>Material Vendor</strong>
+            <span class="go">Open cement flow →</span>
+          </span>
+        </a>
+      </nav>
+    </header>
+
+    <p class="next">Next up: <strong>Fleet Interact / Edge — Landing FL-L1–L7 PASS (4 Active machines on 9000000001)</strong> — module-by-module edge cases, in first-launch order.</p>
+
+    <section class="stats" aria-label="Overall progress">
+      <div class="stat">
+        <div class="num">10 <span>/ 72</span></div>
+        <div class="label">Screens automated</div>
+      </div>
+      <div class="stat">
+        <div class="num">14%</div>
+        <div class="label">Coverage</div>
+      </div>
+      <div class="stat ok">
+        <div class="num">334</div>
+        <div class="label">Passed in latest run</div>
+      </div>
+      <div class="stat fail">
+        <div class="num">16</div>
+        <div class="label">Failed in latest run (14 skipped)</div>
+      </div>
+      <div class="stat bugs">
+        <div class="num">38</div>
+        <div class="label">Open bugs found so far</div>
+      </div>
+    </section>
+    <p class="note bugs-open">Open bugs: 38 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
+    <section class="blocker" aria-label="Functional blocker for developers">
+      <p><strong>Dev blocker #16 (High):</strong>
+      Assign machine Confirm stays disabled when operators are busy, so a vendor cannot complete
+      Accept on a busy-slot rental. Free-operator Accept→Confirm works (F7D066, 23 Sep) — #16 is
+      busy-slot only. The busy-sheet copy still says confirm the machine now and assign later,
+      but Confirm stays grey. Functional blocker for busy slots — treat separately from the rest
+      of the bug list.</p>
+      <p><a href="bugs.html#bug-16">Open #16</a></p>
+    </section>
+    <p class="run-note">Unique latest status per test (retries collapsed). Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). Open Bookings bugs #27–#34 (Timer gate, Skip stuck, offline/stale Accept, Address not provided, decline reason). Free-operator UI Accept→Confirm PASSES (F7D066). OTP 23/24 retargeted to 9000000003.</p>
+
+    <h2>Modules</h2>
+    <div class="grid">
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Splash</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">8/8 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Language</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">10/10 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Onboarding</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">11/11 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Sign up</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">23/23 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>OTP</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">25/25 cases</p>
+      </article>
+      <article class="card status-progress">
+        <div class="card-top">
+          <h3>Sign Up Completed</h3>
+          <span class="badge progress">In progress</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-progress">
+        <div class="card-top">
+          <h3>Select your role</h3>
+          <span class="badge progress">In progress</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-progress">
+        <div class="card-top">
+          <h3>Select category</h3>
+          <span class="badge progress">In progress</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Tell us (Operator)</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>List skills</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Tell us (Materials)</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Tell us (Rental)</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>List machineries</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>KYC</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Profile Verification</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Quick Booking</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">55/55 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Home</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">72/72 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Rental Booking</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">82/82 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Fleet</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">39/39 cases</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Calendar</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Earning</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Notifications</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Team</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Profile / Settings</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+      <article class="card status-pending">
+        <div class="card-top">
+          <h3>Help &amp; Support</h3>
+          <span class="badge pending">Pending</span>
+        </div>
+        <p class="cases">Cases not counted yet</p>
+      </article>
+    </div>
+
+    <h2>App flow</h2>
+    <p class="note">Tap On Home to explore live Rental chrome. First launch / After OTP tabs cover the path to Home. Open the optional Mermaid map only if you need the full technical graph.</p>
+    <details class="flow-note-more">
+      <summary>Full coverage note</summary>
+      <p class="note">Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help &amp; Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back → launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE — 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch — #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27–#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred. Rental Home chrome: bottom tabs Calendar · Home · Earning · Fleet; header bell opens Notifications; profile photo opens the Profile drawer; Upcoming See all / card opens Rental Booking with Upcoming · Active · Completed tabs; Booking Orders See all returns to Quick Booking.</p>
+    </details>
+    <div class="flow-explorer" data-flow-meta="{&quot;calendar&quot;: {&quot;title&quot;: &quot;Schedule&quot;, &quot;how&quot;: &quot;bottom tab&quot;, &quot;detail&quot;: &quot;Bottom tab surface — Calendar · Home · Earning · Fleet stay. No Unread/All-style tabs on this page. Live 0001 Sep 2026: day 21 empty; day 25 has timeline jobs (Tata Ace / Excavator).&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Header: Back + Schedule + year&quot;, &quot;Month nav: Previous month / Next month&quot;, &quot;Month grid (S–S) with day status bars&quot;, &quot;Selected day heading (e.g. 25 September, Friday)&quot;, &quot;Day agenda timeline: Started / Completed / Start Task + machine cards (name, dates, route)&quot;, &quot;Empty day: No bookings on this day.&quot;], &quot;actions&quot;: [&quot;Back → Home&quot;, &quot;Home bottom tab → Home&quot;, &quot;Previous month&quot;, &quot;Next month&quot;, &quot;Select day&quot;], &quot;tabs&quot;: [], &quot;pageDetail&quot;: true}, &quot;earning&quot;: {&quot;title&quot;: &quot;Earning&quot;, &quot;how&quot;: &quot;bottom tab&quot;, &quot;detail&quot;: &quot;Earning &amp; Incentive — wallet, withdraw; bottom tabs stay&quot;, &quot;status&quot;: &quot;pending&quot;}, &quot;fleet&quot;: {&quot;title&quot;: &quot;Your machines → Your Fleet&quot;, &quot;how&quot;: &quot;bottom tab&quot;, &quot;detail&quot;: &quot;Same Fleet surface as bottom Fleet tab and Active Fleet See all.&quot;, &quot;status&quot;: &quot;done&quot;, &quot;sections&quot;: [&quot;Machine cards (name, plate, capacity, operator, Status)&quot;], &quot;actions&quot;: [&quot;Add Machine&quot;, &quot;Change operator / Select&quot;, &quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;notifications&quot;: {&quot;title&quot;: &quot;Notification&quot;, &quot;how&quot;: &quot;bell icon&quot;, &quot;detail&quot;: &quot;Stack screen from Home bell — bottom tabs gone. Live 0001: Unread empty; All has Rentals booking-request rows. No separate Marked as read tab — read items live under All. Mark-all-read control not present on this build for 0001.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Header: Back + title Notification&quot;, &quot;Tab bar: Unread | All&quot;, &quot;Unread empty: You&#x27;re all caught up. + View all notifications&quot;, &quot;All list: category blocks (e.g. Rentals + See all)&quot;, &quot;Row: bell icon · title · body · time · View Details&quot;], &quot;actions&quot;: [&quot;Back → Home&quot;, &quot;View all notifications (→ All tab)&quot;, &quot;See all (per category)&quot;, &quot;View Details (row)&quot;], &quot;tabs&quot;: [&quot;Unread&quot;, &quot;All&quot;], &quot;pageDetail&quot;: true}, &quot;profileDrawer&quot;: {&quot;title&quot;: &quot;Profile drawer&quot;, &quot;how&quot;: &quot;profile photo&quot;, &quot;detail&quot;: &quot;Profile drawer — tap a glass row for page sections. Includes Log Out (do not confirm in tests).&quot;, &quot;status&quot;: &quot;pending&quot;}, &quot;bookings&quot;: {&quot;title&quot;: &quot;Rental Booking&quot;, &quot;how&quot;: &quot;Upcoming See all or card&quot;, &quot;detail&quot;: &quot;Rental Booking — tabs: Upcoming / Active / Completed&quot;, &quot;status&quot;: &quot;done&quot;}, &quot;quickBooking&quot;: {&quot;title&quot;: &quot;Quick Booking&quot;, &quot;how&quot;: &quot;Booking Orders See all&quot;, &quot;detail&quot;: &quot;Quick Booking queue (pending Accept / Decline)&quot;, &quot;status&quot;: &quot;done&quot;}, &quot;home&quot;: {&quot;title&quot;: &quot;Home&quot;, &quot;how&quot;: &quot;bottom tab (current)&quot;, &quot;detail&quot;: &quot;Home page chrome 72/72 done. Modules still open from Home: Calendar, Earning, Fleet (landing only), Notifications, Profile drawer rows. Done exits: Rental Booking, Quick Booking.&quot;, &quot;status&quot;: &quot;done&quot;, &quot;sections&quot;: [{&quot;label&quot;: &quot;Header: Profile + greeting&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;module&quot;: &quot;profileDrawer&quot;}, {&quot;label&quot;: &quot;Monthly period&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;home&quot;}, {&quot;label&quot;: &quot;Notifications bell&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;module&quot;: &quot;notifications&quot;}, {&quot;label&quot;: &quot;Current Earning&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;home&quot;}, {&quot;label&quot;: &quot;Active Fleet (+ See all)&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;module&quot;: &quot;fleet&quot;}, {&quot;label&quot;: &quot;Total Completed Task&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;home&quot;}, {&quot;label&quot;: &quot;Upcoming Booking (stat)&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;home&quot;}, {&quot;label&quot;: &quot;Earning Projected&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;home&quot;}, {&quot;label&quot;: &quot;Material Deliveries (+ See all)&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;home&quot;}, {&quot;label&quot;: &quot;Upcoming Booking strip (+ See all)&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;bookings&quot;}, {&quot;label&quot;: &quot;Booking Orders (+ See all · Timer · Decline · Accept)&quot;, &quot;status&quot;: &quot;done&quot;, &quot;module&quot;: &quot;quickBooking&quot;}, {&quot;label&quot;: &quot;Bottom tabs: Calendar · Home · Earning · Fleet&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;module&quot;: &quot;calendar&quot;}], &quot;actions&quot;: [], &quot;tabs&quot;: [], &quot;pageDetail&quot;: true}, &quot;account&quot;: {&quot;title&quot;: &quot;Account / Profile Info&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Stack screen from drawer. Live 0001: mobile 9000000001.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Profile photo&quot;, &quot;Full Name&quot;, &quot;Mobile&quot;, &quot;Company Info&quot;], &quot;actions&quot;: [&quot;Edit&quot;, &quot;Update&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;kyc&quot;: {&quot;title&quot;: &quot;KYC Details&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Read-only hub for company KYC docs.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Company PAN&quot;, &quot;GST&quot;, &quot;Document Details&quot;], &quot;actions&quot;: [&quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;team&quot;: {&quot;title&quot;: &quot;Manage team&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Live 0001: Nauman Majid Pathan · 9000000002.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Team member list&quot;, &quot;Invite / assignment&quot;], &quot;actions&quot;: [&quot;Change Assignment&quot;, &quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;help&quot;: {&quot;title&quot;: &quot;Help and Support&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Hours copy: 8:00 AM – 8:00 PM.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Live chat&quot;, &quot;Raise Ticket&quot;, &quot;Ticket history&quot;], &quot;actions&quot;: [&quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;languageSettings&quot;: {&quot;title&quot;: &quot;Language&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;In-app language settings (not first-launch Welcome).&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;English (Default)&quot;, &quot;Hindi&quot;, &quot;Telugu&quot;, &quot;Kannada&quot;], &quot;actions&quot;: [&quot;Save&quot;, &quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;referEarn&quot;: {&quot;title&quot;: &quot;Refer and Earn&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Referral surface from drawer.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Referral code&quot;, &quot;Reward copy&quot;], &quot;actions&quot;: [&quot;Share / copy&quot;, &quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;faq&quot;: {&quot;title&quot;: &quot;FAQ&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Expandable FAQ rows.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;FAQ list (review, payout, start job, cancel, reach a human)&quot;], &quot;actions&quot;: [&quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;terms&quot;: {&quot;title&quot;: &quot;Terms and Services&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Scrollable legal copy.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Partner obligations&quot;, &quot;No off-platform settle&quot;], &quot;actions&quot;: [&quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;policies&quot;: {&quot;title&quot;: &quot;Policies&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Privacy / policy copy.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;KYC&quot;, &quot;Location on active jobs&quot;, &quot;Payouts&quot;], &quot;actions&quot;: [&quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;settings&quot;: {&quot;title&quot;: &quot;Settings&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Permission toggles.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Notification&quot;, &quot;GPS Location&quot;, &quot;Camera Access&quot;], &quot;actions&quot;: [&quot;Toggles&quot;, &quot;Back&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}, &quot;logout&quot;: {&quot;title&quot;: &quot;Log Out&quot;, &quot;how&quot;: &quot;profile drawer&quot;, &quot;detail&quot;: &quot;Do not tap Confirm in automation — session destroy.&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;sections&quot;: [&quot;Log Out? confirm dialog&quot;], &quot;actions&quot;: [&quot;Confirm Log Out&quot;, &quot;Cancel&quot;], &quot;tabs&quot;: [], &quot;drawerItem&quot;: true}}">
+      <nav class="flow-tabs" role="tablist" aria-label="App flow sections">
+        <button type="button" role="tab" id="tab-launch" aria-controls="panel-launch" aria-selected="false" data-panel="launch" class="status-done">First launch</button>
+        <button type="button" role="tab" id="tab-otp" aria-controls="panel-otp" aria-selected="false" data-panel="otp" class="status-done">After OTP</button>
+        <button type="button" role="tab" id="tab-home" aria-controls="panel-home" aria-selected="true" data-panel="home" class="status-progress is-active">On Home</button>
+      </nav>
+      <div class="legend flow-explorer-legend" aria-label="Coverage status">
+        <span><i class="dot done"></i>Done — light green → dark green on tap</span>
+        <span><i class="dot progress"></i>In progress</span>
+        <span><i class="dot pending"></i>Pending — light orange → dark orange on tap</span>
+      </div>
+
+      <div class="flow-panels">
+        <section class="flow-panel" id="panel-launch" role="tabpanel" aria-labelledby="tab-launch" hidden>
+          <p class="flow-lead">Cold start path until OTP — tested.</p>
+          <div class="flow-steps"><button type="button" class="flow-chip status-done" data-node="splash">Splash</button><span class="flow-arrow" aria-hidden="true">→</span><button type="button" class="flow-chip status-done" data-node="language">Language</button><span class="flow-arrow" aria-hidden="true">→</span><button type="button" class="flow-chip status-done" data-node="onboarding">Onboarding</button><span class="flow-arrow" aria-hidden="true">→</span><button type="button" class="flow-chip status-done" data-node="signup">Sign up</button><span class="flow-arrow" aria-hidden="true">→</span><button type="button" class="flow-chip status-done" data-node="otp">OTP</button></div>
+        </section>
+
+        <section class="flow-panel" id="panel-otp" role="tabpanel" aria-labelledby="tab-otp" hidden>
+          <p class="flow-lead">Valid OTP then branches by registration + pending jobs — tested.</p>
+          <div class="flow-branch-grid">
+            <button type="button" class="flow-branch status-done">
+              <h3>Existing user</h3>
+              <ol>
+                <li>Pending rental / material? <strong>Yes</strong> → Quick Booking first</li>
+                <li>Pending rental / material? <strong>No</strong> → Home</li>
+                <li>Quick Booking <strong>Close / Back</strong> → Home</li>
+              </ol>
+            </button>
+            <button type="button" class="flow-branch status-done">
+              <h3>New user</h3>
+              <ol>
+                <li>Sign Up Completed</li>
+                <li><strong>Register Yourself</strong> → role → category / operator path → Home</li>
+                <li><strong>Contact us</strong> → Help &amp; Support</li>
+              </ol>
+            </button>
+          </div>
+        </section>
+
+        <section class="flow-panel is-active" id="panel-home" role="tabpanel" aria-labelledby="tab-home">
+          <p class="flow-lead">Rental Home chrome — tap a control to see where it opens.</p>
+          <div class="flow-home-layout">
+            <div class="phone-chrome" aria-label="Rental Home chrome">
+              <div class="phone-top">
+                <button type="button" class="flow-hotspot icon status-pending" data-dest="profileDrawer" title="Profile photo">Profile</button>
+                <span class="phone-title">Home</span>
+                <button type="button" class="flow-hotspot icon status-pending" data-dest="notifications" title="Notifications" aria-label="Notifications"><svg class="flow-bell-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.2-2.2h-4.4A2.2 2.2 0 0 0 12 22zm6.2-6.2V11a6.2 6.2 0 0 0-5-6.1V4.2a1.2 1.2 0 1 0-2.4 0v.7A6.2 6.2 0 0 0 5.8 11v4.8L4 17.6V18.8h16v-1.2l-1.8-1.8z"/></svg></button>
+              </div>
+              <div class="phone-body">
+                <button type="button" class="flow-hotspot status-done" data-dest="bookings" aria-label="Rental Booking"><span class="flow-hotspot-title">Rental Booking</span><span class="flow-hotspot-how">Upcoming See all or card</span></button><button type="button" class="flow-hotspot status-done" data-dest="quickBooking" aria-label="Quick Booking"><span class="flow-hotspot-title">Quick Booking</span><span class="flow-hotspot-how">Booking Orders See all</span></button>
+              </div>
+              <div class="phone-tabs" role="toolbar" aria-label="Bottom tabs">
+                <button type="button" class="flow-hotspot tab status-pending" data-dest="calendar">Calendar</button>
+                <button type="button" class="flow-hotspot tab is-here status-done" data-dest="home">Home</button>
+                <button type="button" class="flow-hotspot tab status-pending" data-dest="earning">Earning</button>
+                <button type="button" class="flow-hotspot tab status-done" data-dest="fleet">Fleet</button>
+              </div>
+            </div>
+            <aside class="flow-detail" id="flow-detail" aria-live="polite">
+              <p class="flow-detail-kicker">Tap any control</p>
+              <h3 class="flow-detail-title">Home</h3>
+              <p class="flow-detail-how">You are on Rental Home</p>
+              <p class="flow-detail-body">Bottom bar: Calendar · Home · Earning · Fleet. Header: profile photo (drawer) and bell (Notifications). Upcoming card opens Rental Booking (Upcoming / Active / Completed). Booking Orders opens Quick Booking.</p>
+              <div class="flow-home-sections" id="flow-home-sections" hidden>
+                <p class="flow-detail-kicker">Home sections · tested</p>
+                <div class="home-section-grid">
+                <button type="button" class="home-section-btn status-pending"><span class="home-section-badge">pending</span><span class="home-section-label">Header: Profile + greeting</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Monthly period</span></button><button type="button" class="home-section-btn status-pending"><span class="home-section-badge">pending</span><span class="home-section-label">Notifications bell</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Current Earning</span></button><button type="button" class="home-section-btn status-pending"><span class="home-section-badge">pending</span><span class="home-section-label">Active Fleet (+ See all)</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Total Completed Task</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Upcoming Booking (stat)</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Earning Projected</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Material Deliveries (+ See all)</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Upcoming Booking strip (+ See all)</span></button><button type="button" class="home-section-btn status-done"><span class="home-section-badge">done</span><span class="home-section-label">Booking Orders (+ See all · Timer · Decline · Accept)</span></button><button type="button" class="home-section-btn status-pending"><span class="home-section-badge">pending</span><span class="home-section-label">Bottom tabs: Calendar · Home · Earning · Fleet</span></button>
+                </div>
+              </div>
+              <div class="flow-booking-tabs" id="flow-booking-tabs" hidden>
+                <p class="flow-detail-kicker">Tabs on this screen</p>
+                <div class="flow-steps"><button type="button" class="flow-chip status-done">Upcoming</button><button type="button" class="flow-chip status-done">Active</button><button type="button" class="flow-chip status-done">Completed</button></div>
+              </div>
+              <div class="flow-booking-tabs" id="flow-notif-tabs" hidden>
+                <p class="flow-detail-kicker">Tabs on this screen</p>
+                <div class="flow-steps"><button type="button" class="flow-chip status-pending">Unread</button><button type="button" class="flow-chip status-pending">All</button></div>
+                <p class="flow-notif-hint">Unread = unseen · All = unread + marked as read. No third tab on live build.</p>
+              </div>
+              <p class="flow-return" id="flow-return" hidden>Back → <strong>Home</strong></p>
+              <div class="flow-drawer-list" id="flow-drawer-list" hidden>
+                <p class="flow-detail-kicker">Profile drawer</p>
+                <div class="drawer-chip-grid">
+                <button type="button" class="drawer-chip status-pending" data-dest="account" aria-label="Account"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Account</span></button><button type="button" class="drawer-chip status-pending" data-dest="kyc" aria-label="KYC Details"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">KYC Details</span></button><button type="button" class="drawer-chip status-done" data-dest="fleet" aria-label="Your machines"><span class="drawer-chip-badge">done</span><span class="drawer-chip-label">Your machines</span></button><button type="button" class="drawer-chip status-pending" data-dest="team" aria-label="Manage team"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Manage team</span></button><button type="button" class="drawer-chip status-pending" data-dest="help" aria-label="Help and Support"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Help and Support</span></button><button type="button" class="drawer-chip status-pending" data-dest="languageSettings" aria-label="Language"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Language</span></button><button type="button" class="drawer-chip status-pending" data-dest="referEarn" aria-label="Refer and Earn"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Refer and Earn</span></button><button type="button" class="drawer-chip status-pending" data-dest="faq" aria-label="FAQ"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">FAQ</span></button><button type="button" class="drawer-chip status-pending" data-dest="terms" aria-label="Terms"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Terms</span></button><button type="button" class="drawer-chip status-pending" data-dest="policies" aria-label="Policies"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Policies</span></button><button type="button" class="drawer-chip status-pending" data-dest="settings" aria-label="Settings"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Settings</span></button><button type="button" class="drawer-chip status-pending" data-dest="logout" aria-label="Log Out"><span class="drawer-chip-badge">pending</span><span class="drawer-chip-label">Log Out</span></button>
+                </div>
+              </div>
+              <div class="flow-page-meta" id="flow-page-meta" hidden>
+                <p class="flow-detail-kicker">On this page</p>
+                <p class="flow-page-label" id="flow-page-sections-label" hidden>Sections</p>
+                <div class="flow-page-sections" id="flow-page-sections"></div>
+                <p class="flow-page-label" id="flow-page-actions-label" hidden>Actions</p>
+                <div class="flow-page-actions" id="flow-page-actions"></div>
+                <p class="flow-page-label" id="flow-page-tabs-label" hidden>Tabs</p>
+                <div class="flow-page-tabs" id="flow-page-tabs"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+
+      <details class="flow-map" id="flow-map-details">
+        <summary>Full technical map (Mermaid) — optional</summary>
+        <div class="flow flow-map-canvas">
+          <pre class="mermaid">
+flowchart TB
+  subgraph launch["First launch"]
+    direction TB
+    splash(["Splash"])
+    language(["Language"])
+    splash --> language
+    onboarding(["Onboarding"])
+    language --> onboarding
+    signup(["Sign up"])
+    onboarding --> signup
+    otp(["OTP"])
+    signup --> otp
+    signupCompleted(["Sign Up Completed"])
+    role(["Select your role"])
+    category(["Select category"])
+    tellUs(["Tell us (Operator)"])
+    listSkills(["List skills"])
+    tellUsMaterial(["Tell us (Materials)"])
+    tellUsRental(["Tell us (Rental)"])
+    listMachineries(["List machineries"])
+    profileVerification(["Profile Verification"])
+  end
+  registered{"Mobile already registered?"}
+  otp --> registered
+  activeBooking["Check for active rental or material booking<br>(any assigned machine / material order)"]
+  registered -->|Yes, existing user| activeBooking
+  activeBooking -->|Yes, Quick Booking first| quickBooking
+  activeBooking -->|No, go to Home| home
+  registered -->|No, new user| signupCompleted
+  subgraph loggedin["After login"]
+    direction TB
+    quickBooking(["Quick Booking"])
+    home(["Home"])
+    profileDrawer(["Profile drawer"])
+    calendar(["Calendar"])
+    home -->|bottom tab| calendar
+    earning(["Earning"])
+    home -->|bottom tab| earning
+    fleet(["Fleet"])
+    home -->|bottom tab| fleet
+    notifications(["Notifications"])
+    home -->|bell icon| notifications
+    home -->|profile photo| profileDrawer
+    bookings(["Rental Booking<br/>Upcoming / Active / Completed"])
+    home -->|Upcoming See all or card| bookings
+    home -->|Booking Orders See all| quickBooking
+    account(["Account"])
+    profileDrawer -->|Account| account
+    kyc(["KYC"])
+    profileDrawer -->|KYC Details| kyc
+    profileDrawer -->|Your machines| fleet
+    team(["Team"])
+    profileDrawer -->|Manage team| team
+    help(["Help & Support"])
+    profileDrawer -->|Help and Support| help
+    languageSettings(["Language"])
+    profileDrawer -->|Language| languageSettings
+    referEarn(["Refer and Earn"])
+    profileDrawer -->|Refer and Earn| referEarn
+    faq(["FAQ"])
+    profileDrawer -->|FAQ| faq
+    terms(["Terms"])
+    profileDrawer -->|Terms| terms
+    policies(["Policies"])
+    profileDrawer -->|Policies| policies
+    settings(["Profile / Settings"])
+    profileDrawer -->|Settings| settings
+    logout(["Log Out"])
+    profileDrawer -->|Log Out| logout
+    settings --> team
+  end
+  signupCompleted -->|Register Yourself| role
+  signupCompleted -->|Contact us to Register| help
+  quickBooking -->|Close / Back| home
+  role -->|Vendor / Owner| category
+  role -->|Operator / Driver| tellUs
+  tellUs -->|Continue| listSkills
+  listSkills -->|Skip| home
+  listSkills -->|Complete KYC| kyc
+  category -->|Materials Vendor| tellUsMaterial
+  category -->|Rental Vendor| tellUsRental
+  tellUsRental -->|Continue| listMachineries
+  listMachineries -->|Skip| home
+  listMachineries -->|Complete KYC| kyc
+  tellUsMaterial -->|Continue| kyc
+  kyc -->|submit KYC| profileVerification
+  profileVerification -->|skip or after KYC| home
+  class splash,language,onboarding,signup,otp,quickBooking,home,bookings,fleet done
+  class signupCompleted,role,category progress
+  class tellUs,listSkills,tellUsMaterial,tellUsRental,listMachineries,kyc,profileVerification,calendar,earning,notifications,team,settings,help pending
+  class profileDrawer,account,faq,languageSettings,logout,policies,referEarn,terms pending
+  class registered,activeBooking decision
+  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px
+  classDef progress fill:#FFE4A8,stroke:#E39A1C,color:#5C3D00,stroke-width:3px
+  classDef pending fill:#F4F4F4,stroke:#8D8D8D,color:#3D3D3D,stroke-width:2px
+  classDef decision fill:#FFF8E1,stroke:#F9A825,color:#7A5200,stroke-width:2px
+          </pre>
+          <div class="legend">
+            <span><i class="dot done"></i>Done</span>
+            <span><i class="dot progress"></i>In progress</span>
+            <span><i class="dot pending"></i>Pending</span>
+            <span><i class="dot decision"></i>Decision</span>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <h2>After OTP — existing vs new user</h2>
+    <p class="note">18 Sep live on 9000000001: pending rentals open Quick Booking after OTP (screenshot: assets/screens/quick-booking-rental.png). 19 Sep on 9000000017: pending material orders open the same Quick Booking page — material chrome, no timer/operator (screenshot: assets/screens/quick-booking-material.png). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/screens/quick-booking-rental.png" alt="Existing user + active rental booking — Quick Booking (9000000001)">
+        <figcaption>Existing user + active rental booking — Quick Booking (9000000001)</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/screens/quick-booking-material.png" alt="Existing user + active material order — same Quick Booking pattern (9000000017)">
+        <figcaption>Existing user + active material order — same Quick Booking pattern (9000000017)</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/screens/home-rental-with-fleet.png" alt="Existing user, no active booking/order — Home">
+        <figcaption>Existing user, no active booking/order — Home</figcaption>
+      </figure>
+    </div>
+
+    <h2>New user after OTP</h2>
+    <p class="note">New user only (mobile not already registered). Live-app screenshots, Sep. Contact us opens the same Help &amp; Support chrome as the logged-in Help module.</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/flow/sign-up-completed.jpg" alt="1. After first login — Sign Up Completed">
+        <figcaption>1. After first login — Sign Up Completed</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/flow/select-your-role.jpg" alt="2. Register Yourself — Select your role">
+        <figcaption>2. Register Yourself — Select your role</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/flow/help-and-support.jpg" alt="3. Contact us — Help &amp; Support">
+        <figcaption>3. Contact us — Help &amp; Support</figcaption>
+      </figure>
+    </div>
+
+    <h2>After Select your role</h2>
+    <p class="note">Live-app screenshots, Sep. Next on Select your role depends on the role card.</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/flow/select-category.jpg" alt="4. Vendor / Owner — Please select the category">
+        <figcaption>4. Vendor / Owner — Please select the category</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/flow/tell-us-about-yourself.jpg" alt="5. Operator / Driver — Tell us about yourself">
+        <figcaption>5. Operator / Driver — Tell us about yourself</figcaption>
+      </figure>
+    </div>
+
+    <h2>After Select category</h2>
+    <p class="note">Live-app screenshots, Sep. Same title, different fields.</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/flow/tell-us-materials.jpg" alt="6. Materials Vendor — warehouse location">
+        <figcaption>6. Materials Vendor — warehouse location</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/flow/tell-us-rental.jpg" alt="7. Rental Vendor — company + machinery">
+        <figcaption>7. Rental Vendor — company + machinery</figcaption>
+      </figure>
+    </div>
+
+    <h2>Material Vendor registration</h2>
+    <p class="note">Design strip, Sep. After Materials Tell us: KYC (company-type variants) → Profile Verification → skip or KYC → material Home / Inventory.</p>
+    <div class="shots filmstrip">
+      <figure>
+        <img src="assets/flow/material-vendor-registration.jpg" alt="8. Material Vendor registration — KYC → Profile Verification → Home">
+        <figcaption>8. Material Vendor registration — KYC → Profile Verification → Home</figcaption>
+      </figure>
+    </div>
+
+    <h2>Rental Vendor registration</h2>
+    <p class="note">Design strip, Sep. After Rental Tell us: List machineries → Machine successfully added. Skip goes to Home. Complete KYC goes to KYC → Profile Verification → Home.</p>
+    <div class="shots filmstrip">
+      <figure>
+        <img src="assets/flow/rental-vendor-registration.jpg" alt="9. Rental Vendor registration — machines → Skip or KYC → Home">
+        <figcaption>9. Rental Vendor registration — machines → Skip or KYC → Home</figcaption>
+      </figure>
+    </div>
+
+    <h2>Operator / Driver registration</h2>
+    <p class="note">Design strip, Sep. After Operator Tell us: List skills → Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC → Profile Verification → Home.</p>
+    <div class="shots filmstrip">
+      <figure>
+        <img src="assets/flow/operator-registration.jpg" alt="10. Operator / Driver registration — skills → Skip or KYC → Home">
+        <figcaption>10. Operator / Driver registration — skills → Skip or KYC → Home</figcaption>
+      </figure>
+    </div>
+
+    <footer>
+      <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
+      <a class="btn bugs" href="bugs.html">Bugs found (38 open)</a>
+      <a class="btn ghost" href="BUGS_FOUND.docx">Download BUGS_FOUND.docx</a>
+    </footer>
+  </div>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+    const explorer = document.querySelector(".flow-explorer");
+    if (explorer) {
+      const meta = JSON.parse(explorer.getAttribute("data-flow-meta") || "{}");
+      const detailTitle = document.querySelector(".flow-detail-title");
+      const detailHow = document.querySelector(".flow-detail-how");
+      const detailBody = document.querySelector(".flow-detail-body");
+      const detailKicker = document.querySelector(".flow-detail-kicker");
+      const drawerList = document.getElementById("flow-drawer-list");
+      const bookingTabs = document.getElementById("flow-booking-tabs");
+      const notifTabs = document.getElementById("flow-notif-tabs");
+      const homeSections = document.getElementById("flow-home-sections");
+      const flowReturn = document.getElementById("flow-return");
+      const pageMeta = document.getElementById("flow-page-meta");
+      const pageSections = document.getElementById("flow-page-sections");
+      const pageActions = document.getElementById("flow-page-actions");
+      const pageTabs = document.getElementById("flow-page-tabs");
+      const pageSectionsLabel = document.getElementById("flow-page-sections-label");
+      const pageActionsLabel = document.getElementById("flow-page-actions-label");
+      const pageTabsLabel = document.getElementById("flow-page-tabs-label");
+      let fromDrawer = false;
+
+      const fillPills = (el, labelEl, items, kind) => {
+        if (!el) return;
+        el.innerHTML = "";
+        const list = items || [];
+        if (labelEl) labelEl.hidden = list.length === 0;
+        list.forEach((text) => {
+          const span = document.createElement("span");
+          span.className = `flow-page-pill kind-${kind}`;
+          span.textContent = text;
+          el.appendChild(span);
+        });
+      };
+
+      const activateInGroup = (group, target) => {
+        group.forEach((el) => el.classList.toggle("is-active", el === target));
+      };
+
+      explorer.querySelectorAll(".flow-tabs [data-panel]").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.getAttribute("data-panel");
+          explorer.querySelectorAll(".flow-tabs [data-panel]").forEach((t) => {
+            const on = t === tab;
+            t.classList.toggle("is-active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          explorer.querySelectorAll(".flow-panel").forEach((panel) => {
+            const on = panel.id === `panel-${id}`;
+            panel.classList.toggle("is-active", on);
+            panel.hidden = !on;
+          });
+        });
+      });
+
+      explorer.querySelectorAll(".flow-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const group = chip.closest(".flow-steps")?.querySelectorAll(".flow-chip") || [chip];
+          activateInGroup([...group], chip);
+        });
+      });
+
+      explorer.querySelectorAll(".flow-branch").forEach((branch) => {
+        branch.addEventListener("click", () => {
+          activateInGroup([...explorer.querySelectorAll(".flow-branch")], branch);
+        });
+      });
+
+      explorer.querySelectorAll(".home-section-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activateInGroup([...explorer.querySelectorAll(".home-section-btn")], btn);
+        });
+      });
+
+      const showDest = (dest) => {
+        const info = meta[dest] || { title: dest, how: "", detail: "", status: "pending" };
+        if (detailKicker) {
+          detailKicker.textContent = info.status === "done" ? "done"
+            : info.status === "progress" ? "in progress" : "pending";
+        }
+        if (detailTitle) detailTitle.textContent = info.title || dest;
+        if (detailHow) detailHow.textContent = info.how ? `Via: ${info.how}` : "";
+        if (detailBody) detailBody.textContent = info.detail || "";
+        if (drawerList) drawerList.hidden = !(dest === "profileDrawer" || fromDrawer);
+        if (bookingTabs) bookingTabs.hidden = dest !== "bookings";
+        if (notifTabs) notifTabs.hidden = dest !== "notifications";
+        if (homeSections) homeSections.hidden = dest !== "home";
+        if (flowReturn) {
+          const showReturn = dest === "quickBooking" || dest === "notifications" || dest === "calendar";
+          flowReturn.hidden = !showReturn;
+          if (dest === "quickBooking") {
+            flowReturn.innerHTML = 'Close / Back → <strong>Home</strong>';
+          } else if (dest === "calendar") {
+            flowReturn.innerHTML = 'Back or Home tab → <strong>Home</strong>';
+          } else {
+            flowReturn.innerHTML = 'Back → <strong>Home</strong>';
+          }
+        }
+        const showPage = !!((info.drawerItem || info.pageDetail)
+          && dest !== "home"
+          && (info.sections?.length || info.actions?.length || info.tabs?.length));
+        if (pageMeta) pageMeta.hidden = !showPage;
+        if (showPage) {
+          fillPills(pageSections, pageSectionsLabel, info.sections, "section");
+          fillPills(pageActions, pageActionsLabel, info.actions, "action");
+          // Tabs already shown as chips for bookings/notifications — skip duplicate pills there
+          if (dest === "notifications" || dest === "bookings") {
+            fillPills(pageTabs, pageTabsLabel, [], "tab");
+          } else {
+            fillPills(pageTabs, pageTabsLabel, info.tabs, "tab");
+          }
+        }
+        explorer.querySelectorAll(".flow-hotspot[data-dest], .drawer-chip[data-dest]").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.getAttribute("data-dest") === dest && !btn.disabled);
+        });
+      };
+
+      explorer.querySelectorAll(".flow-hotspot[data-dest]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          fromDrawer = false;
+          showDest(btn.getAttribute("data-dest"));
+        });
+      });
+      explorer.querySelectorAll(".drawer-chip[data-dest]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          fromDrawer = true;
+          showDest(btn.getAttribute("data-dest"));
+        });
+      });
+      showDest("home");
+    }
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      themeVariables: {
+        background: "transparent",
+        primaryTextColor: "#1A1A1A",
+        lineColor: "#B8B0A4",
+        clusterBkg: "rgba(255,255,255,0.28)",
+        clusterBorder: "rgba(255,255,255,0.45)",
+        titleColor: "#5C5C5C",
+        edgeLabelBackground: "rgba(255,254,249,0.85)"
+      },
+      flowchart: { htmlLabels: true, curve: "basis", padding: 12, wrappingWidth: 200, useMaxWidth: true }
+    });
+
+    let mermaidReady = false;
+    const paintMermaid = async () => {
+      if (mermaidReady) return;
+      const nodes = document.querySelectorAll("#flow-map-details .mermaid");
+      if (!nodes.length) return;
+      await mermaid.run({ nodes });
+      mermaidReady = true;
+      const ns = "http://www.w3.org/2000/svg";
+      document.querySelectorAll(".flow-map-canvas svg").forEach((svg) => {
+        svg.style.maxWidth = "100%";
+        svg.style.height = "auto";
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        let defs = svg.querySelector("defs");
+        if (!defs) {
+          defs = document.createElementNS(ns, "defs");
+          svg.prepend(defs);
+        }
+        if (!svg.querySelector("#l2b-grad-done")) {
+          defs.insertAdjacentHTML("beforeend", `
+            <linearGradient id="l2b-grad-done" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F4FBF5"/>
+              <stop offset="100%" stop-color="#C8E6C9"/>
+            </linearGradient>
+            <linearGradient id="l2b-grad-progress" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFBF2"/>
+              <stop offset="100%" stop-color="#FFE4A8"/>
+            </linearGradient>
+            <linearGradient id="l2b-grad-pending" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FBFBFB"/>
+              <stop offset="100%" stop-color="#E4E4E4"/>
+            </linearGradient>
+            <linearGradient id="l2b-grad-decision" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFDF5"/>
+              <stop offset="100%" stop-color="#FFE082"/>
+            </linearGradient>`);
+        }
+        const paintFill = (status, fill) => {
+          svg.querySelectorAll(`.node.${status} .label-container > path`).forEach((el) => {
+            const current = el.getAttribute("fill");
+            if (current && current !== "none") {
+              el.setAttribute("fill", fill);
+              el.style.setProperty("fill", fill, "important");
+            }
+          });
+        };
+        paintFill("done", "url(#l2b-grad-done)");
+        paintFill("progress", "url(#l2b-grad-progress)");
+        paintFill("pending", "url(#l2b-grad-pending)");
+        paintFill("decision", "url(#l2b-grad-decision)");
+      });
+    };
+
+    const mapDetails = document.getElementById("flow-map-details");
+    if (mapDetails) {
+      mapDetails.addEventListener("toggle", () => {
+        if (mapDetails.open) paintMermaid();
+      });
+    }
+  </script>
+</body>
+</html>

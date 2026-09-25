@@ -1,0 +1,16 @@
+launch_status_failed 13
+launch_status_broken 6
+launch_status_passed 334
+launch_status_skipped 14
+launch_status_unknown 16
+launch_time_duration 688201193
+launch_time_min_duration 0
+launch_time_max_duration 134944
+launch_time_sum_duration 9937883
+launch_time_start 1789642360585
+launch_time_stop 1790330561778
+launch_problems_product_defects 13
+launch_problems_device/adb_problem 4
+launch_problems_test_defects 2
+launch_retries_retries 967
+launch_retries_run 383
