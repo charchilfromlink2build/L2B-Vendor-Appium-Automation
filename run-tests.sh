@@ -39,9 +39,18 @@ fi
 echo "OK: $UDID ready"
 
 echo "--- App ---"
-adb -s "$UDID" shell pm list packages | grep -q "$PKG" \
-  || { echo "FAIL: $PKG not installed. adb install -r <apk>"; exit 1; }
-echo "OK: $PKG installed"
+APK="$(pwd)/apk/app-qa-release.apk"
+if [ -f "$APK" ]; then
+  echo "Installing from project APK: $APK"
+  adb -s "$UDID" install -r "$APK"
+elif adb -s "$UDID" shell pm list packages | grep -q "$PKG"; then
+  echo "WARN: $APK missing — using already-installed $PKG"
+else
+  echo "FAIL: put QA APK at apk/app-qa-release.apk then re-run"
+  echo "  (or: adb install -r apk/app-qa-release.apk)"
+  exit 1
+fi
+echo "OK: $PKG ready"
 
 echo "--- Appium ---"
 curl -sf "${APPIUM_URL}/status" >/dev/null \

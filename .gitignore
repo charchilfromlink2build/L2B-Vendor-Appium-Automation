@@ -10,3 +10,6 @@ screenshots/
 *.log
 run.log
 reports/
+# Keep apk/README.md; ignore binary builds dropped locally
+apk/*.apk
+apk/*.aab

@@ -15,7 +15,8 @@ This repo is separate from `L2B-Vendor-app-test` and `L2B-Vendor-backend-api-tes
 - Android SDK, AVD `Medium_Phone_API_36.1`
 - Appium 3 (`appium -v` → 3.x)
 - `appium driver install uiautomator2`
-- QA APK installed: `adb install -r ../L2B-Vendor-app-test/apk/app-qa-release.apk`
+- QA APK in this repo: put the build at `apk/app-qa-release.apk`, then  
+  `adb install -r apk/app-qa-release.apk`
 
 ```bash
 export JAVA_HOME=/opt/homebrew/opt/openjdk@17

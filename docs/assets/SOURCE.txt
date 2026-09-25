@@ -4,7 +4,7 @@ L2B brand assets used on this dashboard
 Logo
   File:   docs/assets/ic_splash_logo.png
   Source: L2B Vendor QA APK (com.l2b.app.qa)
-          path on disk: L2B-Vendor-app-test/apk/app-qa-release.apk
+          path on disk: apk/app-qa-release.apk (this repo)
           Android resource: drawable/ic_splash_logo  (packaged as res/pk.png)
   Also used as launcher foreground (drawable/ic_launcher_foreground insets this same PNG).
 

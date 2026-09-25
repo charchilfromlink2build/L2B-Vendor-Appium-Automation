@@ -172,6 +172,11 @@ def mermaid_node(mod: dict) -> str:
     return f'{mod["id"]}(["{label}"])'
 
 
+def mermaid_free_node(node_id: str, label: str) -> str:
+    safe = str(label).replace('"', "'")
+    return f'{node_id}(["{safe}"])'
+
+
 def mermaid_decision(node_id: str, label: str, shape: str = "diamond") -> str:
     safe = str(label).replace('"', "'")
     if shape == "round":
@@ -194,12 +199,25 @@ def mermaid_graph(coverage: dict) -> str:
     labels = coverage.get("firstLaunchEdgeLabels") or {}
     branches = coverage.get("firstLaunchBranches") or []
     after = coverage.get("afterOtp") or {}
+    home_chrome = coverage.get("homeChrome") or {}
+    drawer_leaf_ids: list[str] = []
     loggedin_ids = set(
         ["home"]
         + list(coverage.get("postLoginFromHome") or [])
         + list(coverage.get("postLoginFromSettings") or [])
         + list(coverage.get("loggedInExtra") or [])
     )
+    if home_chrome:
+        loggedin_ids.add("profileDrawer")
+        for edge in home_chrome.get("fromHome") or []:
+            if edge.get("to"):
+                loggedin_ids.add(edge["to"])
+        for edge in home_chrome.get("drawer") or []:
+            tid = edge.get("to")
+            if tid:
+                loggedin_ids.add(tid)
+                if tid not in by_id:
+                    drawer_leaf_ids.append(tid)
     lines = ["flowchart TB", '  subgraph launch["First launch"]', "    direction TB"]
     declared = set()
     for i, mid in enumerate(launch):
@@ -232,16 +250,61 @@ def mermaid_graph(coverage: dict) -> str:
         lines.append(mermaid_edge(registered["id"], new_user["to"], new_user.get("edge"), indent="  "))
     lines.append('  subgraph loggedin["After login"]')
     lines.append("    direction TB")
+    loggedin_declared: set[str] = set()
+
+    def declare_loggedin(node_id: str, label_override: str | None = None) -> None:
+        if node_id in loggedin_declared:
+            return
+        if node_id in by_id:
+            if label_override:
+                lines.append(f"    {mermaid_free_node(node_id, label_override)}")
+            else:
+                lines.append(f"    {mermaid_node(by_id[node_id])}")
+        elif label_override:
+            lines.append(f"    {mermaid_free_node(node_id, label_override)}")
+        else:
+            lines.append(f"    {mermaid_free_node(node_id, node_id)}")
+        loggedin_declared.add(node_id)
+
     for mid in coverage.get("loggedInExtra") or []:
         if mid in by_id:
-            lines.append(f"    {mermaid_node(by_id[mid])}")
-    lines.append(f"    {mermaid_node(by_id['home'])}")
-    for mid in coverage["postLoginFromHome"]:
-        lines.append(f"    {mermaid_node(by_id[mid])}")
-        lines.append(f"    home --> {mid}")
-    for mid in coverage.get("postLoginFromSettings", []):
-        lines.append(f"    {mermaid_node(by_id[mid])}")
-        lines.append(f"    settings --> {mid}")
+            declare_loggedin(mid)
+    declare_loggedin("home")
+
+    if home_chrome:
+        tabs = home_chrome.get("bookingsTabsLabel") or "Upcoming / Active / Completed"
+        bookings_label = f"{by_id['bookings']['name']}<br/>{tabs}" if "bookings" in by_id else tabs
+        declare_loggedin("profileDrawer", "Profile drawer")
+        for edge in home_chrome.get("fromHome") or []:
+            tid = edge.get("to")
+            if not tid:
+                continue
+            if tid == "bookings":
+                declare_loggedin("bookings", bookings_label)
+            else:
+                declare_loggedin(tid)
+            lines.append(mermaid_edge("home", tid, edge.get("label")))
+        for edge in home_chrome.get("drawer") or []:
+            tid = edge.get("to")
+            if not tid:
+                continue
+            leaf_label = edge.get("label") or tid
+            if tid in by_id:
+                declare_loggedin(tid)
+            else:
+                declare_loggedin(tid, leaf_label)
+            lines.append(mermaid_edge("profileDrawer", tid, edge.get("label")))
+        for mid in coverage.get("postLoginFromSettings") or []:
+            declare_loggedin(mid)
+            lines.append(mermaid_edge("settings", mid))
+    else:
+        for mid in coverage.get("postLoginFromHome") or []:
+            declare_loggedin(mid)
+            lines.append(f"    home --> {mid}")
+        for mid in coverage.get("postLoginFromSettings") or []:
+            declare_loggedin(mid)
+            lines.append(f"    settings --> {mid}")
+
     lines.append("  end")
     for branch in branches:
         lines.append(mermaid_edge(branch["from"], branch["to"], branch.get("label"), indent="  "))
@@ -257,6 +320,10 @@ def mermaid_graph(coverage: dict) -> str:
     ):
         if ids:
             lines.append(f"  class {','.join(ids)} {status}")
+    # Mermaid-only drawer leaves + profileDrawer stay pending grey
+    synthetic_pending = ["profileDrawer"] + sorted(set(drawer_leaf_ids))
+    if synthetic_pending:
+        lines.append(f"  class {','.join(synthetic_pending)} pending")
     if decision_ids:
         lines.append(f"  class {','.join(decision_ids)} decision")
     lines.append("  classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px")
@@ -335,6 +402,337 @@ def blocker_banner(bugs: list[dict]) -> str:
     </section>"""
 
 
+def _status_class(by_id: dict, node_id: str) -> str:
+    mod = by_id.get(node_id) or {}
+    status = (mod.get("status") or "pending").replace("in-progress", "progress")
+    if status not in ("done", "progress", "pending"):
+        status = "pending"
+    return status
+
+
+def _flow_btn_status(by_id: dict, node_id: str) -> str:
+    """Button color: green only when module fully done; else orange (pending)."""
+    st = _status_class(by_id, node_id) if node_id in by_id else "pending"
+    return "done" if st == "done" else "pending"
+
+
+def _node_label(by_id: dict, node_id: str, fallback: str | None = None) -> str:
+    mod = by_id.get(node_id)
+    if mod and mod.get("name"):
+        return str(mod["name"])
+    return fallback or node_id
+
+
+def flow_explorer(coverage: dict, mermaid: str) -> str:
+    """Compact interactive App flow — primary UX; Mermaid stays optional."""
+    by_id = {m["id"]: m for m in coverage.get("modules") or []}
+    chrome = coverage.get("homeChrome") or {}
+    from_home = chrome.get("fromHome") or []
+    drawer = chrome.get("drawer") or []
+    tabs_label = chrome.get("bookingsTabsLabel") or "Upcoming / Active / Completed"
+    launch = coverage.get("firstLaunch") or []
+
+    def chip(node_id: str, caption: str | None = None) -> str:
+        label = html.escape(caption or _node_label(by_id, node_id))
+        st = _status_class(by_id, node_id)
+        return (
+            f'<button type="button" class="flow-chip status-{st}" data-node="{html.escape(node_id)}">'
+            f"{label}</button>"
+        )
+
+    launch_bits = []
+    for i, mid in enumerate(launch):
+        if i:
+            launch_bits.append('<span class="flow-arrow" aria-hidden="true">→</span>')
+        launch_bits.append(chip(mid))
+
+    dest_meta: dict[str, dict] = {}
+    for edge in from_home:
+        tid = edge.get("to")
+        if not tid:
+            continue
+        how = edge.get("label") or ""
+        name = _node_label(by_id, tid, tid)
+        detail = name
+        if tid == "bookings":
+            detail = f"{name} — tabs: {tabs_label}"
+        elif tid == "profileDrawer":
+            detail = "Profile drawer — Account, KYC, machines, team, Help, Language, Refer, FAQ, Terms, Policies, Settings"
+        elif tid == "quickBooking":
+            detail = "Quick Booking queue (pending Accept / Decline)"
+        elif tid == "notifications":
+            detail = "Notification — Unread / All (stack screen, Back to Home)"
+        elif tid == "calendar":
+            detail = "Schedule — month grid + day agenda; bottom tabs stay; Back or Home → Home"
+        elif tid == "earning":
+            detail = "Earning & Incentive — wallet, withdraw; bottom tabs stay"
+        elif tid == "fleet":
+            detail = "Your Fleet — same as drawer Your machines / Active Fleet See all"
+        dest_meta[tid] = {
+            "title": name if tid != "profileDrawer" else "Profile drawer",
+            "how": how,
+            "detail": detail,
+            "status": _flow_btn_status(by_id, tid),
+        }
+    dest_meta["home"] = {
+        "title": "Home",
+        "how": "bottom tab (current)",
+        "detail": "Rental Home — greeting, stats, Upcoming strip, Booking Orders feed",
+        "status": _flow_btn_status(by_id, "home"),
+    }
+
+    def apply_page(dest_id: str, page_key: str) -> None:
+        page = chrome.get(page_key) or {}
+        if dest_id not in dest_meta or not page:
+            return
+        dest_meta[dest_id].update({
+            "title": page.get("title") or dest_meta[dest_id]["title"],
+            "detail": page.get("note") or dest_meta[dest_id]["detail"],
+            "sections": page.get("sections") or [],
+            "actions": page.get("actions") or [],
+            "tabs": page.get("tabs") or [],
+            "pageDetail": True,
+        })
+
+    apply_page("notifications", "notificationsPage")
+    apply_page("calendar", "calendarPage")
+    apply_page("home", "homePage")
+
+    notif_page = chrome.get("notificationsPage") or {}
+    home_page = chrome.get("homePage") or {}
+    home_section_btns = []
+    for item in home_page.get("sections") or []:
+        if isinstance(item, dict):
+            label = item.get("label") or ""
+            mid = item.get("module") or ""
+            st = item.get("status") or (_flow_btn_status(by_id, mid) if mid else "pending")
+            if st == "progress":
+                st = "pending"
+        else:
+            label = str(item)
+            st = "done"
+        if not label:
+            continue
+        badge = "done" if st == "done" else "pending"
+        home_section_btns.append(
+            f'<button type="button" class="home-section-btn status-{st}">'
+            f'<span class="home-section-badge">{badge}</span>'
+            f'<span class="home-section-label">{html.escape(label)}</span></button>'
+        )
+    home_section_btns = "".join(home_section_btns)
+
+    drawer_pages = chrome.get("drawerPages") or {}
+    status_word = {"done": "done", "progress": "in progress", "pending": "pending"}
+    from_home_ids = {e.get("to") for e in from_home if e.get("to")}
+
+    drawer_rows = []
+    for edge in drawer:
+        tid = edge.get("to")
+        if not tid:
+            continue
+        label = edge.get("label") or _node_label(by_id, tid)
+        st = _flow_btn_status(by_id, tid)
+        page = drawer_pages.get(tid) or {}
+        page_meta = {
+            "title": page.get("title") or label,
+            "how": "profile drawer",
+            "detail": page.get("note") or label,
+            "status": st,
+            "sections": page.get("sections") or [],
+            "actions": page.get("actions") or [],
+            "tabs": page.get("tabs") or [],
+            "drawerItem": True,
+        }
+        if tid in dest_meta and tid in from_home_ids:
+            # Shared surface (e.g. Fleet): keep Home chrome how, attach drawer page facts
+            dest_meta[tid]["sections"] = page_meta["sections"]
+            dest_meta[tid]["actions"] = page_meta["actions"]
+            dest_meta[tid]["tabs"] = page_meta["tabs"]
+            dest_meta[tid]["drawerItem"] = True
+            if page.get("note"):
+                dest_meta[tid]["detail"] = page["note"]
+            if page.get("title"):
+                dest_meta[tid]["title"] = page["title"]
+        else:
+            dest_meta[tid] = page_meta
+        badge = status_word.get(st, "pending")
+        drawer_rows.append(
+            f'<button type="button" class="drawer-chip status-{st}" data-dest="{html.escape(tid)}" '
+            f'aria-label="{html.escape(label)}">'
+            f'<span class="drawer-chip-badge">{html.escape(badge)}</span>'
+            f'<span class="drawer-chip-label">{html.escape(label)}</span>'
+            f"</button>"
+        )
+
+    # Keep profileDrawer detail listing current drawer labels
+    if "profileDrawer" in dest_meta:
+        dest_meta["profileDrawer"]["detail"] = (
+            "Profile drawer — tap a glass row for page sections. Includes Log Out (do not confirm in tests)."
+        )
+
+    exit_btns = []
+    for edge in from_home:
+        tid = edge.get("to")
+        if not tid or tid in ("calendar", "earning", "fleet", "notifications", "profileDrawer"):
+            continue
+        label = edge.get("label") or tid
+        title = dest_meta.get(tid, {}).get("title", tid)
+        st = dest_meta.get(tid, {}).get("status", "pending")
+        exit_btns.append(
+            f'<button type="button" class="flow-hotspot status-{st}" data-dest="{html.escape(tid)}" '
+            f'aria-label="{html.escape(title)}">'
+            f'<span class="flow-hotspot-title">{html.escape(title)}</span>'
+            f'<span class="flow-hotspot-how">{html.escape(str(label))}</span></button>'
+        )
+
+    tab_status = {
+        "calendar": _flow_btn_status(by_id, "calendar"),
+        "earning": _flow_btn_status(by_id, "earning"),
+        "fleet": _flow_btn_status(by_id, "fleet"),
+        "notifications": _flow_btn_status(by_id, "notifications"),
+        "profileDrawer": "pending",
+        "home": _flow_btn_status(by_id, "home"),
+    }
+    booking_tab_chips = "".join(
+        f'<button type="button" class="flow-chip status-done">{html.escape(t.strip())}</button>'
+        for t in tabs_label.split("/")
+        if t.strip()
+    )
+    notif_tabs = notif_page.get("tabs") or ["Unread", "All"]
+    notif_st = dest_meta.get("notifications", {}).get("status", "pending")
+    if notif_st == "progress":
+        notif_st = "pending"
+    notif_tab_chips = "".join(
+        f'<button type="button" class="flow-chip status-{notif_st}">{html.escape(t)}</button>'
+        for t in notif_tabs
+        if t
+    )
+    bell_icon = (
+        '<svg class="flow-bell-icon" viewBox="0 0 24 24" width="18" height="18" '
+        'aria-hidden="true" focusable="false">'
+        '<path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.2-2.2h-4.4A2.2 2.2 0 0 0 12 22zm6.2-6.2V11a6.2 6.2 0 0 0-5-6.1V4.2a1.2 1.2 0 1 0-2.4 0v.7A6.2 6.2 0 0 0 5.8 11v4.8L4 17.6V18.8h16v-1.2l-1.8-1.8z"/>'
+        "</svg>"
+    )
+
+    meta_json = html.escape(json.dumps(dest_meta, ensure_ascii=False))
+
+    return f"""    <div class="flow-explorer" data-flow-meta="{meta_json}">
+      <nav class="flow-tabs" role="tablist" aria-label="App flow sections">
+        <button type="button" role="tab" id="tab-launch" aria-controls="panel-launch" aria-selected="false" data-panel="launch" class="status-done">First launch</button>
+        <button type="button" role="tab" id="tab-otp" aria-controls="panel-otp" aria-selected="false" data-panel="otp" class="status-done">After OTP</button>
+        <button type="button" role="tab" id="tab-home" aria-controls="panel-home" aria-selected="true" data-panel="home" class="status-progress is-active">On Home</button>
+      </nav>
+      <div class="legend flow-explorer-legend" aria-label="Coverage status">
+        <span><i class="dot done"></i>Done — light green → dark green on tap</span>
+        <span><i class="dot progress"></i>In progress</span>
+        <span><i class="dot pending"></i>Pending — light orange → dark orange on tap</span>
+      </div>
+
+      <div class="flow-panels">
+        <section class="flow-panel" id="panel-launch" role="tabpanel" aria-labelledby="tab-launch" hidden>
+          <p class="flow-lead">Cold start path until OTP — tested.</p>
+          <div class="flow-steps">{"".join(launch_bits)}</div>
+        </section>
+
+        <section class="flow-panel" id="panel-otp" role="tabpanel" aria-labelledby="tab-otp" hidden>
+          <p class="flow-lead">Valid OTP then branches by registration + pending jobs — tested.</p>
+          <div class="flow-branch-grid">
+            <button type="button" class="flow-branch status-done">
+              <h3>Existing user</h3>
+              <ol>
+                <li>Pending rental / material? <strong>Yes</strong> → Quick Booking first</li>
+                <li>Pending rental / material? <strong>No</strong> → Home</li>
+                <li>Quick Booking <strong>Close / Back</strong> → Home</li>
+              </ol>
+            </button>
+            <button type="button" class="flow-branch status-done">
+              <h3>New user</h3>
+              <ol>
+                <li>Sign Up Completed</li>
+                <li><strong>Register Yourself</strong> → role → category / operator path → Home</li>
+                <li><strong>Contact us</strong> → Help &amp; Support</li>
+              </ol>
+            </button>
+          </div>
+        </section>
+
+        <section class="flow-panel is-active" id="panel-home" role="tabpanel" aria-labelledby="tab-home">
+          <p class="flow-lead">Rental Home chrome — tap a control to see where it opens.</p>
+          <div class="flow-home-layout">
+            <div class="phone-chrome" aria-label="Rental Home chrome">
+              <div class="phone-top">
+                <button type="button" class="flow-hotspot icon status-{tab_status['profileDrawer']}" data-dest="profileDrawer" title="Profile photo">Profile</button>
+                <span class="phone-title">Home</span>
+                <button type="button" class="flow-hotspot icon status-{tab_status['notifications']}" data-dest="notifications" title="Notifications" aria-label="Notifications">{bell_icon}</button>
+              </div>
+              <div class="phone-body">
+                {"".join(exit_btns) or '<p class="flow-empty">No Home body exits configured.</p>'}
+              </div>
+              <div class="phone-tabs" role="toolbar" aria-label="Bottom tabs">
+                <button type="button" class="flow-hotspot tab status-{tab_status['calendar']}" data-dest="calendar">Calendar</button>
+                <button type="button" class="flow-hotspot tab is-here status-{tab_status['home']}" data-dest="home">Home</button>
+                <button type="button" class="flow-hotspot tab status-{tab_status['earning']}" data-dest="earning">Earning</button>
+                <button type="button" class="flow-hotspot tab status-{tab_status['fleet']}" data-dest="fleet">Fleet</button>
+              </div>
+            </div>
+            <aside class="flow-detail" id="flow-detail" aria-live="polite">
+              <p class="flow-detail-kicker">Tap any control</p>
+              <h3 class="flow-detail-title">Home</h3>
+              <p class="flow-detail-how">You are on Rental Home</p>
+              <p class="flow-detail-body">Bottom bar: Calendar · Home · Earning · Fleet. Header: profile photo (drawer) and bell (Notifications). Upcoming card opens Rental Booking ({html.escape(tabs_label)}). Booking Orders opens Quick Booking.</p>
+              <div class="flow-home-sections" id="flow-home-sections" hidden>
+                <p class="flow-detail-kicker">Home sections · tested</p>
+                <div class="home-section-grid">
+                {home_section_btns}
+                </div>
+              </div>
+              <div class="flow-booking-tabs" id="flow-booking-tabs" hidden>
+                <p class="flow-detail-kicker">Tabs on this screen</p>
+                <div class="flow-steps">{booking_tab_chips}</div>
+              </div>
+              <div class="flow-booking-tabs" id="flow-notif-tabs" hidden>
+                <p class="flow-detail-kicker">Tabs on this screen</p>
+                <div class="flow-steps">{notif_tab_chips}</div>
+                <p class="flow-notif-hint">Unread = unseen · All = unread + marked as read. No third tab on live build.</p>
+              </div>
+              <p class="flow-return" id="flow-return" hidden>Back → <strong>Home</strong></p>
+              <div class="flow-drawer-list" id="flow-drawer-list" hidden>
+                <p class="flow-detail-kicker">Profile drawer</p>
+                <div class="drawer-chip-grid">
+                {"".join(drawer_rows)}
+                </div>
+              </div>
+              <div class="flow-page-meta" id="flow-page-meta" hidden>
+                <p class="flow-detail-kicker">On this page</p>
+                <p class="flow-page-label" id="flow-page-sections-label" hidden>Sections</p>
+                <div class="flow-page-sections" id="flow-page-sections"></div>
+                <p class="flow-page-label" id="flow-page-actions-label" hidden>Actions</p>
+                <div class="flow-page-actions" id="flow-page-actions"></div>
+                <p class="flow-page-label" id="flow-page-tabs-label" hidden>Tabs</p>
+                <div class="flow-page-tabs" id="flow-page-tabs"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+
+      <details class="flow-map" id="flow-map-details">
+        <summary>Full technical map (Mermaid) — optional</summary>
+        <div class="flow flow-map-canvas">
+          <pre class="mermaid">
+{mermaid}
+          </pre>
+          <div class="legend">
+            <span><i class="dot done"></i>Done</span>
+            <span><i class="dot progress"></i>In progress</span>
+            <span><i class="dot pending"></i>Pending</span>
+            <span><i class="dot decision"></i>Decision</span>
+          </div>
+        </div>
+      </details>
+    </div>"""
+
+
 def write_bugs_html(bugs: list[dict]) -> None:
     rows = []
     for b in bugs:
@@ -400,8 +798,12 @@ def build() -> None:
         "{{RUN_NOTE}}": html.escape(str(run.get("note") or "")),
         "{{BLOCKER}}": blocker_banner(bugs),
         "{{MODULE_CARDS}}": module_cards(modules),
-        "{{MERMAID}}": mermaid_graph(coverage),
+        "{{FLOW_EXPLORER}}": flow_explorer(coverage, mermaid_graph(coverage)),
         "{{FLOW_NOTE}}": html.escape(
+            "Tap On Home to explore live Rental chrome. First launch / After OTP tabs cover the path to Home. "
+            "Open the optional Mermaid map only if you need the full technical graph."
+        ),
+        "{{FLOW_NOTE_FULL}}": html.escape(
             coverage.get("flowNote")
             or "Green is done. Amber is in progress. Grey is not started."
         ),
@@ -787,6 +1189,341 @@ INDEX_HTML = r"""<!DOCTYPE html>
       max-width: 260px;
     }
     .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--muted); font-size: 0.85rem; }
+    .flow-note-more { margin: 0 0 14px; }
+    .flow-note-more summary {
+      cursor: pointer; font-weight: 650; color: var(--muted); font-size: 0.88rem;
+    }
+    .flow-explorer {
+      margin: 0 0 28px;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+    .flow-tabs {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .flow-tabs button {
+      appearance: none; border-radius: 14px; padding: 8px 14px;
+      font-weight: 650; font-size: 0.88rem; cursor: pointer;
+      border: 2px solid transparent; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    /* Done tabs (First launch / After OTP / On Home): light green → dark green */
+    .flow-tabs button.status-done {
+      background: #E8F5E9; border-color: #81C784; color: #2E7D32;
+    }
+    .flow-tabs button.status-done.is-active,
+    .flow-tabs button.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    /* Pending tabs: light orange → dark orange */
+    .flow-tabs button.status-pending {
+      background: #FFF3E0; border-color: #FFCC80; color: #E65100;
+    }
+    .flow-tabs button.status-pending.is-active,
+    .flow-tabs button.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .flow-tabs button.status-progress {
+      background: #FFF8E1; border-color: #FFD54F; color: #7A5200;
+    }
+    .flow-tabs button.status-progress.is-active,
+    .flow-tabs button.status-progress:focus-visible {
+      background: #F9A825; border-color: #F57F17; color: #1A1A1A;
+    }
+    .flow-lead { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
+    .flow-steps {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    }
+    .flow-chip {
+      appearance: none; cursor: pointer;
+      display: inline-flex; align-items: center; padding: 7px 12px;
+      border-radius: 14px; font-size: 0.84rem; font-weight: 650;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .flow-chip.status-done {
+      background: #E8F5E9; color: #2E7D32; border-color: #81C784;
+    }
+    .flow-chip.status-done.is-active,
+    .flow-chip.status-done:focus-visible {
+      background: #1B5E20; color: #E8F5E9; border-color: #0D3B12;
+    }
+    .flow-chip.status-progress {
+      background: #FFF8E1; color: #7A5200; border-color: #FFD54F;
+    }
+    .flow-chip.status-progress.is-active,
+    .flow-chip.status-progress:focus-visible {
+      background: #F9A825; color: #1A1A1A; border-color: #F57F17;
+    }
+    .flow-chip.status-pending {
+      background: #FFF3E0; color: #E65100; border-color: #FFCC80;
+    }
+    .flow-chip.status-pending.is-active,
+    .flow-chip.status-pending:focus-visible {
+      background: #EF6C00; color: #fff; border-color: #E65100;
+    }
+    .flow-arrow { color: var(--muted); font-weight: 700; }
+    .flow-branch-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+    }
+    .flow-branch {
+      appearance: none; cursor: pointer; text-align: left; width: 100%;
+      margin: 0; padding: 14px 16px; border-radius: 14px;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      font: inherit; color: inherit;
+    }
+    .flow-branch.status-done {
+      background: #E8F5E9; border-color: #81C784; color: #1A1A1A;
+    }
+    .flow-branch.status-done.is-active,
+    .flow-branch.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .flow-branch.status-done.is-active h3,
+    .flow-branch.status-done:focus-visible h3,
+    .flow-branch.status-done.is-active strong,
+    .flow-branch.status-done:focus-visible strong {
+      color: #E8F5E9;
+    }
+    .flow-branch h3 { margin: 0 0 8px; font-size: 1rem; color: #2E7D32; }
+    .flow-branch ol { margin: 0; padding-left: 18px; }
+    .flow-branch li { margin: 6px 0; font-size: 0.9rem; }
+    .flow-home-layout {
+      display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: 16px; align-items: start;
+    }
+    .phone-chrome {
+      border-radius: 22px; border: 1px solid rgba(80,50,10,0.16);
+      background: linear-gradient(180deg, #FFFDF8, #F7EFE3);
+      overflow: hidden; box-shadow: 0 10px 28px rgba(80,50,10,0.08);
+    }
+    .phone-top, .phone-tabs {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 10px 12px; background: rgba(255,255,255,0.72);
+    }
+    .phone-title { font-weight: 750; font-size: 0.95rem; }
+    .phone-body { padding: 12px; display: grid; gap: 10px; min-height: 160px; }
+    .phone-tabs { border-top: 1px solid rgba(80,50,10,0.10); }
+    .flow-hotspot {
+      appearance: none; width: 100%; text-align: left; cursor: pointer;
+      border: 2px solid transparent; border-radius: 14px;
+      padding: 10px 12px; color: var(--text);
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .flow-hotspot.icon, .flow-hotspot.tab {
+      width: auto; flex: 1; text-align: center; font-size: 0.78rem; font-weight: 700; padding: 8px 6px;
+    }
+    .flow-hotspot.icon {
+      display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+      min-width: 40px; padding: 8px 10px;
+    }
+    .flow-bell-icon { display: block; }
+    .flow-notif-hint {
+      margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.35;
+    }
+    /* Pending: light orange → dark orange */
+    .flow-hotspot.status-pending {
+      background: #FFF3E0; border-color: #FFCC80; color: #E65100;
+    }
+    .flow-hotspot.status-pending:hover {
+      background: #FFE0B2; border-color: #FFB74D;
+    }
+    .flow-hotspot.status-pending.is-active,
+    .flow-hotspot.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .flow-hotspot.status-pending.is-active .flow-hotspot-how,
+    .flow-hotspot.status-pending:focus-visible .flow-hotspot-how {
+      color: rgba(255,255,255,0.85);
+    }
+    /* Progress: light amber → deep amber */
+    .flow-hotspot.status-progress {
+      background: #FFF8E1; border-color: #FFD54F; color: #7A5200;
+    }
+    .flow-hotspot.status-progress.is-active,
+    .flow-hotspot.status-progress:focus-visible {
+      background: #F9A825; border-color: #F57F17; color: #1A1A1A;
+    }
+    /* Done: light green → dark green */
+    .flow-hotspot.status-done {
+      background: #E8F5E9; border-color: #81C784; color: #2E7D32;
+    }
+    .flow-hotspot.status-done:hover {
+      background: #C8E6C9; border-color: #66BB6A;
+    }
+    .flow-hotspot.status-done.is-active,
+    .flow-hotspot.status-done.is-here.is-active,
+    .flow-hotspot.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .flow-hotspot.status-done.is-active .flow-hotspot-how,
+    .flow-hotspot.status-done:focus-visible .flow-hotspot-how {
+      color: rgba(232,245,233,0.85);
+    }
+    .flow-hotspot.tab.status-done.is-here:not(.is-active) {
+      background: #E8F5E9; border-color: #81C784; color: #2E7D32;
+    }
+    .flow-home-sections { margin-top: 12px; }
+    .home-section-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .home-section-btn {
+      appearance: none; cursor: pointer; text-align: left;
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 10px 12px; border-radius: 14px;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .home-section-btn.status-done {
+      border-color: #81C784; background: #E8F5E9; color: #2E7D32;
+    }
+    .home-section-btn.status-done.is-active,
+    .home-section-btn.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .home-section-btn.status-pending {
+      border-color: #FFCC80; background: #FFF3E0; color: #E65100;
+    }
+    .home-section-btn.status-pending.is-active,
+    .home-section-btn.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .home-section-badge {
+      align-self: flex-start;
+      font-size: 0.68rem; font-weight: 750; letter-spacing: 0.03em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+    }
+    .home-section-btn.status-done .home-section-badge {
+      background: #81C784; color: #0D3B12;
+    }
+    .home-section-btn.status-done.is-active .home-section-badge,
+    .home-section-btn.status-done:focus-visible .home-section-badge {
+      background: #E8F5E9; color: #1B5E20;
+    }
+    .home-section-btn.status-pending .home-section-badge {
+      background: #FFE0B2; color: #E65100;
+    }
+    .home-section-btn.status-pending.is-active .home-section-badge,
+    .home-section-btn.status-pending:focus-visible .home-section-badge {
+      background: rgba(255,255,255,0.25); color: #fff;
+    }
+    .home-section-label { font-size: 0.86rem; font-weight: 700; line-height: 1.25; }
+    @media (max-width: 800px) {
+      .home-section-grid { grid-template-columns: 1fr; }
+    }
+    .flow-explorer-legend { margin: -6px 0 12px; }
+    .flow-return {
+      margin: 12px 0 0; padding: 8px 10px; border-radius: 10px;
+      background: #FFF6E5; border: 1px solid rgba(254,182,55,0.45);
+      font-size: 0.88rem; font-weight: 650; color: #7A5200;
+    }
+    .flow-booking-tabs { margin-top: 12px; }
+    .flow-hotspot-title { display: block; font-weight: 750; font-size: 0.92rem; }
+    .flow-hotspot-how { display: block; margin-top: 3px; color: var(--muted); font-size: 0.78rem; }
+    .flow-detail {
+      padding: 14px 16px; border-radius: 14px;
+      background: rgba(255,255,255,0.55); border: 1px solid rgba(80,50,10,0.10);
+      min-height: 180px;
+    }
+    .flow-detail-kicker {
+      margin: 0 0 4px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .flow-detail-title { margin: 0 0 6px; font-size: 1.15rem; }
+    .flow-detail-how { margin: 0 0 8px; color: #7A5200; font-weight: 650; font-size: 0.9rem; }
+    .flow-detail-body { margin: 0; color: var(--text); font-size: 0.92rem; }
+    .flow-drawer-list { margin-top: 12px; }
+    .drawer-chip-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .drawer-chip {
+      appearance: none; cursor: pointer; text-align: left;
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 10px 12px; border-radius: 14px;
+      border: 2px solid transparent;
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      box-shadow: 0 6px 18px rgba(80, 50, 10, 0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .drawer-chip.status-pending {
+      background: rgba(255, 243, 224, 0.85); border-color: #FFCC80; color: #E65100;
+    }
+    .drawer-chip.status-pending.is-active,
+    .drawer-chip.status-pending:focus-visible {
+      background: #EF6C00; border-color: #E65100; color: #fff;
+    }
+    .drawer-chip.status-progress {
+      background: rgba(255, 248, 225, 0.9); border-color: #FFD54F; color: #7A5200;
+    }
+    .drawer-chip.status-progress.is-active,
+    .drawer-chip.status-progress:focus-visible {
+      background: #F9A825; border-color: #F57F17; color: #1A1A1A;
+    }
+    .drawer-chip.status-done {
+      background: rgba(232, 245, 233, 0.9); border-color: #81C784; color: #2E7D32;
+    }
+    .drawer-chip.status-done.is-active,
+    .drawer-chip.status-done:focus-visible {
+      background: #1B5E20; border-color: #0D3B12; color: #E8F5E9;
+    }
+    .drawer-chip-badge {
+      align-self: flex-start;
+      font-size: 0.68rem; font-weight: 750; letter-spacing: 0.03em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+    }
+    .drawer-chip.status-pending .drawer-chip-badge { background: #FFE0B2; color: #E65100; }
+    .drawer-chip.status-progress .drawer-chip-badge { background: #FFECB3; color: #7A5200; }
+    .drawer-chip.status-done .drawer-chip-badge { background: #C8E6C9; color: #1B5E20; }
+    .drawer-chip.status-pending.is-active .drawer-chip-badge,
+    .drawer-chip.status-pending:focus-visible .drawer-chip-badge {
+      background: rgba(255,255,255,0.25); color: #fff;
+    }
+    .drawer-chip.status-done.is-active .drawer-chip-badge,
+    .drawer-chip.status-done:focus-visible .drawer-chip-badge {
+      background: #E8F5E9; color: #1B5E20;
+    }
+    .drawer-chip-label { font-size: 0.88rem; font-weight: 700; }
+    .flow-page-meta { margin-top: 12px; }
+    .flow-page-label {
+      margin: 10px 0 0; font-size: 0.72rem; font-weight: 750;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+    }
+    .flow-page-sections, .flow-page-actions, .flow-page-tabs {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+    }
+    .flow-page-pill {
+      display: inline-flex; padding: 5px 10px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 650;
+      background: rgba(255,255,255,0.7); border: 1px solid rgba(80,50,10,0.12);
+    }
+    .flow-page-pill.kind-action { background: #FFF3E0; border-color: #FFCC80; color: #E65100; }
+    .flow-page-pill.kind-section { background: #E8F5E9; border-color: #81C784; color: #2E7D32; }
+    .flow-page-pill.kind-tab { background: #E8F5E9; border-color: #81C784; color: #2E7D32; }
+    @media (max-width: 800px) {
+      .drawer-chip-grid { grid-template-columns: 1fr; }
+    }
+    .flow-how {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+    .flow-map { margin-top: 14px; }
+    .flow-map summary {
+      cursor: pointer; font-weight: 650; color: var(--muted); font-size: 0.9rem;
+    }
+    .flow-map-canvas {
+      margin-top: 12px; max-height: 70vh; overflow: auto;
+      border: 1px solid rgba(80,50,10,0.10); border-radius: 12px; padding: 10px;
+      background: rgba(255,255,255,0.35);
+    }
+    .flow-map-canvas .flow { overflow: auto; }
+    @media (max-width: 800px) {
+      .flow-home-layout, .flow-branch-grid { grid-template-columns: 1fr; }
+    }
     .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
     .dot.done { background: var(--done); }
     .dot.progress { background: var(--brand); }
@@ -927,17 +1664,11 @@ INDEX_HTML = r"""<!DOCTYPE html>
 
     <h2>App flow</h2>
     <p class="note">{{FLOW_NOTE}}</p>
-    <div class="flow">
-      <pre class="mermaid">
-{{MERMAID}}
-      </pre>
-      <div class="legend">
-        <span><i class="dot done"></i>Done</span>
-        <span><i class="dot progress"></i>In progress</span>
-        <span><i class="dot pending"></i>Pending</span>
-        <span><i class="dot decision"></i>Decision</span>
-      </div>
-    </div>
+    <details class="flow-note-more">
+      <summary>Full coverage note</summary>
+      <p class="note">{{FLOW_NOTE_FULL}}</p>
+    </details>
+{{FLOW_EXPLORER}}
 
 {{EXISTING_USER_SHOTS}}
 
@@ -961,6 +1692,139 @@ INDEX_HTML = r"""<!DOCTYPE html>
   </div>
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+    const explorer = document.querySelector(".flow-explorer");
+    if (explorer) {
+      const meta = JSON.parse(explorer.getAttribute("data-flow-meta") || "{}");
+      const detailTitle = document.querySelector(".flow-detail-title");
+      const detailHow = document.querySelector(".flow-detail-how");
+      const detailBody = document.querySelector(".flow-detail-body");
+      const detailKicker = document.querySelector(".flow-detail-kicker");
+      const drawerList = document.getElementById("flow-drawer-list");
+      const bookingTabs = document.getElementById("flow-booking-tabs");
+      const notifTabs = document.getElementById("flow-notif-tabs");
+      const homeSections = document.getElementById("flow-home-sections");
+      const flowReturn = document.getElementById("flow-return");
+      const pageMeta = document.getElementById("flow-page-meta");
+      const pageSections = document.getElementById("flow-page-sections");
+      const pageActions = document.getElementById("flow-page-actions");
+      const pageTabs = document.getElementById("flow-page-tabs");
+      const pageSectionsLabel = document.getElementById("flow-page-sections-label");
+      const pageActionsLabel = document.getElementById("flow-page-actions-label");
+      const pageTabsLabel = document.getElementById("flow-page-tabs-label");
+      let fromDrawer = false;
+
+      const fillPills = (el, labelEl, items, kind) => {
+        if (!el) return;
+        el.innerHTML = "";
+        const list = items || [];
+        if (labelEl) labelEl.hidden = list.length === 0;
+        list.forEach((text) => {
+          const span = document.createElement("span");
+          span.className = `flow-page-pill kind-${kind}`;
+          span.textContent = text;
+          el.appendChild(span);
+        });
+      };
+
+      const activateInGroup = (group, target) => {
+        group.forEach((el) => el.classList.toggle("is-active", el === target));
+      };
+
+      explorer.querySelectorAll(".flow-tabs [data-panel]").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.getAttribute("data-panel");
+          explorer.querySelectorAll(".flow-tabs [data-panel]").forEach((t) => {
+            const on = t === tab;
+            t.classList.toggle("is-active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          explorer.querySelectorAll(".flow-panel").forEach((panel) => {
+            const on = panel.id === `panel-${id}`;
+            panel.classList.toggle("is-active", on);
+            panel.hidden = !on;
+          });
+        });
+      });
+
+      explorer.querySelectorAll(".flow-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const group = chip.closest(".flow-steps")?.querySelectorAll(".flow-chip") || [chip];
+          activateInGroup([...group], chip);
+        });
+      });
+
+      explorer.querySelectorAll(".flow-branch").forEach((branch) => {
+        branch.addEventListener("click", () => {
+          activateInGroup([...explorer.querySelectorAll(".flow-branch")], branch);
+        });
+      });
+
+      explorer.querySelectorAll(".home-section-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activateInGroup([...explorer.querySelectorAll(".home-section-btn")], btn);
+        });
+      });
+
+      const showDest = (dest) => {
+        const info = meta[dest] || { title: dest, how: "", detail: "", status: "pending" };
+        if (detailKicker) {
+          detailKicker.textContent = info.status === "done" ? "done"
+            : info.status === "progress" ? "in progress" : "pending";
+        }
+        if (detailTitle) detailTitle.textContent = info.title || dest;
+        if (detailHow) detailHow.textContent = info.how ? `Via: ${info.how}` : "";
+        if (detailBody) detailBody.textContent = info.detail || "";
+        if (drawerList) drawerList.hidden = !(dest === "profileDrawer" || fromDrawer);
+        if (bookingTabs) bookingTabs.hidden = dest !== "bookings";
+        if (notifTabs) notifTabs.hidden = dest !== "notifications";
+        if (homeSections) homeSections.hidden = dest !== "home";
+        if (flowReturn) {
+          const showReturn = dest === "quickBooking" || dest === "notifications" || dest === "calendar";
+          flowReturn.hidden = !showReturn;
+          if (dest === "quickBooking") {
+            flowReturn.innerHTML = 'Close / Back → <strong>Home</strong>';
+          } else if (dest === "calendar") {
+            flowReturn.innerHTML = 'Back or Home tab → <strong>Home</strong>';
+          } else {
+            flowReturn.innerHTML = 'Back → <strong>Home</strong>';
+          }
+        }
+        const showPage = !!((info.drawerItem || info.pageDetail)
+          && dest !== "home"
+          && (info.sections?.length || info.actions?.length || info.tabs?.length));
+        if (pageMeta) pageMeta.hidden = !showPage;
+        if (showPage) {
+          fillPills(pageSections, pageSectionsLabel, info.sections, "section");
+          fillPills(pageActions, pageActionsLabel, info.actions, "action");
+          // Tabs already shown as chips for bookings/notifications — skip duplicate pills there
+          if (dest === "notifications" || dest === "bookings") {
+            fillPills(pageTabs, pageTabsLabel, [], "tab");
+          } else {
+            fillPills(pageTabs, pageTabsLabel, info.tabs, "tab");
+          }
+        }
+        explorer.querySelectorAll(".flow-hotspot[data-dest], .drawer-chip[data-dest]").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.getAttribute("data-dest") === dest && !btn.disabled);
+        });
+      };
+
+      explorer.querySelectorAll(".flow-hotspot[data-dest]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          fromDrawer = false;
+          showDest(btn.getAttribute("data-dest"));
+        });
+      });
+      explorer.querySelectorAll(".drawer-chip[data-dest]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          fromDrawer = true;
+          showDest(btn.getAttribute("data-dest"));
+        });
+      });
+      showDest("home");
+    }
+
     mermaid.initialize({
       startOnLoad: false,
       theme: "base",
@@ -973,77 +1837,68 @@ INDEX_HTML = r"""<!DOCTYPE html>
         titleColor: "#5C5C5C",
         edgeLabelBackground: "rgba(255,254,249,0.85)"
       },
-      flowchart: { htmlLabels: true, curve: "basis", padding: 20, wrappingWidth: 240, useMaxWidth: false }
+      flowchart: { htmlLabels: true, curve: "basis", padding: 12, wrappingWidth: 200, useMaxWidth: true }
     });
-    await mermaid.run({ querySelector: ".mermaid" });
-    const ns = "http://www.w3.org/2000/svg";
-    document.querySelectorAll(".flow svg").forEach((svg) => {
-      const vb = svg.viewBox && svg.viewBox.baseVal;
-      if (vb && vb.width && vb.height) {
-        svg.setAttribute("width", String(Math.round(vb.width)));
-        svg.setAttribute("height", String(Math.round(vb.height)));
-        svg.style.width = `${Math.round(vb.width)}px`;
-        svg.style.height = `${Math.round(vb.height)}px`;
-      }
-      svg.style.maxWidth = "none";
-      let defs = svg.querySelector("defs");
-      if (!defs) {
-        defs = document.createElementNS(ns, "defs");
-        svg.prepend(defs);
-      }
-      if (!svg.querySelector("#l2b-grad-done")) {
-        defs.insertAdjacentHTML("beforeend", `
-          <linearGradient id="l2b-grad-done" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#F4FBF5"/>
-            <stop offset="100%" stop-color="#C8E6C9"/>
-          </linearGradient>
-          <linearGradient id="l2b-grad-progress" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FFFBF2"/>
-            <stop offset="100%" stop-color="#FFE4A8"/>
-          </linearGradient>
-          <linearGradient id="l2b-grad-pending" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FBFBFB"/>
-            <stop offset="100%" stop-color="#E4E4E4"/>
-          </linearGradient>
-          <linearGradient id="l2b-grad-decision" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FFFDF5"/>
-            <stop offset="100%" stop-color="#FFE082"/>
-          </linearGradient>`);
-      }
-      const paintFill = (status, fill) => {
-        svg.querySelectorAll(`.node.${status} .label-container > path`).forEach((el) => {
-          const current = el.getAttribute("fill");
-          if (current && current !== "none") {
-            el.setAttribute("fill", fill);
-            el.style.setProperty("fill", fill, "important");
-          }
-          el.style.removeProperty("stroke-width");
-        });
-        svg.querySelectorAll(`.node.${status} .label rect`).forEach((el) => {
-          el.setAttribute("fill", "transparent");
-          el.setAttribute("stroke", "none");
-          el.style.setProperty("fill", "transparent", "important");
-          el.style.setProperty("stroke", "none", "important");
-        });
-      };
-      paintFill("done", "url(#l2b-grad-done)");
-      paintFill("progress", "url(#l2b-grad-progress)");
-      paintFill("pending", "url(#l2b-grad-pending)");
-      paintFill("decision", "url(#l2b-grad-decision)");
-      svg.querySelectorAll(".node.progress .label-container > path").forEach((el) => {
-        el.setAttribute("stroke", "#E39A1C");
-        el.style.setProperty("stroke", "#E39A1C", "important");
-        el.setAttribute("stroke-width", "3.5");
-        el.style.setProperty("stroke-width", "3.5", "important");
+
+    let mermaidReady = false;
+    const paintMermaid = async () => {
+      if (mermaidReady) return;
+      const nodes = document.querySelectorAll("#flow-map-details .mermaid");
+      if (!nodes.length) return;
+      await mermaid.run({ nodes });
+      mermaidReady = true;
+      const ns = "http://www.w3.org/2000/svg";
+      document.querySelectorAll(".flow-map-canvas svg").forEach((svg) => {
+        svg.style.maxWidth = "100%";
+        svg.style.height = "auto";
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        let defs = svg.querySelector("defs");
+        if (!defs) {
+          defs = document.createElementNS(ns, "defs");
+          svg.prepend(defs);
+        }
+        if (!svg.querySelector("#l2b-grad-done")) {
+          defs.insertAdjacentHTML("beforeend", `
+            <linearGradient id="l2b-grad-done" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F4FBF5"/>
+              <stop offset="100%" stop-color="#C8E6C9"/>
+            </linearGradient>
+            <linearGradient id="l2b-grad-progress" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFBF2"/>
+              <stop offset="100%" stop-color="#FFE4A8"/>
+            </linearGradient>
+            <linearGradient id="l2b-grad-pending" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FBFBFB"/>
+              <stop offset="100%" stop-color="#E4E4E4"/>
+            </linearGradient>
+            <linearGradient id="l2b-grad-decision" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFDF5"/>
+              <stop offset="100%" stop-color="#FFE082"/>
+            </linearGradient>`);
+        }
+        const paintFill = (status, fill) => {
+          svg.querySelectorAll(`.node.${status} .label-container > path`).forEach((el) => {
+            const current = el.getAttribute("fill");
+            if (current && current !== "none") {
+              el.setAttribute("fill", fill);
+              el.style.setProperty("fill", fill, "important");
+            }
+          });
+        };
+        paintFill("done", "url(#l2b-grad-done)");
+        paintFill("progress", "url(#l2b-grad-progress)");
+        paintFill("pending", "url(#l2b-grad-pending)");
+        paintFill("decision", "url(#l2b-grad-decision)");
       });
-      svg.querySelectorAll(".node").forEach((node) => {
-        if (node.querySelector(":scope > .node-visual")) return;
-        const wrap = document.createElementNS(ns, "g");
-        wrap.setAttribute("class", "node-visual");
-        while (node.firstChild) wrap.appendChild(node.firstChild);
-        node.appendChild(wrap);
+    };
+
+    const mapDetails = document.getElementById("flow-map-details");
+    if (mapDetails) {
+      mapDetails.addEventListener("toggle", () => {
+        if (mapDetails.open) paintMermaid();
       });
-    });
+    }
   </script>
 </body>
 </html>
