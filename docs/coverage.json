@@ -150,11 +150,11 @@
   {
    "id": "fleet",
    "name": "Fleet",
-   "status": "in-progress",
-   "casesDone": 7,
-   "casesTotal": 7,
+   "status": "done",
+   "casesDone": 39,
+   "casesTotal": 39,
    "screens": 1,
-   "note": "Landing FL-L1–L7 PASS 25 Sep (dump /tmp/l2b-fleet-0001-20260925). 4 Active machines. Next: Interact / Edge / Add Machine."
+   "note": "L1–L9 + I1–I16 + E1–E17 done 25 Sep on 9000000001 (dump-reachable). Destructive Disable/Delete Confirm only on disposable FLNOD*. Known Fleet bugs #35–#38. Only remaining manual gap: real RC/Insurance/TPI happy-path verify (user to provide) + empty-fleet account if needed."
   },
   {
    "id": "calendar",

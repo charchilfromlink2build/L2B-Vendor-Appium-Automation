@@ -16,8 +16,8 @@ import org.testng.annotations.Test;
 
 /**
  * Fleet landing — read-only chrome on {@code 9000000001}. Dump
- * {@code /tmp/l2b-fleet-0001-20260925}. Do not submit Add Machine or confirm
- * operator changes.
+ * {@code /tmp/l2b-fleet-full-0001-20260925} (03-fleet-list). Do not submit
+ * Add Machine, confirm operator, Delete, or Disable.
  */
 @Epic("Vendor app")
 @Feature("Fleet landing — rental 9000000001")
@@ -25,15 +25,17 @@ public class FleetLandingTest extends FleetBaseTest {
 
     @Test(priority = 1, description = "FL-L1: bottom Fleet tab opens Your Fleet; bottom bar stays")
     @Severity(SeverityLevel.BLOCKER)
-    @Description("From usable Rental Home, tap Fleet. Expect Your Fleet / Add Machine, "
-            + "Calendar·Home·Earning·Fleet still visible. Dump 25 Sep 01-fleet-tab.")
+    @Description("Dump 03-fleet-list: content-desc Fleet from Home → texts Your Fleet + Add Machine; "
+            + "descs Back + Calendar·Home·Earning·Fleet. classifyRentalNow=fleet.")
     public void bottomTabOpensFleet() {
         FleetPage fleet = reachFleetViaTab();
         fleet.attachScreenshot("fleet-fl-l1-tab");
         Allure.parameter("tabsStay", String.valueOf(fleet.areBottomTabsVisible()));
-        Allure.parameter("plates", String.valueOf(fleet.visiblePlateCount()));
+        Allure.parameter("yourFleet", String.valueOf(fleet.isYourFleetTitleVisible()));
+        Allure.parameter("addMachine", String.valueOf(fleet.isAddMachineVisible()));
         assertThat(vendorPackage()).isEqualTo(Config.get("app.package"));
-        assertThat(fleet.isDisplayedNow()).as("Your Fleet or Add Machine").isTrue();
+        assertThat(fleet.isYourFleetTitleVisible()).as("Dump title Your Fleet").isTrue();
+        assertThat(fleet.isAddMachineVisible()).as("Dump CTA Add Machine").isTrue();
         assertThat(fleet.areBottomTabsVisible()).as("Bottom bar stays on Fleet tab").isTrue();
         assertThat(classifyRentalNow()).isEqualTo("fleet");
     }
@@ -126,5 +128,30 @@ public class FleetLandingTest extends FleetBaseTest {
         assertThat(change || select)
                 .as("At least one Change… or Select operator control")
                 .isTrue();
+    }
+
+    @Test(priority = 8, description = "FL-L8: list can show Under Review status")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Live 25 Sep: fleet may include Under Review (e.g. newly submitted machine). "
+            + "Record presence; Active still required on 0001.")
+    public void underReviewStatusWhenPresent() {
+        FleetPage fleet = reachFleetViaTab();
+        boolean under = fleet.hasUnderReviewStatus();
+        Allure.parameter("underReview", String.valueOf(under));
+        fleet.attachScreenshot("fleet-fl-l8-under-review");
+        assertThat(fleet.hasActiveStatus()).as("Active machines still on 0001").isTrue();
+        assertThat(fleet.isDisplayedNow()).isTrue();
+    }
+
+    @Test(priority = 9, description = "FL-L9: swipe list keeps Your Fleet + bottom tabs")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Dump 04-fleet-scrolled: swipe up on list — title and Calendar·Home·Earning·Fleet stay.")
+    public void swipeListKeepsChrome() {
+        FleetPage fleet = reachFleetViaTab();
+        fleet.swipeFleetListUp();
+        fleet.attachScreenshot("fleet-fl-l9-scrolled");
+        assertThat(fleet.isYourFleetTitleVisible() || fleet.isDisplayedNow()).isTrue();
+        assertThat(fleet.areBottomTabsVisible()).isTrue();
+        assertThat(classifyRentalNow()).isEqualTo("fleet");
     }
 }

@@ -11,7 +11,8 @@ import io.qameta.allure.Step;
 
 /**
  * Shared 9000000001 path onto Fleet. Close QB only. Never Accept / Decline /
- * Log Out / Add Machine submit / operator confirm.
+ * Log Out. Operator confirm + Submit &amp; Verify allowed only in Interact I9+
+ * / Edge suites that explicitly cover those paths.
  */
 public abstract class FleetBaseTest extends RentalHomeBaseTest {
 
