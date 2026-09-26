@@ -128,7 +128,7 @@
    "casesDone": 55,
    "casesTotal": 55,
    "screens": 1,
-   "note": "Includes free-operator UI Accept→Confirm PASS on F7D066 (23 Sep)."
+   "note": "Includes free-operator UI Accept\u2192Confirm PASS on F7D066 (23 Sep)."
   },
   {
    "id": "home",
@@ -145,7 +145,7 @@
    "casesDone": 82,
    "casesTotal": 82,
    "screens": 1,
-   "note": "82/82 executed 24 Sep. L16+I16+S16+E20+A14. BLOCKED only S15+E4 (near-expiry Timer seed; timer restarts on relaunch #28). Open Bookings bugs #27–#34."
+   "note": "82/82 executed 24 Sep. L16+I16+S16+E20+A14. BLOCKED only S15+E4 (near-expiry Timer seed; timer restarts on relaunch #28). Open Bookings bugs #27\u2013#34."
   },
   {
    "id": "fleet",
@@ -154,7 +154,7 @@
    "casesDone": 39,
    "casesTotal": 39,
    "screens": 1,
-   "note": "L1–L9 + I1–I16 + E1–E17 done 25 Sep on 9000000001 (dump-reachable). Destructive Disable/Delete Confirm only on disposable FLNOD*. Known Fleet bugs #35–#38. Only remaining manual gap: real RC/Insurance/TPI happy-path verify (user to provide) + empty-fleet account if needed."
+   "note": "L1\u2013L9 + I1\u2013I16 + E1\u2013E17 done 25 Sep on 9000000001 (dump-reachable). Destructive Disable/Delete Confirm only on disposable FLNOD*. Known Fleet bugs #35\u2013#38. Only remaining manual gap: real RC/Insurance/TPI happy-path verify (user to provide) + empty-fleet account if needed."
   },
   {
    "id": "calendar",
@@ -167,10 +167,11 @@
   {
    "id": "earning",
    "name": "Earning",
-   "status": "pending",
-   "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "status": "done",
+   "casesDone": 36,
+   "casesTotal": 36,
+   "screens": 1,
+   "note": "L10+I14+E12 = 36/36 PASS 26 Sep on 9000000001 (I1/E5 re-PASS after Help-Back dismiss fix). Dump /tmp/l2b-earning-0001-20260926. Transfer/Add Money not on live rental. Never confirm Withdraw Money. E6 documents Home Western vs Wallet grouping when visible. Open bug #39 (Home Western vs Wallet Indian grouping)."
   },
   {
    "id": "notifications",
@@ -325,79 +326,79 @@
  "loggedInExtra": [
   "quickBooking"
  ],
- "whatsNext": "Fleet Interact / Edge — Landing FL-L1–L7 PASS (4 Active machines on 9000000001)",
- "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back → launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE — 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch — #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27–#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred. Rental Home chrome: bottom tabs Calendar · Home · Earning · Fleet; header bell opens Notifications; profile photo opens the Profile drawer; Upcoming See all / card opens Rental Booking with Upcoming · Active · Completed tabs; Booking Orders See all returns to Quick Booking.",
- "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP (screenshot: assets/screens/quick-booking-rental.png). 19 Sep on 9000000017: pending material orders open the same Quick Booking page — material chrome, no timer/operator (screenshot: assets/screens/quick-booking-material.png). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
+ "whatsNext": "Fleet Interact / Edge \u2014 Landing FL-L1\u2013L7 PASS (4 Active machines on 9000000001)",
+ "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup \u2014 Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done \u2014 40 isolated cases. Material Vendor Quick Booking (9000000017) is done \u2014 Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done \u2014 Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back \u2192 launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE \u2014 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch \u2014 #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27\u2013#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred. Rental Home chrome: bottom tabs Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet; header bell opens Notifications; profile photo opens the Profile drawer; Upcoming See all / card opens Rental Booking with Upcoming \u00b7 Active \u00b7 Completed tabs; Booking Orders See all returns to Quick Booking.",
+ "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP (screenshot: assets/screens/quick-booking-rental.png). 19 Sep on 9000000017: pending material orders open the same Quick Booking page \u2014 material chrome, no timer/operator (screenshot: assets/screens/quick-booking-material.png). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
  "existingUserEvidence": [
   {
    "src": "assets/screens/quick-booking-rental.png",
-   "caption": "Existing user + active rental booking — Quick Booking (9000000001)"
+   "caption": "Existing user + active rental booking \u2014 Quick Booking (9000000001)"
   },
   {
    "src": "assets/screens/quick-booking-material.png",
-   "caption": "Existing user + active material order — same Quick Booking pattern (9000000017)"
+   "caption": "Existing user + active material order \u2014 same Quick Booking pattern (9000000017)"
   },
   {
    "src": "assets/screens/home-rental-with-fleet.png",
-   "caption": "Existing user, no active booking/order — Home"
+   "caption": "Existing user, no active booking/order \u2014 Home"
   }
  ],
  "flowEvidenceNote": "New user only (mobile not already registered). Live-app screenshots, Sep. Contact us opens the same Help & Support chrome as the logged-in Help module.",
  "flowEvidence": [
   {
    "src": "assets/flow/sign-up-completed.jpg",
-   "caption": "1. After first login — Sign Up Completed"
+   "caption": "1. After first login \u2014 Sign Up Completed"
   },
   {
    "src": "assets/flow/select-your-role.jpg",
-   "caption": "2. Register Yourself — Select your role"
+   "caption": "2. Register Yourself \u2014 Select your role"
   },
   {
    "src": "assets/flow/help-and-support.jpg",
-   "caption": "3. Contact us — Help & Support"
+   "caption": "3. Contact us \u2014 Help & Support"
   }
  ],
  "roleEvidenceNote": "Live-app screenshots, Sep. Next on Select your role depends on the role card.",
  "roleEvidence": [
   {
    "src": "assets/flow/select-category.jpg",
-   "caption": "4. Vendor / Owner — Please select the category"
+   "caption": "4. Vendor / Owner \u2014 Please select the category"
   },
   {
    "src": "assets/flow/tell-us-about-yourself.jpg",
-   "caption": "5. Operator / Driver — Tell us about yourself"
+   "caption": "5. Operator / Driver \u2014 Tell us about yourself"
   }
  ],
  "categoryEvidenceNote": "Live-app screenshots, Sep. Same title, different fields.",
  "categoryEvidence": [
   {
    "src": "assets/flow/tell-us-materials.jpg",
-   "caption": "6. Materials Vendor — warehouse location"
+   "caption": "6. Materials Vendor \u2014 warehouse location"
   },
   {
    "src": "assets/flow/tell-us-rental.jpg",
-   "caption": "7. Rental Vendor — company + machinery"
+   "caption": "7. Rental Vendor \u2014 company + machinery"
   }
  ],
- "materialEvidenceNote": "Design strip, Sep. After Materials Tell us: KYC (company-type variants) → Profile Verification → skip or KYC → material Home / Inventory.",
+ "materialEvidenceNote": "Design strip, Sep. After Materials Tell us: KYC (company-type variants) \u2192 Profile Verification \u2192 skip or KYC \u2192 material Home / Inventory.",
  "materialEvidence": [
   {
    "src": "assets/flow/material-vendor-registration.jpg",
-   "caption": "8. Material Vendor registration — KYC → Profile Verification → Home"
+   "caption": "8. Material Vendor registration \u2014 KYC \u2192 Profile Verification \u2192 Home"
   }
  ],
- "rentalEvidenceNote": "Design strip, Sep. After Rental Tell us: List machineries → Machine successfully added. Skip goes to Home. Complete KYC goes to KYC → Profile Verification → Home.",
+ "rentalEvidenceNote": "Design strip, Sep. After Rental Tell us: List machineries \u2192 Machine successfully added. Skip goes to Home. Complete KYC goes to KYC \u2192 Profile Verification \u2192 Home.",
  "rentalEvidence": [
   {
    "src": "assets/flow/rental-vendor-registration.jpg",
-   "caption": "9. Rental Vendor registration — machines → Skip or KYC → Home"
+   "caption": "9. Rental Vendor registration \u2014 machines \u2192 Skip or KYC \u2192 Home"
   }
  ],
- "operatorEvidenceNote": "Design strip, Sep. After Operator Tell us: List skills → Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC → Profile Verification → Home.",
+ "operatorEvidenceNote": "Design strip, Sep. After Operator Tell us: List skills \u2192 Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC \u2192 Profile Verification \u2192 Home.",
  "operatorEvidence": [
   {
    "src": "assets/flow/operator-registration.jpg",
-   "caption": "10. Operator / Driver registration — skills → Skip or KYC → Home"
+   "caption": "10. Operator / Driver registration \u2014 skills \u2192 Skip or KYC \u2192 Home"
   }
  ],
  "postLoginFromHome": [
@@ -416,148 +417,340 @@
   "note": "Rental Home (9000000001): bottom Calendar/Home/Earning/Fleet; header profile + notifications.",
   "bookingsTabsLabel": "Upcoming / Active / Completed",
   "notificationsPage": {
-    "title": "Notification",
-    "tabs": ["Unread", "All"],
-    "sections": [
-      "Header: Back + title Notification",
-      "Tab bar: Unread | All",
-      "Unread empty: You're all caught up. + View all notifications",
-      "All list: category blocks (e.g. Rentals + See all)",
-      "Row: bell icon · title · body · time · View Details"
-    ],
-    "actions": ["Back → Home", "View all notifications (→ All tab)", "See all (per category)", "View Details (row)"],
-    "note": "Stack screen from Home bell — bottom tabs gone. Live 0001: Unread empty; All has Rentals booking-request rows. No separate Marked as read tab — read items live under All. Mark-all-read control not present on this build for 0001."
+   "title": "Notification",
+   "tabs": [
+    "Unread",
+    "All"
+   ],
+   "sections": [
+    "Header: Back + title Notification",
+    "Tab bar: Unread | All",
+    "Unread empty: You're all caught up. + View all notifications",
+    "All list: category blocks (e.g. Rentals + See all)",
+    "Row: bell icon \u00b7 title \u00b7 body \u00b7 time \u00b7 View Details"
+   ],
+   "actions": [
+    "Back \u2192 Home",
+    "View all notifications (\u2192 All tab)",
+    "See all (per category)",
+    "View Details (row)"
+   ],
+   "note": "Stack screen from Home bell \u2014 bottom tabs gone. Live 0001: Unread empty; All has Rentals booking-request rows. No separate Marked as read tab \u2014 read items live under All. Mark-all-read control not present on this build for 0001."
   },
   "calendarPage": {
-    "title": "Schedule",
-    "tabs": [],
-    "sections": [
-      "Header: Back + Schedule + year",
-      "Month nav: Previous month / Next month",
-      "Month grid (S–S) with day status bars",
-      "Selected day heading (e.g. 25 September, Friday)",
-      "Day agenda timeline: Started / Completed / Start Task + machine cards (name, dates, route)",
-      "Empty day: No bookings on this day."
-    ],
-    "actions": ["Back → Home", "Home bottom tab → Home", "Previous month", "Next month", "Select day"],
-    "note": "Bottom tab surface — Calendar · Home · Earning · Fleet stay. No Unread/All-style tabs on this page. Live 0001 Sep 2026: day 21 empty; day 25 has timeline jobs (Tata Ace / Excavator)."
+   "title": "Schedule",
+   "tabs": [],
+   "sections": [
+    "Header: Back + Schedule + year",
+    "Month nav: Previous month / Next month",
+    "Month grid (S\u2013S) with day status bars",
+    "Selected day heading (e.g. 25 September, Friday)",
+    "Day agenda timeline: Started / Completed / Start Task + machine cards (name, dates, route)",
+    "Empty day: No bookings on this day."
+   ],
+   "actions": [
+    "Back \u2192 Home",
+    "Home bottom tab \u2192 Home",
+    "Previous month",
+    "Next month",
+    "Select day"
+   ],
+   "note": "Bottom tab surface \u2014 Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet stay. No Unread/All-style tabs on this page. Live 0001 Sep 2026: day 21 empty; day 25 has timeline jobs (Tata Ace / Excavator)."
   },
   "homePage": {
-    "title": "Home",
-    "tabs": [],
-    "sections": [
-      {"label": "Header: Profile + greeting", "status": "pending", "module": "profileDrawer"},
-      {"label": "Monthly period", "status": "done", "module": "home"},
-      {"label": "Notifications bell", "status": "pending", "module": "notifications"},
-      {"label": "Current Earning", "status": "done", "module": "home"},
-      {"label": "Active Fleet (+ See all)", "status": "pending", "module": "fleet"},
-      {"label": "Total Completed Task", "status": "done", "module": "home"},
-      {"label": "Upcoming Booking (stat)", "status": "done", "module": "home"},
-      {"label": "Earning Projected", "status": "done", "module": "home"},
-      {"label": "Material Deliveries (+ See all)", "status": "done", "module": "home"},
-      {"label": "Upcoming Booking strip (+ See all)", "status": "done", "module": "bookings"},
-      {"label": "Booking Orders (+ See all · Timer · Decline · Accept)", "status": "done", "module": "quickBooking"},
-      {"label": "Bottom tabs: Calendar · Home · Earning · Fleet", "status": "pending", "module": "calendar"}
-    ],
-    "actions": [],
-    "note": "Home page chrome 72/72 done. Modules still open from Home: Calendar, Earning, Fleet (landing only), Notifications, Profile drawer rows. Done exits: Rental Booking, Quick Booking."
+   "title": "Home",
+   "tabs": [],
+   "sections": [
+    {
+     "label": "Header: Profile + greeting",
+     "status": "pending",
+     "module": "profileDrawer"
+    },
+    {
+     "label": "Monthly period",
+     "status": "done",
+     "module": "home"
+    },
+    {
+     "label": "Notifications bell",
+     "status": "pending",
+     "module": "notifications"
+    },
+    {
+     "label": "Current Earning",
+     "status": "done",
+     "module": "home"
+    },
+    {
+     "label": "Active Fleet (+ See all)",
+     "status": "pending",
+     "module": "fleet"
+    },
+    {
+     "label": "Total Completed Task",
+     "status": "done",
+     "module": "home"
+    },
+    {
+     "label": "Upcoming Booking (stat)",
+     "status": "done",
+     "module": "home"
+    },
+    {
+     "label": "Earning Projected",
+     "status": "done",
+     "module": "home"
+    },
+    {
+     "label": "Material Deliveries (+ See all)",
+     "status": "done",
+     "module": "home"
+    },
+    {
+     "label": "Upcoming Booking strip (+ See all)",
+     "status": "done",
+     "module": "bookings"
+    },
+    {
+     "label": "Booking Orders (+ See all \u00b7 Timer \u00b7 Decline \u00b7 Accept)",
+     "status": "done",
+     "module": "quickBooking"
+    },
+    {
+     "label": "Bottom tabs: Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet",
+     "status": "pending",
+     "module": "calendar"
+    }
+   ],
+   "actions": [],
+   "note": "Home page chrome 72/72 done. Modules still open from Home: Calendar, Earning, Fleet (landing only), Notifications, Profile drawer rows. Done exits: Rental Booking, Quick Booking."
   },
   "fromHome": [
-   {"to": "calendar", "label": "bottom tab"},
-   {"to": "earning", "label": "bottom tab"},
-   {"to": "fleet", "label": "bottom tab"},
-   {"to": "notifications", "label": "bell icon"},
-   {"to": "profileDrawer", "label": "profile photo"},
-   {"to": "bookings", "label": "Upcoming See all or card"},
-   {"to": "quickBooking", "label": "Booking Orders See all"}
+   {
+    "to": "calendar",
+    "label": "bottom tab"
+   },
+   {
+    "to": "earning",
+    "label": "bottom tab"
+   },
+   {
+    "to": "fleet",
+    "label": "bottom tab"
+   },
+   {
+    "to": "notifications",
+    "label": "bell icon"
+   },
+   {
+    "to": "profileDrawer",
+    "label": "profile photo"
+   },
+   {
+    "to": "bookings",
+    "label": "Upcoming See all or card"
+   },
+   {
+    "to": "quickBooking",
+    "label": "Booking Orders See all"
+   }
   ],
   "drawer": [
-   {"to": "account", "label": "Account"},
-   {"to": "kyc", "label": "KYC Details"},
-   {"to": "fleet", "label": "Your machines"},
-   {"to": "team", "label": "Manage team"},
-   {"to": "help", "label": "Help and Support"},
-   {"to": "languageSettings", "label": "Language"},
-   {"to": "referEarn", "label": "Refer and Earn"},
-   {"to": "faq", "label": "FAQ"},
-   {"to": "terms", "label": "Terms"},
-   {"to": "policies", "label": "Policies"},
-   {"to": "settings", "label": "Settings"},
-   {"to": "logout", "label": "Log Out"}
+   {
+    "to": "account",
+    "label": "Account"
+   },
+   {
+    "to": "kyc",
+    "label": "KYC Details"
+   },
+   {
+    "to": "fleet",
+    "label": "Your machines"
+   },
+   {
+    "to": "team",
+    "label": "Manage team"
+   },
+   {
+    "to": "help",
+    "label": "Help and Support"
+   },
+   {
+    "to": "languageSettings",
+    "label": "Language"
+   },
+   {
+    "to": "referEarn",
+    "label": "Refer and Earn"
+   },
+   {
+    "to": "faq",
+    "label": "FAQ"
+   },
+   {
+    "to": "terms",
+    "label": "Terms"
+   },
+   {
+    "to": "policies",
+    "label": "Policies"
+   },
+   {
+    "to": "settings",
+    "label": "Settings"
+   },
+   {
+    "to": "logout",
+    "label": "Log Out"
+   }
   ],
   "drawerPages": {
    "account": {
     "title": "Account / Profile Info",
-    "sections": ["Profile photo", "Full Name", "Mobile", "Company Info"],
-    "actions": ["Edit", "Update"],
+    "sections": [
+     "Profile photo",
+     "Full Name",
+     "Mobile",
+     "Company Info"
+    ],
+    "actions": [
+     "Edit",
+     "Update"
+    ],
     "note": "Stack screen from drawer. Live 0001: mobile 9000000001."
    },
    "kyc": {
     "title": "KYC Details",
-    "sections": ["Company PAN", "GST", "Document Details"],
-    "actions": ["Back"],
+    "sections": [
+     "Company PAN",
+     "GST",
+     "Document Details"
+    ],
+    "actions": [
+     "Back"
+    ],
     "note": "Read-only hub for company KYC docs."
    },
    "fleet": {
-    "title": "Your machines → Your Fleet",
-    "sections": ["Machine cards (name, plate, capacity, operator, Status)"],
-    "actions": ["Add Machine", "Change operator / Select", "Back"],
+    "title": "Your machines \u2192 Your Fleet",
+    "sections": [
+     "Machine cards (name, plate, capacity, operator, Status)"
+    ],
+    "actions": [
+     "Add Machine",
+     "Change operator / Select",
+     "Back"
+    ],
     "tabs": [],
     "note": "Same Fleet surface as bottom Fleet tab and Active Fleet See all."
    },
    "team": {
     "title": "Manage team",
-    "sections": ["Team member list", "Invite / assignment"],
-    "actions": ["Change Assignment", "Back"],
-    "note": "Live 0001: Nauman Majid Pathan · 9000000002."
+    "sections": [
+     "Team member list",
+     "Invite / assignment"
+    ],
+    "actions": [
+     "Change Assignment",
+     "Back"
+    ],
+    "note": "Live 0001: Nauman Majid Pathan \u00b7 9000000002."
    },
    "help": {
     "title": "Help and Support",
-    "sections": ["Live chat", "Raise Ticket", "Ticket history"],
-    "actions": ["Back"],
-    "note": "Hours copy: 8:00 AM – 8:00 PM."
+    "sections": [
+     "Live chat",
+     "Raise Ticket",
+     "Ticket history"
+    ],
+    "actions": [
+     "Back"
+    ],
+    "note": "Hours copy: 8:00 AM \u2013 8:00 PM."
    },
    "languageSettings": {
     "title": "Language",
-    "sections": ["English (Default)", "Hindi", "Telugu", "Kannada"],
-    "actions": ["Save", "Back"],
+    "sections": [
+     "English (Default)",
+     "Hindi",
+     "Telugu",
+     "Kannada"
+    ],
+    "actions": [
+     "Save",
+     "Back"
+    ],
     "note": "In-app language settings (not first-launch Welcome)."
    },
    "referEarn": {
     "title": "Refer and Earn",
-    "sections": ["Referral code", "Reward copy"],
-    "actions": ["Share / copy", "Back"],
+    "sections": [
+     "Referral code",
+     "Reward copy"
+    ],
+    "actions": [
+     "Share / copy",
+     "Back"
+    ],
     "note": "Referral surface from drawer."
    },
    "faq": {
     "title": "FAQ",
-    "sections": ["FAQ list (review, payout, start job, cancel, reach a human)"],
-    "actions": ["Back"],
+    "sections": [
+     "FAQ list (review, payout, start job, cancel, reach a human)"
+    ],
+    "actions": [
+     "Back"
+    ],
     "note": "Expandable FAQ rows."
    },
    "terms": {
     "title": "Terms and Services",
-    "sections": ["Partner obligations", "No off-platform settle"],
-    "actions": ["Back"],
+    "sections": [
+     "Partner obligations",
+     "No off-platform settle"
+    ],
+    "actions": [
+     "Back"
+    ],
     "note": "Scrollable legal copy."
    },
    "policies": {
     "title": "Policies",
-    "sections": ["KYC", "Location on active jobs", "Payouts"],
-    "actions": ["Back"],
+    "sections": [
+     "KYC",
+     "Location on active jobs",
+     "Payouts"
+    ],
+    "actions": [
+     "Back"
+    ],
     "note": "Privacy / policy copy."
    },
    "settings": {
     "title": "Settings",
-    "sections": ["Notification", "GPS Location", "Camera Access"],
-    "actions": ["Toggles", "Back"],
+    "sections": [
+     "Notification",
+     "GPS Location",
+     "Camera Access"
+    ],
+    "actions": [
+     "Toggles",
+     "Back"
+    ],
     "note": "Permission toggles."
    },
    "logout": {
     "title": "Log Out",
-    "sections": ["Log Out? confirm dialog"],
-    "actions": ["Confirm Log Out", "Cancel"],
-    "note": "Do not tap Confirm in automation — session destroy."
+    "sections": [
+     "Log Out? confirm dialog"
+    ],
+    "actions": [
+     "Confirm Log Out",
+     "Cancel"
+    ],
+    "note": "Do not tap Confirm in automation \u2014 session destroy."
    }
   }
  }
