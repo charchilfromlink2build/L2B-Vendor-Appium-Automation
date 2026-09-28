@@ -159,10 +159,11 @@
   {
    "id": "calendar",
    "name": "Calendar",
-   "status": "pending",
-   "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "status": "done",
+   "casesDone": 38,
+   "casesTotal": 38,
+   "screens": 1,
+   "note": "L10+I14+E14 = 38/38 PASS 28 Sep on 9000000001. Dump /tmp/l2b-calendar-0001-20260928. Publish layout checks PASS (header title/year, month between chevrons, day-heading inset, bottom-tab spacing). Start Task probed only — never complete job. CA-E13 documents known #25 cascade (Schedule→Home→Back→launcher). Suites under src/test/resources/calendar/."
   },
   {
    "id": "earning",
@@ -176,10 +177,11 @@
   {
    "id": "notifications",
    "name": "Notifications",
-   "status": "pending",
-   "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "status": "done",
+   "casesDone": 38,
+   "casesTotal": 38,
+   "screens": 1,
+   "note": "L10+I14+E14 = 38/38 PASS 28 Sep on 9000000001. Dump /tmp/l2b-notifications-0001-20260928. Unread empty + View all; All Rentals + See all + Mark all read; View Details opens QB (never Accept/Decline). Stack hides bottom tabs. Layout checks PASS. NT-E13 documents known #25 cascade. Suites under src/test/resources/notifications/."
   },
   {
    "id": "team",
@@ -435,7 +437,7 @@
     "See all (per category)",
     "View Details (row)"
    ],
-   "note": "Stack screen from Home bell \u2014 bottom tabs gone. Live 0001: Unread empty; All has Rentals booking-request rows. No separate Marked as read tab \u2014 read items live under All. Mark-all-read control not present on this build for 0001."
+   "note": "Stack screen from Home bell \u2014 bottom tabs gone. Live 0001 28 Sep 2026: L/I/E 38/38 PASS. Unread empty (You're all caught up.); View all \u2192 All Rentals rows + View Details; See all \u2192 Mark all read; View Details \u2192 Quick Booking (Close only). Header/device Back \u2192 Home."
   },
   "calendarPage": {
    "title": "Schedule",
@@ -455,7 +457,7 @@
     "Next month",
     "Select day"
    ],
-   "note": "Bottom tab surface \u2014 Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet stay. No Unread/All-style tabs on this page. Live 0001 Sep 2026: day 21 empty; day 25 has timeline jobs (Tata Ace / Excavator)."
+   "note": "Bottom tab surface \u2014 Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet stay. No Unread/All-style tabs on this page. Live 0001 28 Sep 2026: L/I/E 38/38 PASS. Day 21 empty; day 25 Started/Completed/Start Task (Tata Ace / Excavator). Month nav Aug/Oct OK. Layout padding/spacing checks green."
   },
   "homePage": {
    "title": "Home",
@@ -473,7 +475,7 @@
     },
     {
      "label": "Notifications bell",
-     "status": "pending",
+     "status": "done",
      "module": "notifications"
     },
     {
@@ -518,12 +520,12 @@
     },
     {
      "label": "Bottom tabs: Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet",
-     "status": "pending",
+     "status": "done",
      "module": "calendar"
     }
    ],
    "actions": [],
-   "note": "Home page chrome 72/72 done. Modules still open from Home: Calendar, Earning, Fleet (landing only), Notifications, Profile drawer rows. Done exits: Rental Booking, Quick Booking."
+   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications done from Home. Still open from Home: Profile drawer rows. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications."
   },
   "fromHome": [
    {

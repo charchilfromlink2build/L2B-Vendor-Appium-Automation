@@ -114,6 +114,10 @@ public abstract class RentalHomeBaseTest extends QuickBookingBaseTest {
         if (hasText("Notification") && (hasText("Unread") || hasText("All"))) {
             return "notifications";
         }
+        // Category list from Notification "See all" (e.g. Rentals + Mark all read)
+        if (hasText("Mark all read") && (hasText("Rentals") || hasText("View Details"))) {
+            return "notifications-category";
+        }
         if (new HomePage().isDisplayedNow()) {
             return "home";
         }
