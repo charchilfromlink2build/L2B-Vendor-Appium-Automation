@@ -1,0 +1,76 @@
+---
+description: Module automation must list Happy Path + Edge Cases, then TestNG @Test methods with hard/soft asserts. Applies to every L2B Vendor screen module.
+alwaysApply: true
+---
+
+# Module automation — Happy Path + Edge (senior QA)
+
+Before writing or expanding **any** module (Profile drawer, Account, KYC, Fleet, …), do this order every time. Do not skip.
+
+## 1. List cases first (in chat + class Javadoc)
+
+**A. Standard / Happy Path** — expected user journey when everything works:
+- Entry (how we open the screen)
+- Primary chrome visible (title, key labels, CTAs)
+- Successful navigation / actions that must work
+- Safe exits (Back, Cancel, Close) that leave Vendor package + correct screen
+- Never include destructive confirms in happy path unless the module owns a disposable fixture
+
+**B. Critical Edge Cases** — stress / recover / must-not-break:
+- Rapid repeat taps, double open/close
+- Dialog Back / Cancel (must not confirm logout, Accept, Decline, Save, Withdraw, …)
+- Layout / padding publish checks when dump has bounds
+- Recover after dismiss + reopen
+- Package stays Vendor; never launcher / wrong app
+- Idempotent Cancel / Back chains
+- Known-bug documentation only when a case proves it (do not invent)
+
+Write both lists **before** coding. Keep them updated when dump reveals new chrome.
+
+## 2. Automation scripts (TestNG)
+
+Map lists → separate `@Test` methods (one case ≈ one method):
+
+| List | Test class (project convention) | ID prefix |
+|------|----------------------------------|-----------|
+| Happy Path (identity / chrome) | `*LandingTest` | `XX-L*` |
+| Happy Path (user actions) | `*InteractTest` | `XX-I*` |
+| Critical Edge | `*EdgeTest` | `XX-E*` |
+
+Rules:
+- Each `@Test` has `description` matching the case id + short title
+- Prefer dump-sourced locators / Page Object; no blind XPaths
+- Standing never-taps: Accept / Decline / Log Out confirm / Withdraw confirm / Save Changes (unless disposable fixture explicitly allowed)
+- Chrome-only vs deep module: respect current scope (e.g. Profile drawer chrome before Account page)
+
+## 3. Assertions (hard + soft)
+
+**Hard** (fail fast — journey broken):
+- Entry succeeded (`classify…` / `isDisplayedNow`)
+- Critical CTA / title present
+- Vendor package still `l2b`
+- Must-not navigate to launcher / wrong screen after Cancel/Back
+
+Use AssertJ `assertThat(...).as("…").isTrue()` / `isEqualTo(...)` (project default). Equivalent intent to TestNG `Assert.assertTrue` / `Assert.assertEquals`.
+
+**Soft** (collect layout / secondary copy, then report):
+- Use `org.assertj.core.api.SoftAssertions` (or `softly.assertThat`) for non-blocking layout bands, optional labels, multi-check publish rows
+- Call `softly.assertAll()` at end of that test
+- Do **not** soft-assert blocker identity (title / entry / package) — those stay hard
+
+Validate:
+- Successful navigation (hard)
+- Error / dialog copy when the case opens a dialog (hard for presence; soft OK for secondary wording if flaky)
+- Layout spacing / insets (prefer soft batch in one `*-E*` or `*-L*` layout test)
+
+## 4. Per-module checklist (do not forget)
+
+1. Live dump first on agreed account  
+2. List Happy Path + Edge in reply  
+3. Page Object  
+4. Landing + Interact + Edge classes  
+5. Isolated suite XMLs + combined `*-all.xml`  
+6. Run until green; log real bugs only  
+7. Coverage / landing sync when module chrome is done  
+
+This is how we **perform testing in automation** — list → script → assert → run — for **every** module.

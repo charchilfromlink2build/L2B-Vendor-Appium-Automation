@@ -61,12 +61,13 @@ def parse_allure_results(results_dir: Path) -> dict | None:
         "when": datetime.now(IST).isoformat(timespec="seconds"),
         "source": "allure-results-unique-latest",
         "note": (
-            "Unique latest status per test (retries collapsed). "
+            "Profile drawer chrome 40/40 + Account 40/40 PASS (9000000001, 29 Sep) — no new bugs "
+            "on those surfaces. Unique latest status per test (retries collapsed). "
             "Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). "
             "Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). "
-            "Open Bookings bugs #27–#34 (Timer gate, Skip stuck, offline/stale Accept, Address not provided, "
-            "decline reason). Free-operator UI Accept→Confirm PASSES (F7D066). "
-            "OTP 23/24 retargeted to 9000000003."
+            "Open Bookings bugs #27–#34; Fleet #35–#38; Earning #39; Home #25/#26. "
+            "Free-operator UI Accept→Confirm PASSES (F7D066). "
+            "OTP 23/24 retargeted to 9000000003. Next drawer: KYC → Team → Help → …"
         ),
     }
 
@@ -320,8 +321,13 @@ def mermaid_graph(coverage: dict) -> str:
     ):
         if ids:
             lines.append(f"  class {','.join(ids)} {status}")
-    # Mermaid-only drawer leaves + profileDrawer stay pending grey
-    synthetic_pending = ["profileDrawer"] + sorted(set(drawer_leaf_ids))
+    # Mermaid-only drawer leaf modules stay pending until each is automated
+    by_module = {m["id"]: m for m in coverage["modules"]}
+    synthetic_pending = sorted(
+        tid for tid in set(drawer_leaf_ids)
+        if by_module.get(tid, {}).get("status") != "done"
+    )
+    # profileDrawer uses modules[] status via class list above — do not force pending
     if synthetic_pending:
         lines.append(f"  class {','.join(synthetic_pending)} pending")
     if decision_ids:
@@ -498,6 +504,23 @@ def flow_explorer(coverage: dict, mermaid: str) -> str:
     apply_page("calendar", "calendarPage")
     apply_page("home", "homePage")
 
+    # Profile drawer chrome detail from drawerPages.chrome when present
+    drawer_chrome = (chrome.get("drawerPages") or {}).get("chrome") or {}
+    if "profileDrawer" in dest_meta and drawer_chrome:
+        dest_meta["profileDrawer"].update({
+            "title": drawer_chrome.get("title") or "Profile drawer",
+            "detail": drawer_chrome.get("note") or dest_meta["profileDrawer"]["detail"],
+            "sections": drawer_chrome.get("sections") or [],
+            "actions": drawer_chrome.get("actions") or [],
+            "pageDetail": True,
+            "status": _flow_btn_status(by_id, "profileDrawer"),
+        })
+    elif "profileDrawer" in dest_meta:
+        dest_meta["profileDrawer"]["detail"] = (
+            "Profile drawer — tap a glass row for page sections. Includes Log Out (Cancel only)."
+        )
+        dest_meta["profileDrawer"]["status"] = _flow_btn_status(by_id, "profileDrawer")
+
     notif_page = chrome.get("notificationsPage") or {}
     home_page = chrome.get("homePage") or {}
     home_section_btns = []
@@ -564,12 +587,6 @@ def flow_explorer(coverage: dict, mermaid: str) -> str:
             f"</button>"
         )
 
-    # Keep profileDrawer detail listing current drawer labels
-    if "profileDrawer" in dest_meta:
-        dest_meta["profileDrawer"]["detail"] = (
-            "Profile drawer — tap a glass row for page sections. Includes Log Out (do not confirm in tests)."
-        )
-
     exit_btns = []
     for edge in from_home:
         tid = edge.get("to")
@@ -590,7 +607,7 @@ def flow_explorer(coverage: dict, mermaid: str) -> str:
         "earning": _flow_btn_status(by_id, "earning"),
         "fleet": _flow_btn_status(by_id, "fleet"),
         "notifications": _flow_btn_status(by_id, "notifications"),
-        "profileDrawer": "pending",
+        "profileDrawer": _flow_btn_status(by_id, "profileDrawer"),
         "home": _flow_btn_status(by_id, "home"),
     }
     booking_tab_chips = "".join(

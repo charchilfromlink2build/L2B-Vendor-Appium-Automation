@@ -184,6 +184,24 @@
    "note": "L10+I14+E14 = 38/38 PASS 28 Sep on 9000000001. Dump /tmp/l2b-notifications-0001-20260928. Unread empty + View all; All Rentals + See all + Mark all read; View Details opens QB (never Accept/Decline). Stack hides bottom tabs. Layout checks PASS. NT-E13 documents known #25 cascade. Suites under src/test/resources/notifications/."
   },
   {
+   "id": "profileDrawer",
+   "name": "Profile drawer",
+   "status": "done",
+   "casesDone": 40,
+   "casesTotal": 40,
+   "screens": 1,
+   "note": "L12+I14+E14 = 40/40 chrome-only on 9000000001 (29 Sep). Dump /tmp/l2b-profile-drawer-0001-20260929. Open/close (Back, Close navigation menu, right scrim), header Kasim Pathan · L2B-8FV7CE, 11 row labels visible (no row navigation into Account/KYC/Team/… yet), Log Out? Cancel only. Layout pitch + inset + scrim PASS. Suites under src/test/resources/settings/profile-drawer-*.xml."
+  },
+  {
+   "id": "account",
+   "name": "Account",
+   "status": "done",
+   "casesDone": 40,
+   "casesTotal": 40,
+   "screens": 1,
+   "note": "L12+I14+E14 = 40/40 PASS 29 Sep on 9000000001. Dump /tmp/l2b-account-0001-20260929. Profile Info · Edit/Update Cancel-only (never Save Changes) · Full Name/Mobile/Company/Email in EditText · photo Close · Back→drawer. Layout soft asserts PASS. Suites under src/test/resources/settings/account-*.xml."
+  },
+  {
    "id": "team",
    "name": "Team",
    "status": "pending",
@@ -409,6 +427,7 @@
   "calendar",
   "earning",
   "notifications",
+  "profileDrawer",
   "settings",
   "help"
  ],
@@ -465,7 +484,7 @@
    "sections": [
     {
      "label": "Header: Profile + greeting",
-     "status": "pending",
+     "status": "done",
      "module": "profileDrawer"
     },
     {
@@ -525,7 +544,7 @@
     }
    ],
    "actions": [],
-   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications done from Home. Still open from Home: Profile drawer rows. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications."
+   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications + Profile drawer + Account done from Home. Still open: KYC, Team, Help, Language, Refer, FAQ, Terms, Policies, Settings. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications, Profile drawer, Account."
   },
   "fromHome": [
    {
@@ -612,15 +631,17 @@
     "title": "Account / Profile Info",
     "sections": [
      "Profile photo",
-     "Full Name",
-     "Mobile",
-     "Company Info"
+     "Full Name (EditText)",
+     "Mobile Number (EditText)",
+     "Company Info · Company Name · Email Address"
     ],
     "actions": [
-     "Edit",
-     "Update"
+     "Edit → Cancel (never Save Changes)",
+     "Update → Cancel (never Save Changes)",
+     "Profile photo → Close",
+     "Back → drawer"
     ],
-    "note": "Stack screen from drawer. Live 0001: mobile 9000000001."
+    "note": "Live 0001 29 Sep: L12+I14+E14 = 40/40 PASS. Dump /tmp/l2b-account-0001-20260929. Values in EditText. Never Save Changes."
    },
    "kyc": {
     "title": "KYC Details",
@@ -752,7 +773,23 @@
      "Confirm Log Out",
      "Cancel"
     ],
-    "note": "Do not tap Confirm in automation \u2014 session destroy."
+    "note": "Live 0001 29 Sep: Log Out? + body + Cancel + Log out. Cancel-only in automation (PD-L9/I5/E3/E4/E14). Never tap Log out confirm."
+   },
+   "chrome": {
+    "title": "Profile drawer",
+    "sections": [
+     "Header: vendor name + L2B- company code + Company Id",
+     "Menu rows: Account \u00b7 KYC \u00b7 Your machines \u00b7 Manage team \u00b7 Help \u00b7 Language \u00b7 Refer & Earn \u00b7 FAQ \u00b7 Terms & Services \u00b7 Policies \u00b7 Settings",
+     "Log Out CTA (bottom)",
+     "Close navigation menu (right scrim)"
+    ],
+    "actions": [
+     "Device Back \u2192 Home",
+     "Close navigation menu / right scrim \u2192 Home",
+     "Row tap \u2192 module (Back returns)",
+     "Log Out \u2192 dialog \u2192 Cancel only"
+    ],
+    "note": "Left drawer. Live 0001 29 Sep: L12+I14+E14 = 40/40 PASS. Dump /tmp/l2b-profile-drawer-0001-20260929."
    }
   }
  }

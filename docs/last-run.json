@@ -1,8 +1,8 @@
 {
-  "passed": 449,
+  "passed": 546,
   "failed": 16,
   "skipped": 14,
-  "when": "2026-09-28T17:10:28+05:30",
+  "when": "2026-09-29T16:56:24+05:30",
   "source": "allure-results-unique-latest",
-  "note": "Unique latest status per test (retries collapsed). Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). Open Bookings bugs #27\u2013#34 (Timer gate, Skip stuck, offline/stale Accept, Address not provided, decline reason). Free-operator UI Accept\u2192Confirm PASSES (F7D066). OTP 23/24 retargeted to 9000000003."
+  "note": "Profile drawer chrome 40/40 + Account 40/40 PASS (9000000001, 29 Sep) \u2014 no new bugs on those surfaces. Unique latest status per test (retries collapsed). Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). Open Bookings bugs #27\u2013#34; Fleet #35\u2013#38; Earning #39; Home #25/#26. Free-operator UI Accept\u2192Confirm PASSES (F7D066). OTP 23/24 retargeted to 9000000003. Next drawer: KYC \u2192 Team \u2192 Help \u2192 \u2026"
 }

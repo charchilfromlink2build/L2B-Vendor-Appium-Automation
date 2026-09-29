@@ -118,6 +118,9 @@ public abstract class RentalHomeBaseTest extends QuickBookingBaseTest {
         if (hasText("Mark all read") && (hasText("Rentals") || hasText("View Details"))) {
             return "notifications-category";
         }
+        if (hasText("Profile Info") && (hasText("Full Name") || hasText("Mobile Number"))) {
+            return "account";
+        }
         if (new HomePage().isDisplayedNow()) {
             return "home";
         }
