@@ -220,10 +220,20 @@
   {
    "id": "help",
    "name": "Help & Support",
-   "status": "pending",
-   "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "status": "done",
+   "casesDone": 59,
+   "casesTotal": 59,
+   "screens": 1,
+   "note": "L18+I19+E22 = 59/59 PASS 1 Oct on 9000000001. Dump /tmp/l2b-help-0001-20261001 + deep/orderid. Landing + Live chat (11 concerns, Order ID→Your Bookings, Chat now enable never tap) + Raise Ticket (Submit enable never tap) + Ticket history/Details + Call Support dialer +91 1800 (never Call). Suites under src/test/resources/help/help-*.xml."
+  },
+  {
+   "id": "languageSettings",
+   "name": "Language (in-app)",
+   "status": "done",
+   "casesDone": 38,
+   "casesTotal": 38,
+   "screens": 1,
+   "note": "L10+I12+E16 = 38/38 PASS 1 Oct on 9000000001. Hindi Save reflects Home/Calendar/Earning/Fleet/Account/Help/Settings/KYC/Team. Open product bugs #40–#46 on incomplete reflection (Log Out EN, Refer steps, FAQ mixed, Terms EN, Earning incentive EN, Calendar month EN, Policies mixed). Suites settings/language-settings-*.xml. Matrix /tmp/l2b-lang-matrix-0001-20261001. True one-session E2E: LanguageReflectionE2ETest + settings/language-reflection-e2e.xml (does not logout between modules; re-tests #40–#46 as separate FAILs)."
   }
  ],
  "firstLaunch": [
@@ -544,7 +554,7 @@
     }
    ],
    "actions": [],
-   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications + Profile drawer + Account done from Home. Still open: KYC, Team, Help, Language, Refer, FAQ, Terms, Policies, Settings. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications, Profile drawer, Account."
+   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications + Profile drawer + Account + Help + Language (in-app) done from Home. Still open: KYC, Team, Refer, FAQ, Terms, Policies, Settings. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications, Profile drawer, Account, Help, Language."
   },
   "fromHome": [
    {
@@ -683,18 +693,27 @@
    "help": {
     "title": "Help and Support",
     "sections": [
+     "Call Support",
      "Live chat",
+     "Working Hours : 8:00 AM - 8:00 PM",
      "Raise Ticket",
      "Ticket history"
     ],
     "actions": [
-     "Back"
+     "Back",
+     "Call Support",
+     "Live chat \u2192 Chat now (disabled until concern)",
+     "Raise Ticket \u2192 Submit (disabled empty; never submit)",
+     "Ticket history"
     ],
-    "note": "Hours copy: 8:00 AM \u2013 8:00 PM."
+    "status": "done",
+    "note": "L18+I19+E22 = 59/59 PASS 1 Oct 9000000001. Dump /tmp/l2b-help-0001-20261001 + deep. Hours 8:00 AM–8:00 PM. Never Chat now / Submit / dialer Call. Functional: 11 concerns, Order ID bookings sheet, Chat/Submit enablement, Ticket Details, Call Support dialer."
    },
    "languageSettings": {
     "title": "Language",
     "sections": [
+     "Choose the language",
+     "All language",
      "English (Default)",
      "Hindi",
      "Telugu",
@@ -704,7 +723,8 @@
      "Save",
      "Back"
     ],
-    "note": "In-app language settings (not first-launch Welcome)."
+    "status": "done",
+    "note": "L10+I12+E16 = 38/38 PASS 1 Oct. Hindi reflects core modules. BUGS_FOUND #40–#46 for incomplete localization. Matrix /tmp/l2b-lang-matrix-0001-20261001."
    },
    "referEarn": {
     "title": "Refer and Earn",

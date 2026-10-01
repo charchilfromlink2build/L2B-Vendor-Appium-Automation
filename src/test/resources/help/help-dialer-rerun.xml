@@ -1,0 +1,25 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Help dialer rerun" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Help-Dialer-Rerun" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.help.presentation.tests.HelpLandingTest">
+                <methods>
+                    <include name="callSupportOpensDialerWithNumber"/>
+                </methods>
+            </class>
+            <class name="com.l2b.vendor.modules.help.presentation.tests.HelpInteractTest">
+                <methods>
+                    <include name="callSupportRecoverToHelp"/>
+                </methods>
+            </class>
+            <class name="com.l2b.vendor.modules.help.presentation.tests.HelpEdgeTest">
+                <methods>
+                    <include name="dialerThenRecoverVendor"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -61,13 +61,15 @@ def parse_allure_results(results_dir: Path) -> dict | None:
         "when": datetime.now(IST).isoformat(timespec="seconds"),
         "source": "allure-results-unique-latest",
         "note": (
-            "Profile drawer chrome 40/40 + Account 40/40 PASS (9000000001, 29 Sep) — no new bugs "
-            "on those surfaces. Unique latest status per test (retries collapsed). "
+            "Help & Support 59/59 + Language in-app 38/38 PASS (9000000001, 1 Oct). "
+            "Hindi reflection E2E reconfirmed open bugs #40/#41/#43/#45/#46; #42/#44 not reproduced "
+            "in that run. Unique latest status per test (retries collapsed). "
             "Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). "
             "Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). "
-            "Open Bookings bugs #27–#34; Fleet #35–#38; Earning #39; Home #25/#26. "
+            "Open Bookings #27–#34; Fleet #35–#38; Earning #39; Home #25/#26; Language #40–#46. "
             "Free-operator UI Accept→Confirm PASSES (F7D066). "
-            "OTP 23/24 retargeted to 9000000003. Next drawer: KYC → Team → Help → …"
+            "Next drawer: KYC → Team → Refer → FAQ → Terms → Policies → Settings. "
+            "Language remaining: Telugu + Kannada full reflection."
         ),
     }
 

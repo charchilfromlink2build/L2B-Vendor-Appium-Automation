@@ -1,8 +1,8 @@
 {
-  "passed": 546,
-  "failed": 16,
+  "passed": 649,
+  "failed": 18,
   "skipped": 14,
-  "when": "2026-09-29T16:58:53+05:30",
+  "when": "2026-10-01T18:23:50+05:30",
   "source": "allure-results-unique-latest",
-  "note": "Profile drawer chrome 40/40 + Account 40/40 PASS (9000000001, 29 Sep) \u2014 no new bugs on those surfaces. Unique latest status per test (retries collapsed). Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). Open Bookings bugs #27\u2013#34; Fleet #35\u2013#38; Earning #39; Home #25/#26. Free-operator UI Accept\u2192Confirm PASSES (F7D066). OTP 23/24 retargeted to 9000000003. Next drawer: KYC \u2192 Team \u2192 Help \u2192 \u2026"
+  "note": "Help & Support 59/59 + Language in-app 38/38 PASS (9000000001, 1 Oct). Hindi reflection E2E reconfirmed open bugs #40/#41/#43/#45/#46; #42/#44 not reproduced in that run. Unique latest status per test (retries collapsed). Rental Booking 82/82 executed 24 Sep (S15+E4 BLOCKED). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). Open Bookings #27\u2013#34; Fleet #35\u2013#38; Earning #39; Home #25/#26; Language #40\u2013#46. Free-operator UI Accept\u2192Confirm PASSES (F7D066). Next drawer: KYC \u2192 Team \u2192 Refer \u2192 FAQ \u2192 Terms \u2192 Policies \u2192 Settings. Language remaining: Telugu + Kannada full reflection."
 }

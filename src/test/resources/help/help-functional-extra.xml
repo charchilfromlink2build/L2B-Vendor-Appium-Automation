@@ -1,0 +1,50 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Help functional extras" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Help-Landing-Extra" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.help.presentation.tests.HelpLandingTest">
+                <methods>
+                    <include name="elevenConcernOptions"/>
+                    <include name="concernRevealsOrderIdChatStillDisabled"/>
+                    <include name="orderIdOpensYourBookingsSheet"/>
+                    <include name="ticketDetailsChrome"/>
+                    <include name="callSupportOpensDialerWithNumber"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="Help-Interact-Extra" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.help.presentation.tests.HelpInteractTest">
+                <methods>
+                    <include name="concernThenOrderIdThenBack"/>
+                    <include name="bookingsSheetDismissKeepsLiveChat"/>
+                    <include name="selectBookingEnablesChatNow"/>
+                    <include name="raiseFullFormEnablesSubmit"/>
+                    <include name="ticketDetailBackToHistory"/>
+                    <include name="callSupportRecoverToHelp"/>
+                    <include name="bookingsTabsSwitch"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="Help-Edge-Extra" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.help.presentation.tests.HelpEdgeTest">
+                <methods>
+                    <include name="chatNowDisabledAfterConcernOnly"/>
+                    <include name="submitDisabledWithoutOrderId"/>
+                    <include name="concernOptionsSoftCount"/>
+                    <include name="ticketDetailOpenCloseTwice"/>
+                    <include name="dialerThenRecoverVendor"/>
+                    <include name="noAcceptDeclineOnTicketDetail"/>
+                    <include name="deviceBackFromBookingsSheet"/>
+                    <include name="rapidCallSupportRecover"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

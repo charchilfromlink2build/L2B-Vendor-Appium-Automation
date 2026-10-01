@@ -50,10 +50,13 @@ public class LanguagePage extends SplashScreen {
                 timeout);
     }
 
-    /** True when the English title "Welcome to L2B" is on screen. Text-matched; false after locale change. */
+    /** True when any locale welcome title is on screen (EN/HI/TE/KN). */
     @Step("Check language screen is visible")
     public boolean isDisplayedNow() {
-        return isPresent(ComposeLocators.textView("Welcome to L2B"));
+        return isPresent(ComposeLocators.textView("Welcome to L2B"))
+                || isTitleHindi()
+                || isTitleTelugu()
+                || isTitleKannada();
     }
 
     /** True when the partner-logo content-desc is present. Fragile if the a11y label is rewritten. */

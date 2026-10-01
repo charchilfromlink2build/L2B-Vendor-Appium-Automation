@@ -1,6 +1,7 @@
 package com.l2b.vendor.modules.settings.data.api;
 
 import com.l2b.vendor.core.api.HttpClient;
+import com.l2b.vendor.modules.settings.data.dto.LanguageUpdateRequest;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
@@ -25,5 +26,10 @@ public class AccountApi {
     @Step("GET vendor profile")
     public Response profile(String token) {
         return http.get(PROFILE, token);
+    }
+
+    @Step("POST vendor language {language}")
+    public Response updateLanguage(String token, String language) {
+        return http.post(LANGUAGE, new LanguageUpdateRequest(language), token);
     }
 }

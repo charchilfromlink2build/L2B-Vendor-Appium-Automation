@@ -1,0 +1,25 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Language settings failed rerun" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Language-Failed-Rerun" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.settings.presentation.tests.LanguageSettingsInteractTest">
+                <methods>
+                    <include name="englishSaveRestoresChrome"/>
+                </methods>
+            </class>
+            <class name="com.l2b.vendor.modules.settings.presentation.tests.LanguageSettingsEdgeTest">
+                <methods>
+                    <include name="rapidOpenBack"/>
+                    <include name="hindiFaqMixedBug42"/>
+                    <include name="hindiReferPartialBug41"/>
+                    <include name="hindiTermsStillEnglishBug43"/>
+                    <include name="hindiPoliciesPartialBug46"/>
+                    <include name="drawerLogOutStaysEnglishBug40"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

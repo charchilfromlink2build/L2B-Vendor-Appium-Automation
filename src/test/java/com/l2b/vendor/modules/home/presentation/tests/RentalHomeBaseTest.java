@@ -121,6 +121,18 @@ public abstract class RentalHomeBaseTest extends QuickBookingBaseTest {
         if (hasText("Profile Info") && (hasText("Full Name") || hasText("Mobile Number"))) {
             return "account";
         }
+        if (hasText("Help & Support")
+                || (hasText("Live chat") && hasText("Raise Ticket") && hasText("Ticket history"))
+                || (hasText("Submit a query") && (hasText("Chat now") || hasText("Submit")))
+                || (hasText("Ticket history") && hasText("Recent tickets"))) {
+            return "help";
+        }
+        if ((hasText("Choose the language") || hasText("भाषा चुनें") || hasText("All language")
+                || hasText("सभी भाषाएं"))
+                && (hasText("English") || hasText("हिंदी"))
+                && (hasText("Save") || hasText("सेव करें"))) {
+            return "language-settings";
+        }
         if (new HomePage().isDisplayedNow()) {
             return "home";
         }
