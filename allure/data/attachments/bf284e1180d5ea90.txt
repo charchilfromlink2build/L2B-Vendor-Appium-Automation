@@ -1,0 +1,10 @@
+text=We're ready to help - just choose an option below.
+text=Working Hours : 8:00 AM - 8:00 PM
+text=Live chat
+text=Raise a Support Ticket for Assistance
+text=Just fill in your details and we'll get back to you with a solution soon.
+text=Raise Ticket
+text=Ticket history
+text=Help &amp; Support
+text=Call Support
+desc=Back

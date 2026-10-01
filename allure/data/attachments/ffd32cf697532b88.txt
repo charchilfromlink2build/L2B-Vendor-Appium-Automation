@@ -1,0 +1,11 @@
+text=Payment &amp; Billing Issues
+text=Delivery Partner Issues
+text=Rental Machine Issues
+text=Material Order Issues
+text=Account &amp; Profile Issues
+text=Operator issue
+text=Document &amp; Invoice Issues
+text=Offers / Cashback Issues
+text=Security &amp; Safety
+text=Location / Address Issues
+text=Other

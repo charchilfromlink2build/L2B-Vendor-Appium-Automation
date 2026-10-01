@@ -1,0 +1,63 @@
+  : Waiting up to 10000ms for the device to idle
+10-01 16:46:24.897 18699 18734 I appium  : The following attributes will be included to the page source: [text]
+10-01 16:46:24.943 18699 18734 I appium  : Took 0ms to retrieve 1 matches for '//android.widget.TextView[@text='English']' XPath2 query
+10-01 16:46:24.946 18699 18734 I appium  : Caching 1 found element
+10-01 16:46:24.947 18699 18734 I appium  : Cached 1 element
+10-01 16:46:24.950 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":[{"ELEMENT":"00000000-0000-2da1-0000-033d00000004","element-6066-11e4-a52e-4f735466cecf":"00000000-0000-2da1-0000-033d00000004"}]}
+10-01 16:46:24.967 18699 18734 I appium  : channel read: POST /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/elements
+10-01 16:46:24.972 18699 18734 I appium  : FindElements command
+10-01 16:46:24.974 18699 18734 I appium  : method: 'xpath', selector: '//android.widget.TextView[@text='Save']'
+10-01 16:46:24.974 18699 18734 I appium  : Waiting up to 10000ms for the device to idle
+10-01 16:46:24.976 18699 18734 I appium  : The following attributes will be included to the page source: [text]
+10-01 16:46:25.028 18699 18734 I appium  : Took 0ms to retrieve 1 matches for '//android.widget.TextView[@text='Save']' XPath2 query
+10-01 16:46:25.035 18699 18734 I appium  : Caching 1 found element
+10-01 16:46:25.036 18699 18734 I appium  : Cached 1 element
+10-01 16:46:25.039 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":[{"ELEMENT":"00000000-0000-2da1-0000-033200000004","element-6066-11e4-a52e-4f735466cecf":"00000000-0000-2da1-0000-033200000004"}]}
+10-01 16:46:25.058 18699 18734 I appium  : channel read: POST /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/elements
+10-01 16:46:25.061 18699 18734 I appium  : FindElements command
+10-01 16:46:25.065 18699 18734 I appium  : method: 'xpath', selector: '//android.widget.TextView[@text='हिंदी']'
+10-01 16:46:25.070 18699 18734 I appium  : Waiting up to 10000ms for the device to idle
+10-01 16:46:25.073 18699 18734 I appium  : The following attributes will be included to the page source: [text]
+10-01 16:46:25.087 18699 18703 I tomator2.server: Method exceeds compiler instruction limit: 19230 in java_cup.runtime.Symbol org.eclipse.wst.xml.xpath2.processor.internal.CUP$XPathCup$actions.CUP$XPathCup$do_action(int, java_cup.runtime.lr_parser, java.util.Stack, int)
+10-01 16:46:25.121 18699 18734 I appium  : Took 0ms to retrieve 1 matches for '//android.widget.TextView[@text='हिंदी']' XPath2 query
+10-01 16:46:25.126 18699 18734 I appium  : Caching 1 found element
+10-01 16:46:25.128 18699 18734 I appium  : Cached 1 element
+10-01 16:46:25.130 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":[{"ELEMENT":"00000000-0000-2da1-0000-034300000004","element-6066-11e4-a52e-4f735466cecf":"00000000-0000-2da1-0000-034300000004"}]}
+10-01 16:46:25.140 18699 18734 I appium  : channel read: GET /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/element/00000000-0000-2da1-0000-034300000004/rect
+10-01 16:46:25.141 18699 18734 I appium  : GetRect command
+10-01 16:46:25.147 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":{"height":60,"width":68,"x":95,"y":531}}
+10-01 16:46:25.157 18699 18734 I appium  : channel read: POST /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/appium/gestures/click
+10-01 16:46:25.159 18699 18734 I appium  : Click command
+10-01 16:46:25.222 18699 18734 W GestureController: Gestures took longer than expected (59ms >> 16ms), device might be in a busy state.
+10-01 16:46:25.225 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":null}
+10-01 16:46:25.760 18699 18734 I appium  : channel read: POST /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/elements
+10-01 16:46:25.762 18699 18734 I appium  : FindElements command
+10-01 16:46:25.764 18699 18734 I appium  : method: 'xpath', selector: '//android.widget.TextView[@text='Save']'
+10-01 16:46:25.765 18699 18734 I appium  : Waiting up to 10000ms for the device to idle
+10-01 16:46:25.771 18699 18734 I appium  : The following attributes will be included to the page source: [text]
+10-01 16:46:25.843 18699 18734 I appium  : Took 0ms to retrieve 1 matches for '//android.widget.TextView[@text='Save']' XPath2 query
+10-01 16:46:25.847 18699 18734 I appium  : Caching 1 found element
+10-01 16:46:25.848 18699 18734 I appium  : Cached 1 element
+10-01 16:46:25.853 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":[{"ELEMENT":"00000000-0000-2da1-0000-033200000004","element-6066-11e4-a52e-4f735466cecf":"00000000-0000-2da1-0000-033200000004"}]}
+10-01 16:46:25.876 18699 18734 I appium  : channel read: POST /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/elements
+10-01 16:46:25.877 18699 18734 I appium  : FindElements command
+10-01 16:46:25.879 18699 18734 I appium  : method: 'xpath', selector: '//android.widget.TextView[@text='Save']'
+10-01 16:46:25.880 18699 18734 I appium  : Waiting up to 10000ms for the device to idle
+10-01 16:46:25.882 18699 18734 I appium  : The following attributes will be included to the page source: [text]
+10-01 16:46:25.916 18699 18734 I appium  : Took 0ms to retrieve 1 matches for '//android.widget.TextView[@text='Save']' XPath2 query
+10-01 16:46:25.935   686   828 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+10-01 16:46:25.938 18699 18734 I appium  : Caching 1 found element
+10-01 16:46:25.940 18699 18734 I appium  : Cached 1 element
+10-01 16:46:25.942 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":[{"ELEMENT":"00000000-0000-2da1-0000-033200000004","element-6066-11e4-a52e-4f735466cecf":"00000000-0000-2da1-0000-033200000004"}]}
+10-01 16:46:25.956 18699 18734 I appium  : channel read: GET /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/element/00000000-0000-2da1-0000-033200000004/rect
+10-01 16:46:25.957 18699 18734 I appium  : GetRect command
+10-01 16:46:25.965 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":{"height":56,"width":94,"x":493,"y":2214}}
+10-01 16:46:25.977 18699 18734 I appium  : channel read: POST /session/6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696/appium/gestures/click
+10-01 16:46:25.979 18699 18734 I appium  : Click command
+10-01 16:46:26.036 18699 18734 W GestureController: Gestures took longer than expected (53ms >> 16ms), device might be in a busy state.
+10-01 16:46:26.051 18699 18734 I appium  : AppiumResponse: {"sessionId":"6fe0f1e0-ea1c-4f7c-b5d1-f010fa319696","value":null}
+10-01 16:46:26.142 18748 18748 V Configuration: Updating configuration, locales updated from [en_US] to [hi]
+10-01 16:46:26.426 18748 18748 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+10-01 16:46:26.426 18748 18748 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+10-01 16:46:26.904 18748 18748 I Choreographer: Skipped 39 frames!  The application may be doing too much work on its main thread.
+10-01 16:46:27.230 18748 18757 I HWUI    : Davey! duration=980ms; Flags=0, FrameTimelineVsyncId=3942377, IntendedVsync=288285968820255, Vsync=288286618820229, InputEventId=0, HandleInputStart=288286661401186, AnimationStart=288286661403770, PerformTraversalsStart=288286694940311, DrawStart=288286695072395, FrameDeadline=288286652153561, FrameStartTime=288286633614853, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=288286699210645, SyncStart=288286699487478, IssueDrawCommandsStart=288286699891520, SwapBuffers=288286941084895, FrameCompleted=288286949791853, DequeueBufferDuration=10500, QueueBufferDuration=533791, GpuCompleted=288286949722728, SwapBuffersCompleted=288286949791853, DisplayPresentTime=0, CommandSubmissionCompleted=288286941084895, 

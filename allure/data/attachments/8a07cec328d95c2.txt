@@ -1,0 +1,5 @@
+text=Submit a query
+text=Ticket Concern
+text=Live chat
+text=Chat now
+desc=Back

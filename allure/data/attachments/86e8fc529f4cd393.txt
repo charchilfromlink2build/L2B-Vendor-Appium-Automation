@@ -1,0 +1,10 @@
+text=Why is my account still under review?
+text=Every KYC document is checked by our team before your account goes live. If a document is unclear or expired we ask you to upload it again from Profile, so check there for a rejection note.
+text=When do I get paid for a completed job?
+text=How do I start a booked job?
+text=What happens if a customer cancels?
+text=How do I reach a human?
+text=FAQs
+desc=Collapse
+desc=Expand
+desc=Back

@@ -1,0 +1,32 @@
+{
+    "locale": "hi",
+    "referral_code": "HRHND8",
+    "headline": "साथी को रेफर करें, INR 500 कमाएँ",
+    "share_message": "मैं काम पाने के लिए Link2Build इस्तेमाल करता हूँ। मेरे कोड HRHND8 से जुड़ें, सत्यापन के बाद हम दोनों को INR 500 मिलेंगे।",
+    "reward_amount": "500.00",
+    "currency": "INR",
+    "terms_url": null,
+    "steps": [
+        {
+            "step_number": 1,
+            "title": "Share your code",
+            "description": "Send your referral code to another vendor or operator."
+        },
+        {
+            "step_number": 2,
+            "title": "They sign up",
+            "description": "They enter your code while creating their account."
+        },
+        {
+            "step_number": 3,
+            "title": "You both earn",
+            "description": "Once their KYC is approved the reward is credited to both wallets."
+        }
+    ],
+    "stats": {
+        "total_referrals": 0,
+        "pending_referrals": 0,
+        "awarded_referrals": 0,
+        "total_earned": "0"
+    }
+}

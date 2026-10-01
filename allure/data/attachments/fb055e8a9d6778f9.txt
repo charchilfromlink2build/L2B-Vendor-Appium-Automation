@@ -1,0 +1,7 @@
+text=Submit a query
+text=Payment &amp; Billing Issues
+text=Order ID
+text=Automation probe — do not submit
+text=Raise Ticket
+text=Submit
+desc=Back

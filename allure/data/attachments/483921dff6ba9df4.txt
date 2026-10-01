@@ -1,0 +1,7 @@
+text=All
+text=Missed
+text=Contacts
+text=Non-spam
+text=Spam
+text=Favorites
+text=View contacts

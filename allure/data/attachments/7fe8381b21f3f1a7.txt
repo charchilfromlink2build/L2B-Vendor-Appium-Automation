@@ -1,0 +1,2 @@
+desc=Profile photo
+desc=Close

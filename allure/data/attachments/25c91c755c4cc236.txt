@@ -1,0 +1,15 @@
+text=Excavator 20 Tonnes
+text=Quick Booking
+text=Amount · Cash on Delivery ₹51,000
+text=5 Oct 10:30 AM - 6 Oct 2026 10:30 AM (1 day)
+text=Get Direction
+text=Booking for
+text=RB-E6 Offline Decline Site, Bengaluru
+text=Timer
+text=29:59
+text=Decline
+text=Accept
+text=4 Oct 10:30 AM - 5 Oct 2026 10:30 AM (1 day)
+text=RB-E5 Offline Accept Site, Bengaluru
+text=That order is no longer available. It may have been accepted already or the time to accept ran out.
+desc=Close

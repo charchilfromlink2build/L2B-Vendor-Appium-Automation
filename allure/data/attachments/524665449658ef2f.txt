@@ -1,0 +1,9 @@
+text=सभी भाषाएं
+text=English
+text=डिफ़ॉल्ट
+text=हिंदी
+text=తెలుగు
+text=ಕನ್ನಡ
+text=भाषा चुनें
+text=सेव करें
+desc=Back

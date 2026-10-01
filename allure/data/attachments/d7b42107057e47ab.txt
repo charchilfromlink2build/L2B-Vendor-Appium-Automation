@@ -1,0 +1,16 @@
+text=Accepting these terms
+text=By creating a Link2Build partner account you agree to these terms and to the policies referenced inside them.
+text=We may update these terms; the version shown here is always the one that applies to you.
+text=Your obligations
+text=You are responsible for the accuracy of the documents, machines and operators you register on the platform.
+text=You must not
+text=• Register a machine or operator you are not authorised to offer
+text=• Ask a customer to settle a booking outside the platform
+text=• Share your account or OTP with anyone else
+text=Payments and deductions
+text=Platform fees and any applicable deductions are shown on every booking before you accept it.
+text=Payouts are settled to the bank account verified during onboarding.
+text=Suspension and termination
+text=We may suspend an account that repeatedly cancels confirmed jobs, submits false documents, or puts customers or operators at risk.
+text=Terms &amp; Services
+desc=Back

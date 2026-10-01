@@ -1,0 +1,28 @@
+{
+  "case": "RB-S15",
+  "result": "BLOCKED",
+  "checked_at": "2026-09-24T06:31:28.562937+00:00",
+  "reason": "No pending rental (L2B-RNT) Quick Booking with an actively running near-expiry Timer.",
+  "ui": {
+    "timer": "29:58 on Quick Booking",
+    "card": "#MAT-20260923-1850 / Tata Ace (material, not rental)",
+    "accept": true,
+    "decline": true
+  },
+  "api": {
+    "rental_pending_count": 0,
+    "material_pending": [
+      "MDL-20260923095735-9087"
+    ]
+  },
+  "required_seed": [
+    "Pending rental Quick Booking L2B-RNT-* on vendor 9000000001",
+    "QB Timer actively counting on Quick Booking (keep one session open \u2014 timer restarts ~29:5x on relaunch per #28)",
+    "Prefer remaining \u22643:00 for observation at expiry, OR leave a fresh rental pending untouched for the full real ~30:00 window without force-stop/relaunch",
+    "Do not use material (MAT/MDL) cards for RB-S15"
+  ],
+  "evidence": [
+    "screenshots/RB-S15-blocked-no-rental-pending.png",
+    "screenshots/RB-S15-blocked-ui-dump.xml"
+  ]
+}

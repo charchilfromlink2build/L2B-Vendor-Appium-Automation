@@ -1,0 +1,43 @@
+Test class: LanguageReflectionE2ETest
+Account/persona: 9000000001 rental company vendor
+Session count: 1
+Language selected: Hindi (hi)
+Backend language: PASS — backend Hindi (faqs locale or profile)
+Persistence: PASS
+Crash/ANR: PASS
+
+Modules:
+  Login = PASS | Quick Booking closed; Home visible; one session
+  Select Hindi = PASS | Save tapped; logcat language POST=false
+  Language persistence = PASS | खाता/भाषा present; English Account+Language=false
+  Backend/API = PASS | PASS — backend Hindi (faqs locale or profile)
+  Home = PASS | Hindi chrome=true EN Current Earning=false
+  Calendar = PASS | अनुसूची=true October EN=true (#45 separate)
+  Earning = PASS | chrome=true incentive EN=false (#44 separate)
+  Fleet = PASS | opened=true English-only=false
+  Drawer #40 = PASS | Drawer Hindi rows ok; #40 validated separately
+  Account = PASS | Hindi chrome=true Profile Info EN=false
+  KYC = PASS | opened=true English-only=false
+  Team = PASS | opened=true English-only=false
+  Help = PASS | Hindi chrome=true Live chat EN=false
+  Refer & Earn = PASS | chrome=true steps EN=true (#41 separate)
+  FAQ = PASS | opened=true mixed EN=false (#42 separate; see Backend class A/B)
+  Terms & Services = PASS | opened=true body EN=true (#43 separate; see Backend class A/B)
+  Policies = PASS | opened=true later EN=true (#46 separate; see Backend class A/B)
+  Settings = PASS | Hindi chrome=true EN-only=false
+  Notifications = PASS | opened=true English-only=false
+  Background/Foreground = PASS | Hindi after resume=true Earning still HI=true
+  Relaunch = PASS | landing=vendor-other Hindi=true EN revert=false
+  Stability = PASS | FATAL=false ANR=false launcher=false
+
+PASS=22 FAIL=0 BLOCKED=0 UNTESTED=0
+
+Existing bugs re-tested:
+  #45 Calendar — Month label remains English October — FAIL (still reproduced)
+  #40 Drawer — Log Out EN=true Company Id EN=true — FAIL (still reproduced)
+  #41 Refer & Earn — How-to steps remain English — FAIL (still reproduced)
+  #43 Terms & Services — Full page remains English — FAIL (still reproduced)
+  #46 Policies — Later sections remain English after scroll — FAIL (still reproduced)
+
+New bugs:
+  none

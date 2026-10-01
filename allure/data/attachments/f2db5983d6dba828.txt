@@ -1,0 +1,11 @@
+text=Notification
+text=Unread
+text=All
+text=Rentals
+text=See all
+text=New booking request
+text=Excavator 20 Tonnes needed near RB-A7 Decline Reason Site v3, Bengaluru. Tap to accept before someone else does.
+text=3 d ago
+text=View Details
+text=Excavator 20 Tonnes needed near RB-A7 Decline Reason Site v2, Bengaluru. Tap to accept before someone else does.
+desc=Back

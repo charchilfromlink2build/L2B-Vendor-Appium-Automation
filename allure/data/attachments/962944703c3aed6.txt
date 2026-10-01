@@ -1,0 +1,15 @@
+text=Rentals
+text=Mark all read
+text=New booking request
+text=Excavator 20 Tonnes needed near RB-A7 Decline Reason Site v3, Bengaluru. Tap to accept before someone else does.
+text=3 d ago
+text=View Details
+text=Excavator 20 Tonnes needed near RB-A7 Decline Reason Site v2, Bengaluru. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-A7 Decline Reason Site, Bengaluru. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-E20 Rapid Confirm Site, Bengaluru. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-E16 Long Address Seed — Plot No. 1487/A, 3rd…. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-E13 Background Accept Site, Bengaluru. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-E9 Cancel Refresh Site, Bengaluru. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-E8 Cancel Midview Site, Bengaluru. Tap to accept before someone else does.
+text=Excavator 20 Tonnes needed near RB-E7 Stale Accept Site, Bengaluru. Tap to accept before someone else does.
+desc=Back

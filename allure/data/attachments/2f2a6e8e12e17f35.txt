@@ -1,0 +1,15 @@
+text=प्रोफ़ाइल जानकारी
+text=संपादित करें
+text=Kasim Pathan
+text=पूरा नाम
+text=9000000001
+text=मोबाइल नंबर
+text=कंपनी जानकारी
+text=अपडेट करें
+text=kasim
+text=कंपनी का नाम
+text=kasimm@gmail.com
+text=ईमेल पता
+text=खाता
+desc=Profile photo
+desc=Back

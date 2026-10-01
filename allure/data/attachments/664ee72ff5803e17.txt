@@ -1,0 +1,19 @@
+drawer	PASS	localized=true	english=false	Log Out still English=true; Company Id English=true
+home	PASS	localized=true	english=false	key EN still present=false
+calendar	PASS	localized=true	english=false	
+earning	PASS	localized=true	english=false	
+fleet	PASS	localized=true	english=false	
+notifications	PASS	localized=true	english=false	
+bookings	FAIL	localized=false	english=true	See all not found on Home
+account	PASS	localized=true	english=false	hiMarker=true enMarker=false
+kyc	PASS	localized=true	english=false	hiMarker=true enMarker=false
+machines	PASS	localized=true	english=false	hiMarker=true enMarker=false
+team	PASS	localized=true	english=false	hiMarker=true enMarker=false
+help	PASS	localized=true	english=false	hiMarker=true enMarker=false
+refer	PASS	localized=true	english=false	hiMarker=true enMarker=true
+faq	PASS	localized=true	english=false	hiMarker=true enMarker=false
+terms	PASS	localized=true	english=false	hiMarker=true enMarker=true
+policies	PASS	localized=true	english=false	hiMarker=true enMarker=false
+settings	PASS	localized=true	english=false	hiMarker=true enMarker=false
+language	PASS	localized=true	english=false	hiMarker=true enMarker=false
+restore-english	PASS	localized=true	english=false	

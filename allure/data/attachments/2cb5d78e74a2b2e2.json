@@ -1,0 +1,60 @@
+{
+    "doc_type": "terms",
+    "version": "1.0",
+    "title": "Terms & Conditions",
+    "locale": "hi",
+    "effective_from": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-09-03T09:10:30.933773Z",
+    "sections": [
+        {
+            "key": "acceptance",
+            "title": "Accepting these terms",
+            "paragraphs": [
+                "By creating a Link2Build partner account you agree to these terms and to the policies referenced inside them.",
+                "We may update these terms; the version shown here is always the one that applies to you."
+            ],
+            "subsections": [
+                
+            ]
+        },
+        {
+            "key": "your-obligations",
+            "title": "Your obligations",
+            "paragraphs": [
+                "You are responsible for the accuracy of the documents, machines and operators you register on the platform."
+            ],
+            "subsections": [
+                {
+                    "key": "prohibited-conduct",
+                    "title": "You must not",
+                    "bullets": [
+                        "Register a machine or operator you are not authorised to offer",
+                        "Ask a customer to settle a booking outside the platform",
+                        "Share your account or OTP with anyone else"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "payments",
+            "title": "Payments and deductions",
+            "paragraphs": [
+                "Platform fees and any applicable deductions are shown on every booking before you accept it.",
+                "Payouts are settled to the bank account verified during onboarding."
+            ],
+            "subsections": [
+                
+            ]
+        },
+        {
+            "key": "suspension",
+            "title": "Suspension and termination",
+            "paragraphs": [
+                "We may suspend an account that repeatedly cancels confirmed jobs, submits false documents, or puts customers or operators at risk."
+            ],
+            "subsections": [
+                
+            ]
+        }
+    ]
+}

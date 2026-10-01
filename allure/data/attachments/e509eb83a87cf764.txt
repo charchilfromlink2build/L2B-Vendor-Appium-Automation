@@ -1,0 +1,30 @@
+Test class: LanguageReflectionE2ETest
+Account/persona: 9000000001 rental company vendor
+Session count: 1
+Language selected: Hindi (hi)
+Backend language: PASS — backend Hindi (faqs locale or profile)
+Persistence: UNTESTED
+Crash/ANR: UNTESTED
+
+Modules:
+  Login = PASS | Quick Booking closed; Home visible; one session
+  Select Hindi = PASS | Save tapped; logcat language POST=false
+  Language persistence = PASS | खाता/भाषा present; English Account+Language=false
+  Backend/API = PASS | PASS — backend Hindi (faqs locale or profile)
+  Home = PASS | Hindi chrome=true EN Current Earning=false
+  Calendar = PASS | अनुसूची=true October EN=true (#45 separate)
+  Earning = PASS | chrome=true incentive EN=false (#44 separate)
+  Fleet = PASS | opened=true English-only=false
+  Drawer #40 = PASS | Drawer Hindi rows ok; #40 validated separately
+  Account = PASS | Hindi chrome=true Profile Info EN=false
+  KYC = PASS | opened=true English-only=false
+  Team = PASS | opened=true English-only=false
+
+PASS=12 FAIL=0 BLOCKED=0 UNTESTED=0
+
+Existing bugs re-tested:
+  #45 Calendar — Month label remains English October — FAIL (still reproduced)
+  #40 Drawer — Log Out EN=true Company Id EN=true — FAIL (still reproduced)
+
+New bugs:
+  none
