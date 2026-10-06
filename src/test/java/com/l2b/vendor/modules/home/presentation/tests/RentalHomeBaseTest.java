@@ -121,6 +121,58 @@ public abstract class RentalHomeBaseTest extends QuickBookingBaseTest {
         if (hasText("Profile Info") && (hasText("Full Name") || hasText("Mobile Number"))) {
             return "account";
         }
+        if (hasText("Select machine for operator/driver")) {
+            return "team-change-assignment";
+        }
+        if (hasText("Manage Team")
+                && (hasText("Your team member") || hasText("Your team members")
+                || hasText("Add Member") || hasText("Change Assignment"))) {
+            return "team";
+        }
+        if ((hasText("Refer & Earn") || hasText("Refer now"))
+                && (hasText("Your referral code") || hasText("Share your code")
+                || hasText("Referrals are not available right now.")
+                || hasText("Retry"))) {
+            return "refer";
+        }
+        if ((hasText("FAQs") || hasText("FAQ"))
+                && (hasText("How do I start a booked job?")
+                || hasText("What happens if a customer cancels?")
+                || hasText("How do I reach a human?")
+                || hasText("How do I talk to a human?")
+                || hasText("Why is my account still under review?")
+                || hasText("Something went wrong. Please try again.")
+                || (hasText("Retry") && hasText("FAQs")))) {
+            return "faq";
+        }
+        if (hasText("Accepting these terms")
+                || (hasText("Your obligations") && hasText("Payments and deductions"))
+                || ((hasText("Terms & Services") || hasText("Terms and Services")
+                || hasText("नियम एवं सेवाएँ"))
+                && (hasText("Something went wrong. Please try again.")
+                || (hasText("Retry") && hasText("Terms & Services"))))) {
+            return "terms";
+        }
+        if ((hasText("Policies") || hasText("नीतियाँ"))
+                && (hasText("What we collect")
+                || hasText("How we use it")
+                || hasText("Your rights")
+                || hasText("Location")
+                || hasText("हम कौन-सी जानकारी")
+                || hasText("Something went wrong. Please try again.")
+                || (hasText("Retry") && hasText("Policies")))) {
+            return "policies";
+        }
+        if ((hasText("Settings") || hasText("सेटिंग्स"))
+                && (hasText("Permissions")
+                || hasText("An unexpected error occurred")
+                || (hasText("Retry") && hasText("Settings")))
+                && (hasText("Notification") || hasText("GPS Location")
+                || hasText("Camera Access")
+                || hasText("An unexpected error occurred")
+                || hasText("Retry"))) {
+            return "app-settings";
+        }
         if (hasText("Help & Support")
                 || (hasText("Live chat") && hasText("Raise Ticket") && hasText("Ticket history"))
                 || (hasText("Submit a query") && (hasText("Chat now") || hasText("Submit")))

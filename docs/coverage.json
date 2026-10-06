@@ -108,10 +108,11 @@
   {
    "id": "kyc",
    "name": "KYC",
-   "status": "pending",
+   "status": "in-progress",
    "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "casesTotal": 30,
+   "screens": 1,
+   "note": "Suite scaffolded 5 Oct (L10+I10+E10 + dump). Waiting warm 0001 login — blocked by BUGS_FOUND #52 (qa.waardian.com/api/v1 OTP 404). Prior chrome evidence /tmp/l2b-lang-matrix-0001-20261001/d-kyc. Suites: kyc/kyc-*.xml."
   },
   {
    "id": "profileVerification",
@@ -128,7 +129,7 @@
    "casesDone": 55,
    "casesTotal": 55,
    "screens": 1,
-   "note": "Includes free-operator UI Accept\u2192Confirm PASS on F7D066 (23 Sep)."
+   "note": "Includes free-operator UI Accept→Confirm PASS on F7D066 (23 Sep)."
   },
   {
    "id": "home",
@@ -145,7 +146,7 @@
    "casesDone": 82,
    "casesTotal": 82,
    "screens": 1,
-   "note": "82/82 executed 24 Sep. L16+I16+S16+E20+A14. BLOCKED only S15+E4 (near-expiry Timer seed; timer restarts on relaunch #28). Open Bookings bugs #27\u2013#34."
+   "note": "82/82 executed 24 Sep. L16+I16+S16+E20+A14. BLOCKED only S15+E4 (near-expiry Timer seed; timer restarts on relaunch #28). Open Bookings bugs #27–#34."
   },
   {
    "id": "fleet",
@@ -154,7 +155,7 @@
    "casesDone": 39,
    "casesTotal": 39,
    "screens": 1,
-   "note": "L1\u2013L9 + I1\u2013I16 + E1\u2013E17 done 25 Sep on 9000000001 (dump-reachable). Destructive Disable/Delete Confirm only on disposable FLNOD*. Known Fleet bugs #35\u2013#38. Only remaining manual gap: real RC/Insurance/TPI happy-path verify (user to provide) + empty-fleet account if needed."
+   "note": "L1–L9 + I1–I16 + E1–E17 done 25 Sep on 9000000001 (dump-reachable). Destructive Disable/Delete Confirm only on disposable FLNOD*. Known Fleet bugs #35–#38. Only remaining manual gap: real RC/Insurance/TPI happy-path verify (user to provide) + empty-fleet account if needed."
   },
   {
    "id": "calendar",
@@ -204,18 +205,65 @@
   {
    "id": "team",
    "name": "Team",
-   "status": "pending",
-   "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "status": "done",
+   "casesDone": 34,
+   "casesTotal": 34,
+   "screens": 1,
+   "note": "L10+I12+E12 = 34/34 PASS 2 Oct on 9000000001. Dump /tmp/l2b-team-0001-20261002. Manage Team list (Nauman/Randanberno), Change Assignment sheet Close-only, Add Member Back-only. Suites: team/team-landing.xml + team-interact.xml + team-edge.xml (+ team-all.xml). KYC deferred."
+  },
+  {
+   "id": "refer",
+   "name": "Refer & Earn",
+   "status": "done",
+   "casesDone": 30,
+   "casesTotal": 30,
+   "screens": 1,
+   "note": "L10+I12+E10 = 30/30 PASS 3 Oct on 9000000001. Dump /tmp/l2b-refer-0001-20261003. Live empty state 'Referrals are not available right now.' + Retry (BUGS_FOUND #47); Refer now still shown. Tests cover unavailable + full-chrome when recovered. Suites: refer/refer-*.xml."
+  },
+  {
+   "id": "faq",
+   "name": "FAQ",
+   "status": "done",
+   "casesDone": 30,
+   "casesTotal": 30,
+   "screens": 1,
+   "note": "L10+I10+E10 = 30/30 PASS 3 Oct on 9000000001. Dump /tmp/l2b-faq-0001-20261003. Live error empty state 'Something went wrong. Please try again.' + Retry (BUGS_FOUND #48); no FAQ questions. Dual-path tests cover error + full list when recovered. Suites: faq/faq-*.xml."
+  },
+  {
+   "id": "terms",
+   "name": "Terms & Services",
+   "status": "done",
+   "casesDone": 30,
+   "casesTotal": 30,
+   "screens": 1,
+   "note": "L10+I10+E10 = 30/30 PASS 3 Oct on 9000000001. Dump /tmp/l2b-terms-0001-20261003. Live error empty state 'Something went wrong. Please try again.' + Retry (BUGS_FOUND #49); no legal body. Dual-path tests cover error + full chrome when recovered. Suites: terms/terms-*.xml."
+  },
+  {
+   "id": "policies",
+   "name": "Policies",
+   "status": "done",
+   "casesDone": 30,
+   "casesTotal": 30,
+   "screens": 1,
+   "note": "L10+I10+E10 = 30/30 PASS 5 Oct on 9000000001. Dump /tmp/l2b-policies-0001-20261005. Live error empty state 'Something went wrong. Please try again.' + Retry (BUGS_FOUND #50); no policy body. Dual-path tests cover error + full chrome when recovered. Suites: policies/policies-*.xml."
   },
   {
    "id": "settings",
    "name": "Profile / Settings",
-   "status": "pending",
-   "casesDone": 0,
-   "casesTotal": 0,
-   "screens": 1
+   "status": "done",
+   "casesDone": 30,
+   "casesTotal": 30,
+   "screens": 1,
+   "note": "L10+I10+E10 = 30/30 PASS 5 Oct on 9000000001. Dump /tmp/l2b-app-settings-0001-20261005. Live error empty state 'An unexpected error occurred' + Retry (BUGS_FOUND #51); no Permissions list. Dual-path tests cover error + full toggles when recovered. Suites: settings/app-settings-*.xml."
+  },
+  {
+   "id": "logout",
+   "name": "Log Out",
+   "status": "done",
+   "casesDone": 38,
+   "casesTotal": 38,
+   "screens": 1,
+   "note": "Dump + L8+I10+E20 suite 5 Oct on 9000000001. Dump Confirm → Sign up; force-stop → Language (token cleared). User sticky report scoped to Back-after-Confirm → BUGS_FOUND #53 (LO-E19/E20 + dump 03b). QA API OTP outage #52 blocks warm re-login. Suites: settings/logout-*.xml."
   },
   {
    "id": "help",
@@ -233,7 +281,7 @@
    "casesDone": 38,
    "casesTotal": 38,
    "screens": 1,
-   "note": "L10+I12+E16 = 38/38 PASS 1 Oct on 9000000001. Hindi Save reflects Home/Calendar/Earning/Fleet/Account/Help/Settings/KYC/Team. Open product bugs #40–#46 on incomplete reflection (Log Out EN, Refer steps, FAQ mixed, Terms EN, Earning incentive EN, Calendar month EN, Policies mixed). Suites settings/language-settings-*.xml. Matrix /tmp/l2b-lang-matrix-0001-20261001. True one-session E2E: LanguageReflectionE2ETest + settings/language-reflection-e2e.xml (does not logout between modules; re-tests #40–#46 as separate FAILs)."
+   "note": "L10+I12+E16 = 38/38 PASS 1 Oct on 9000000001. Hindi + Telugu + Kannada one-session reflection E2E done 2 Oct (Home/Calendar/Earning/Fleet/Account/Help/KYC/Team/Settings localize). Known incomplete localization still fails soft-assert on #40/#41/#43/#45/#46 across HI/TE/KN; #42/#44 not reproduced on TE/KN runs. Suites: settings/language-settings-*.xml + language-reflection-e2e.xml + language-telugu-reflection-e2e.xml + language-kannada-reflection-e2e.xml. Matrices /tmp/l2b-lang-matrix-{te|kn}-0001-20261002."
   }
  ],
  "firstLaunch": [
@@ -356,79 +404,79 @@
  "loggedInExtra": [
   "quickBooking"
  ],
- "whatsNext": "Fleet Interact / Edge \u2014 Landing FL-L1\u2013L7 PASS (4 Active machines on 9000000001)",
- "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup \u2014 Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done \u2014 40 isolated cases. Material Vendor Quick Booking (9000000017) is done \u2014 Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done \u2014 Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back \u2192 launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE \u2014 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch \u2014 #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27\u2013#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred. Rental Home chrome: bottom tabs Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet; header bell opens Notifications; profile photo opens the Profile drawer; Upcoming See all / card opens Rental Booking with Upcoming \u00b7 Active \u00b7 Completed tabs; Booking Orders See all returns to Quick Booking.",
- "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP (screenshot: assets/screens/quick-booking-rental.png). 19 Sep on 9000000017: pending material orders open the same Quick Booking page \u2014 material chrome, no timer/operator (screenshot: assets/screens/quick-booking-material.png). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
+ "whatsNext": "KYC (drawer) → registration path leftovers (Sign Up Completed / role / category / Tell us…) — blocked until QA API #52 fixed for warm 0001 login",
+ "flowNote": "Green is done. Amber is in progress. Grey is not started. Yellow diamonds are decisions, not screens. After a valid OTP the app checks whether the mobile is already registered. Existing user: the app checks for an active rental or material booking (any assigned machine / material order). If yes, Quick Booking opens first; Close/Back goes to Home. If none, go to Home. New user: Sign Up Completed popup — Contact us to Register opens Help & Support, or Register Yourself continues registration and then Home. Invalid OTP stays on the OTP screen. Rental-owner Quick Booking (9000000001) is done — 40 isolated cases. Material Vendor Quick Booking (9000000017) is done — Landing 6, Accept 1, Decline 1, Edge 6. Rental Home (9000000001) is done — Landing 11, Interact 17, Edge 12 (40 cases) plus Material Home 32. Open Home bugs #25 (Back → launcher) and #26 (rotation opens Account drawer). Rental Booking is DONE — 82/82 executed 24 Sep 2026 (RB-L16 / RB-I16 / RB-S16 / RB-E20 / RB-A14). Only S15 + E4 remain BLOCKED pending a near-expiry rental Timer seed (QB Timer restarts ~29:5x on relaunch — #28). Dev blocker #16 remains open for busy-operator Assign Confirm only (free-op path PASSES on F7D066). Open Rental Booking bugs #27–#34: #27 rupee grouping, #28 Timer gate, #29 Skip stuck after Accept, #30 offline Accept opens Assign, #31/#32 stale Accept opens Assign, #33 Address not provided, #34 decline reason not persisted. Operator Quick Booking / operator Start-End OTP UI deferred. Rental Home chrome: bottom tabs Calendar · Home · Earning · Fleet; header bell opens Notifications; profile photo opens the Profile drawer; Upcoming See all / card opens Rental Booking with Upcoming · Active · Completed tabs; Booking Orders See all returns to Quick Booking.",
+ "existingUserEvidenceNote": "18 Sep live on 9000000001: pending rentals open Quick Booking after OTP (screenshot: assets/screens/quick-booking-rental.png). 19 Sep on 9000000017: pending material orders open the same Quick Booking page — material chrome, no timer/operator (screenshot: assets/screens/quick-booking-material.png). Accept is one-step (toast Accepted 1 item(s)); Decline uses a material reason list and Confirm Decline. After both 0017 cards were consumed, post-OTP lands on Home. Operator existing-user landing will be added when specified.",
  "existingUserEvidence": [
   {
    "src": "assets/screens/quick-booking-rental.png",
-   "caption": "Existing user + active rental booking \u2014 Quick Booking (9000000001)"
+   "caption": "Existing user + active rental booking — Quick Booking (9000000001)"
   },
   {
    "src": "assets/screens/quick-booking-material.png",
-   "caption": "Existing user + active material order \u2014 same Quick Booking pattern (9000000017)"
+   "caption": "Existing user + active material order — same Quick Booking pattern (9000000017)"
   },
   {
    "src": "assets/screens/home-rental-with-fleet.png",
-   "caption": "Existing user, no active booking/order \u2014 Home"
+   "caption": "Existing user, no active booking/order — Home"
   }
  ],
  "flowEvidenceNote": "New user only (mobile not already registered). Live-app screenshots, Sep. Contact us opens the same Help & Support chrome as the logged-in Help module.",
  "flowEvidence": [
   {
    "src": "assets/flow/sign-up-completed.jpg",
-   "caption": "1. After first login \u2014 Sign Up Completed"
+   "caption": "1. After first login — Sign Up Completed"
   },
   {
    "src": "assets/flow/select-your-role.jpg",
-   "caption": "2. Register Yourself \u2014 Select your role"
+   "caption": "2. Register Yourself — Select your role"
   },
   {
    "src": "assets/flow/help-and-support.jpg",
-   "caption": "3. Contact us \u2014 Help & Support"
+   "caption": "3. Contact us — Help & Support"
   }
  ],
  "roleEvidenceNote": "Live-app screenshots, Sep. Next on Select your role depends on the role card.",
  "roleEvidence": [
   {
    "src": "assets/flow/select-category.jpg",
-   "caption": "4. Vendor / Owner \u2014 Please select the category"
+   "caption": "4. Vendor / Owner — Please select the category"
   },
   {
    "src": "assets/flow/tell-us-about-yourself.jpg",
-   "caption": "5. Operator / Driver \u2014 Tell us about yourself"
+   "caption": "5. Operator / Driver — Tell us about yourself"
   }
  ],
  "categoryEvidenceNote": "Live-app screenshots, Sep. Same title, different fields.",
  "categoryEvidence": [
   {
    "src": "assets/flow/tell-us-materials.jpg",
-   "caption": "6. Materials Vendor \u2014 warehouse location"
+   "caption": "6. Materials Vendor — warehouse location"
   },
   {
    "src": "assets/flow/tell-us-rental.jpg",
-   "caption": "7. Rental Vendor \u2014 company + machinery"
+   "caption": "7. Rental Vendor — company + machinery"
   }
  ],
- "materialEvidenceNote": "Design strip, Sep. After Materials Tell us: KYC (company-type variants) \u2192 Profile Verification \u2192 skip or KYC \u2192 material Home / Inventory.",
+ "materialEvidenceNote": "Design strip, Sep. After Materials Tell us: KYC (company-type variants) → Profile Verification → skip or KYC → material Home / Inventory.",
  "materialEvidence": [
   {
    "src": "assets/flow/material-vendor-registration.jpg",
-   "caption": "8. Material Vendor registration \u2014 KYC \u2192 Profile Verification \u2192 Home"
+   "caption": "8. Material Vendor registration — KYC → Profile Verification → Home"
   }
  ],
- "rentalEvidenceNote": "Design strip, Sep. After Rental Tell us: List machineries \u2192 Machine successfully added. Skip goes to Home. Complete KYC goes to KYC \u2192 Profile Verification \u2192 Home.",
+ "rentalEvidenceNote": "Design strip, Sep. After Rental Tell us: List machineries → Machine successfully added. Skip goes to Home. Complete KYC goes to KYC → Profile Verification → Home.",
  "rentalEvidence": [
   {
    "src": "assets/flow/rental-vendor-registration.jpg",
-   "caption": "9. Rental Vendor registration \u2014 machines \u2192 Skip or KYC \u2192 Home"
+   "caption": "9. Rental Vendor registration — machines → Skip or KYC → Home"
   }
  ],
- "operatorEvidenceNote": "Design strip, Sep. After Operator Tell us: List skills \u2192 Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC \u2192 Profile Verification \u2192 Home.",
+ "operatorEvidenceNote": "Design strip, Sep. After Operator Tell us: List skills → Category Skills successfully added. Skip goes to Home. Complete KYC goes to bank/KYC → Profile Verification → Home.",
  "operatorEvidence": [
   {
    "src": "assets/flow/operator-registration.jpg",
-   "caption": "10. Operator / Driver registration \u2014 skills \u2192 Skip or KYC \u2192 Home"
+   "caption": "10. Operator / Driver registration — skills → Skip or KYC → Home"
   }
  ],
  "postLoginFromHome": [
@@ -458,15 +506,15 @@
     "Tab bar: Unread | All",
     "Unread empty: You're all caught up. + View all notifications",
     "All list: category blocks (e.g. Rentals + See all)",
-    "Row: bell icon \u00b7 title \u00b7 body \u00b7 time \u00b7 View Details"
+    "Row: bell icon · title · body · time · View Details"
    ],
    "actions": [
-    "Back \u2192 Home",
-    "View all notifications (\u2192 All tab)",
+    "Back → Home",
+    "View all notifications (→ All tab)",
     "See all (per category)",
     "View Details (row)"
    ],
-   "note": "Stack screen from Home bell \u2014 bottom tabs gone. Live 0001 28 Sep 2026: L/I/E 38/38 PASS. Unread empty (You're all caught up.); View all \u2192 All Rentals rows + View Details; See all \u2192 Mark all read; View Details \u2192 Quick Booking (Close only). Header/device Back \u2192 Home."
+   "note": "Stack screen from Home bell — bottom tabs gone. Live 0001 28 Sep 2026: L/I/E 38/38 PASS. Unread empty (You're all caught up.); View all → All Rentals rows + View Details; See all → Mark all read; View Details → Quick Booking (Close only). Header/device Back → Home."
   },
   "calendarPage": {
    "title": "Schedule",
@@ -474,19 +522,19 @@
    "sections": [
     "Header: Back + Schedule + year",
     "Month nav: Previous month / Next month",
-    "Month grid (S\u2013S) with day status bars",
+    "Month grid (S–S) with day status bars",
     "Selected day heading (e.g. 25 September, Friday)",
     "Day agenda timeline: Started / Completed / Start Task + machine cards (name, dates, route)",
     "Empty day: No bookings on this day."
    ],
    "actions": [
-    "Back \u2192 Home",
-    "Home bottom tab \u2192 Home",
+    "Back → Home",
+    "Home bottom tab → Home",
     "Previous month",
     "Next month",
     "Select day"
    ],
-   "note": "Bottom tab surface \u2014 Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet stay. No Unread/All-style tabs on this page. Live 0001 28 Sep 2026: L/I/E 38/38 PASS. Day 21 empty; day 25 Started/Completed/Start Task (Tata Ace / Excavator). Month nav Aug/Oct OK. Layout padding/spacing checks green."
+   "note": "Bottom tab surface — Calendar · Home · Earning · Fleet stay. No Unread/All-style tabs on this page. Live 0001 28 Sep 2026: L/I/E 38/38 PASS. Day 21 empty; day 25 Started/Completed/Start Task (Tata Ace / Excavator). Month nav Aug/Oct OK. Layout padding/spacing checks green."
   },
   "homePage": {
    "title": "Home",
@@ -543,18 +591,18 @@
      "module": "bookings"
     },
     {
-     "label": "Booking Orders (+ See all \u00b7 Timer \u00b7 Decline \u00b7 Accept)",
+     "label": "Booking Orders (+ See all · Timer · Decline · Accept)",
      "status": "done",
      "module": "quickBooking"
     },
     {
-     "label": "Bottom tabs: Calendar \u00b7 Home \u00b7 Earning \u00b7 Fleet",
+     "label": "Bottom tabs: Calendar · Home · Earning · Fleet",
      "status": "done",
      "module": "calendar"
     }
    ],
    "actions": [],
-   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications + Profile drawer + Account + Help + Language (in-app) done from Home. Still open: KYC, Team, Refer, FAQ, Terms, Policies, Settings. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications, Profile drawer, Account, Help, Language."
+   "note": "Home page chrome done. Calendar + Earning + Fleet + Notifications + Profile drawer + Account + Help + Language (in-app) + Team done from Home. Still open: KYC, Refer, FAQ, Terms, Policies, Settings. Done exits: Rental Booking, Quick Booking, Calendar, Earning, Fleet, Notifications, Profile drawer, Account, Help, Language, Team."
   },
   "fromHome": [
    {
@@ -666,7 +714,7 @@
     "note": "Read-only hub for company KYC docs."
    },
    "fleet": {
-    "title": "Your machines \u2192 Your Fleet",
+    "title": "Your machines → Your Fleet",
     "sections": [
      "Machine cards (name, plate, capacity, operator, Status)"
     ],
@@ -681,14 +729,18 @@
    "team": {
     "title": "Manage team",
     "sections": [
-     "Team member list",
-     "Invite / assignment"
+     "Your team member list",
+     "Active status + machine / capacity / skills",
+     "Change Assignment sheet (Select machine)",
+     "Add Member (header CTA)"
     ],
     "actions": [
-     "Change Assignment",
-     "Back"
+     "Add Member (top-right — Back only)",
+     "Change Assignment → Close sheet (never assign)",
+     "Back → drawer"
     ],
-    "note": "Live 0001: Nauman Majid Pathan \u00b7 9000000002."
+    "status": "done",
+    "note": "L10+I12+E12 = 34/34 PASS 2 Oct 9000000001. Dump /tmp/l2b-team-0001-20261002. Live: Nauman · 9000000002, Randanberno. Never confirm Assign / remove."
    },
    "help": {
     "title": "Help and Support",
@@ -702,8 +754,8 @@
     "actions": [
      "Back",
      "Call Support",
-     "Live chat \u2192 Chat now (disabled until concern)",
-     "Raise Ticket \u2192 Submit (disabled empty; never submit)",
+     "Live chat → Chat now (disabled until concern)",
+     "Raise Ticket → Submit (disabled empty; never submit)",
      "Ticket history"
     ],
     "status": "done",
@@ -724,90 +776,116 @@
      "Back"
     ],
     "status": "done",
-    "note": "L10+I12+E16 = 38/38 PASS 1 Oct. Hindi reflects core modules. BUGS_FOUND #40–#46 for incomplete localization. Matrix /tmp/l2b-lang-matrix-0001-20261001."
+    "note": "L10+I12+E16 = 38/38 PASS 1 Oct. HI/TE/KN reflection E2E 2 Oct — core chrome localizes. BUGS_FOUND #40–#46 still open (reconfirmed on TE/KN for #40/#41/#43/#45/#46)."
    },
    "referEarn": {
     "title": "Refer and Earn",
     "sections": [
-     "Referral code",
-     "Reward copy"
+     "Referral code (when available)",
+     "How-to three steps",
+     "Unavailable empty state + Retry"
     ],
     "actions": [
-     "Share / copy",
+     "Copy referral code",
+     "Refer now (dismiss share)",
+     "Retry",
      "Back"
     ],
-    "note": "Referral surface from drawer."
+    "status": "done",
+    "note": "L10+I12+E10 = 30/30 PASS 3 Oct 9000000001. Dump /tmp/l2b-refer-0001-20261003. BUGS_FOUND #47 unavailable empty state."
    },
    "faq": {
     "title": "FAQ",
     "sections": [
-     "FAQ list (review, payout, start job, cancel, reach a human)"
+     "FAQ list (review, payout, start job, cancel, reach a human)",
+     "Error empty state + Retry"
     ],
     "actions": [
+     "Expand / Collapse",
+     "Retry",
      "Back"
     ],
-    "note": "Expandable FAQ rows."
+    "status": "done",
+    "note": "L10+I10+E10 = 30/30 PASS 3 Oct 9000000001. Dump /tmp/l2b-faq-0001-20261003. BUGS_FOUND #48 error empty state."
    },
    "terms": {
     "title": "Terms and Services",
     "sections": [
-     "Partner obligations",
-     "No off-platform settle"
+     "Accepting these terms",
+     "Your obligations / You must not",
+     "Payments and deductions",
+     "Suspension and termination",
+     "Error empty state + Retry"
     ],
     "actions": [
+     "Scroll",
+     "Retry",
      "Back"
     ],
-    "note": "Scrollable legal copy."
+    "status": "done",
+    "note": "L10+I10+E10 = 30/30 PASS 3 Oct 9000000001. Dump /tmp/l2b-terms-0001-20261003. BUGS_FOUND #49 error empty state."
    },
    "policies": {
     "title": "Policies",
     "sections": [
-     "KYC",
-     "Location on active jobs",
-     "Payouts"
+     "What we collect",
+     "Location",
+     "How we use it",
+     "Your rights",
+     "Error empty state + Retry"
     ],
     "actions": [
+     "Scroll",
+     "Retry",
      "Back"
     ],
-    "note": "Privacy / policy copy."
+    "status": "done",
+    "note": "L10+I10+E10 = 30/30 PASS 5 Oct 9000000001. Dump /tmp/l2b-policies-0001-20261005. BUGS_FOUND #50 error empty state."
    },
    "settings": {
     "title": "Settings",
     "sections": [
-     "Notification",
-     "GPS Location",
-     "Camera Access"
+     "Permissions list (Notification / GPS / Camera / …)",
+     "Error empty state + Retry"
     ],
     "actions": [
-     "Toggles",
+     "Toggle + restore",
+     "Retry",
+     "Scroll",
      "Back"
     ],
-    "note": "Permission toggles."
+    "status": "done",
+    "note": "L10+I10+E10 = 30/30 PASS 5 Oct 9000000001. Dump /tmp/l2b-app-settings-0001-20261005. BUGS_FOUND #51 unexpected-error empty state."
    },
    "logout": {
     "title": "Log Out",
     "sections": [
-     "Log Out? confirm dialog"
+     "Log Out? confirm dialog",
+     "Session clear after Confirm",
+     "Auth UI (Sign up / Language) after relaunch"
     ],
     "actions": [
      "Confirm Log Out",
-     "Cancel"
+     "Cancel",
+     "Force-stop / Home / am kill probes",
+     "OTP restore after Confirm"
     ],
-    "note": "Live 0001 29 Sep: Log Out? + body + Cancel + Log out. Cancel-only in automation (PD-L9/I5/E3/E4/E14). Never tap Log out confirm."
+    "status": "done",
+    "note": "5 Oct dump: Confirm clears session (Sign up → Language). Sticky not reproduced. BUGS_FOUND #52 blocks OTP restore. Suites: settings/logout-*.xml."
    },
    "chrome": {
     "title": "Profile drawer",
     "sections": [
      "Header: vendor name + L2B- company code + Company Id",
-     "Menu rows: Account \u00b7 KYC \u00b7 Your machines \u00b7 Manage team \u00b7 Help \u00b7 Language \u00b7 Refer & Earn \u00b7 FAQ \u00b7 Terms & Services \u00b7 Policies \u00b7 Settings",
+     "Menu rows: Account · KYC · Your machines · Manage team · Help · Language · Refer & Earn · FAQ · Terms & Services · Policies · Settings",
      "Log Out CTA (bottom)",
      "Close navigation menu (right scrim)"
     ],
     "actions": [
-     "Device Back \u2192 Home",
-     "Close navigation menu / right scrim \u2192 Home",
-     "Row tap \u2192 module (Back returns)",
-     "Log Out \u2192 dialog \u2192 Cancel only"
+     "Device Back → Home",
+     "Close navigation menu / right scrim → Home",
+     "Row tap → module (Back returns)",
+     "Log Out → dialog → Cancel only"
     ],
     "note": "Left drawer. Live 0001 29 Sep: L12+I14+E14 = 40/40 PASS. Dump /tmp/l2b-profile-drawer-0001-20260929."
    }

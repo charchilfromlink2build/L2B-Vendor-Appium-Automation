@@ -2,6 +2,9 @@ package com.l2b.vendor.core.ui;
 
 import com.l2b.vendor.core.driver.DriverFactory;
 import com.l2b.vendor.core.driver.DriverManager;
+import com.l2b.vendor.environment.Adb;
+import com.l2b.vendor.environment.Config;
+import io.appium.java_client.android.AndroidDriver;
 import java.lang.reflect.Method;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +45,7 @@ public abstract class BaseTest {
             }
             if (!DriverManager.hasDriver()) {
                 DriverManager.set(DriverFactory.create(noReset(), autoGrantPermissions()));
+                afterDriverCreated();
             }
             return;
         }
@@ -50,6 +54,24 @@ public abstract class BaseTest {
             quitDriver();
         }
         DriverManager.set(DriverFactory.create(noReset(), autoGrantPermissions()));
+        afterDriverCreated();
+    }
+
+    /** After install/launch: grant notification + bring Vendor to foreground (avoid launcher). */
+    private void afterDriverCreated() {
+        String pkg = Config.get("app.package");
+        Adb.grantPostNotifications(pkg);
+        try {
+            ((AndroidDriver) DriverManager.get()).activateApp(pkg);
+        } catch (RuntimeException e) {
+            LOG.warn("activateApp failed, adb start fallback: {}", e.getMessage());
+            try {
+                Adb.run("shell", "am", "start", "-n",
+                        pkg + "/" + Config.get("app.activity"));
+            } catch (RuntimeException ignored) {
+                // Language wait will still surface the real screen state.
+            }
+        }
     }
 
     @AfterMethod(alwaysRun = true)

@@ -60,14 +60,34 @@ public abstract class SplashScreen {
         Allure.addAttachment(name, "image/png", new ByteArrayInputStream(png), "png");
     }
 
-    /** System notification prompt on API 33+ after a data-clear. Taps Allow if the dialog is present. */
+    /**
+     * System notification prompt on API 33+ after a data-clear. Taps Allow when present.
+     * API 36 / Google permissioncontroller can leave the dialog up even with
+     * {@code autoGrantPermissions}; fall back to visible "Allow" text if the id miss.
+     */
     protected void dismissNotificationPromptIfPresent() {
         try {
-            By allow = By.id("com.android.permissioncontroller:id/permission_allow_button");
-            if (!driver.findElements(allow).isEmpty()) {
-                driver.findElement(allow).click();
-                log.info("System permission dialog was present — dismissed it");
+            By allowId = By.id("com.android.permissioncontroller:id/permission_allow_button");
+            By allowText = By.xpath("//android.widget.Button[@text='Allow' or @text='ALLOW']");
+            WebElement allow = null;
+            if (!driver.findElements(allowId).isEmpty()) {
+                allow = driver.findElement(allowId);
+            } else if (!driver.findElements(allowText).isEmpty()) {
+                allow = driver.findElement(allowText);
             }
+            if (allow == null) {
+                return;
+            }
+            try {
+                allow.click();
+            } catch (RuntimeException clickFail) {
+                var r = allow.getRect();
+                driver.executeScript("mobile: clickGesture",
+                        java.util.Map.of(
+                                "x", r.x + Math.max(1, r.width / 2),
+                                "y", r.y + Math.max(1, r.height / 2)));
+            }
+            log.info("System permission dialog dismissed via Allow");
         } catch (RuntimeException e) {
             log.debug("No notification prompt: {}", e.getMessage());
         }

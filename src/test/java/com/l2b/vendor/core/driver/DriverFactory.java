@@ -59,6 +59,9 @@ public final class DriverFactory {
         options.setCapability("uiautomator2ServerInstallTimeout", 120_000);
         options.setCapability("uiautomator2ServerLaunchTimeout", 60_000);
         options.setCapability("disableWindowAnimation", true);
+        // Language / permission / Compose routes — do not require exact MainActivity idle.
+        options.setAppWaitActivity("*");
+        options.setAppWaitDuration(Duration.ofSeconds(45));
 
         String appPath = Config.get("app.path", "");
         if (!appPath.isBlank()) {

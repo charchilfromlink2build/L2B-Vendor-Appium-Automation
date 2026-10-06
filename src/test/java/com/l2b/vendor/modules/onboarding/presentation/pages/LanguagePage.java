@@ -4,6 +4,7 @@ import com.l2b.vendor.core.locators.ComposeLocators;
 import com.l2b.vendor.core.ui.SplashScreen;
 import com.l2b.vendor.core.wait.Waits;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import java.time.Duration;
 import org.openqa.selenium.By;
@@ -36,10 +37,31 @@ public class LanguagePage extends SplashScreen {
     @Override
     @Step("Wait for language screen")
     public void waitUntilLoaded() {
-        Waits.until(driver, d -> {
-            dismissNotificationPromptIfPresent();
-            return isDisplayedNow() ? Boolean.TRUE : null;
-        }, "Language screen did not appear after splash", Duration.ofSeconds(25));
+        try {
+            Waits.until(driver, d -> {
+                dismissNotificationPromptIfPresent();
+                if (isDisplayedNow()) {
+                    return Boolean.TRUE;
+                }
+                // Session create can leave Nexus Launcher in front — re-activate Vendor.
+                try {
+                    String pkg = "com.l2b.app.qa";
+                    ((io.appium.java_client.android.AndroidDriver) driver).activateApp(pkg);
+                } catch (RuntimeException ignored) {
+                }
+                dismissNotificationPromptIfPresent();
+                return isDisplayedNow() ? Boolean.TRUE : null;
+            }, "Language screen did not appear after splash", Duration.ofSeconds(40));
+        } catch (RuntimeException e) {
+            try {
+                Allure.addAttachment("language-wait-page-source", "text/xml",
+                        driver.getPageSource() == null ? "" : driver.getPageSource());
+                attachScreenshot("language-wait-timeout");
+            } catch (RuntimeException ignored) {
+                // Keep the original timeout as the failure.
+            }
+            throw e;
+        }
     }
 
     /** Wait until the English title is present, with a splash-specific timeout message. */

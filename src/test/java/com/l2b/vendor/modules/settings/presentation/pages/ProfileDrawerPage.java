@@ -119,9 +119,15 @@ public class ProfileDrawerPage extends SplashScreen {
         return isPresent(ComposeLocators.textView("Cancel"));
     }
 
-    @Step("Confirm Log out on dialog (do not tap)")
+    @Step("Confirm Log out visible on dialog")
     public boolean isLogoutConfirmVisible() {
+        // Dialog confirm is "Log out" (lowercase o) — not the drawer CTA "Log Out".
         return isPresent(ComposeLocators.textView("Log out"));
+    }
+
+    @Step("Tap Confirm Log out on dialog")
+    public void tapLogoutConfirm() {
+        clickText("Log out");
     }
 
     @Step("Menu rows stacked top→bottom with equal gaps")

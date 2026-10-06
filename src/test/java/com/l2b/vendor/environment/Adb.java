@@ -73,6 +73,18 @@ public final class Adb {
         run("shell", "am", "force-stop", packageName);
     }
 
+    /**
+     * Grant POST_NOTIFICATIONS so the cold-start permission dialog does not cover Language.
+     * Safe no-op if the permission is missing from the APK / already granted.
+     */
+    public static void grantPostNotifications(String packageName) {
+        try {
+            run("shell", "pm", "grant", packageName, "android.permission.POST_NOTIFICATIONS");
+        } catch (RuntimeException e) {
+            // Already granted or OEM without the permission — Language wait still dismisses UI.
+        }
+    }
+
     /** Home so a leftover Play Store / browser task is not the Back target. */
     public static void pressHome() {
         run("shell", "input", "keyevent", "KEYCODE_HOME");

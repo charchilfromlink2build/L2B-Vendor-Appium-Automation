@@ -19,7 +19,7 @@ public abstract class LanguageSettingsBaseTest extends ProfileDrawerBaseTest {
         // Account language persists server-side; prefer English before each case when already logged in.
         try {
             if (DriverManager.hasDriver() && (hasText("खाता") || hasText("भाषा चुनें")
-                    || hasText("वर्तमान कमाई"))) {
+                    || hasText("वर्तमान कमाई") || hasNonLatinIndicScript())) {
                 restoreEnglishLanguage();
             }
         } catch (RuntimeException ignored) {
@@ -89,6 +89,48 @@ public abstract class LanguageSettingsBaseTest extends ProfileDrawerBaseTest {
         sleepQuiet(1300);
     }
 
+    @Step("Apply Telugu and return (drawer usually open)")
+    protected void applyTelugu() {
+        LanguageSettingsPage page = reachLanguage();
+        page.selectTelugu();
+        sleepQuiet(500);
+        page.tapSave();
+        sleepQuiet(1300);
+    }
+
+    @Step("Apply Kannada and return (drawer usually open)")
+    protected void applyKannada() {
+        LanguageSettingsPage page = reachLanguage();
+        page.selectKannada();
+        sleepQuiet(500);
+        page.tapSave();
+        sleepQuiet(1300);
+    }
+
+    protected boolean hasScriptInRange(int lo, int hi) {
+        String src = "";
+        try {
+            src = DriverManager.get().getPageSource();
+        } catch (RuntimeException e) {
+            return false;
+        }
+        for (int i = 0; i < src.length(); i++) {
+            char c = src.charAt(i);
+            if (c >= lo && c <= hi) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean hasTeluguOnScreen() {
+        return hasScriptInRange(0x0C00, 0x0C7F);
+    }
+
+    protected boolean hasKannadaOnScreen() {
+        return hasScriptInRange(0x0C80, 0x0CFF);
+    }
+
     protected boolean hasDevanagariOnScreen() {
         String src = "";
         try {
@@ -99,6 +141,25 @@ public abstract class LanguageSettingsBaseTest extends ProfileDrawerBaseTest {
         for (int i = 0; i < src.length(); i++) {
             char c = src.charAt(i);
             if (c >= 0x0900 && c <= 0x097F) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Telugu / Kannada / Devanagari present — used to force English restore. */
+    protected boolean hasNonLatinIndicScript() {
+        String src = "";
+        try {
+            src = DriverManager.get().getPageSource();
+        } catch (RuntimeException e) {
+            return false;
+        }
+        for (int i = 0; i < src.length(); i++) {
+            char c = src.charAt(i);
+            if ((c >= 0x0900 && c <= 0x097F)
+                    || (c >= 0x0C00 && c <= 0x0C7F)
+                    || (c >= 0x0C80 && c <= 0x0CFF)) {
                 return true;
             }
         }

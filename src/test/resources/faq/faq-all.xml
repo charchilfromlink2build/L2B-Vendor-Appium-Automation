@@ -1,0 +1,21 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor FAQ all" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="FAQ-Landing" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.faq.presentation.tests.FaqLandingTest"/>
+        </classes>
+    </test>
+    <test name="FAQ-Interact" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.faq.presentation.tests.FaqInteractTest"/>
+        </classes>
+    </test>
+    <test name="FAQ-Edge" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.faq.presentation.tests.FaqEdgeTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,21 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Refer all" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Refer-Landing" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.refer.presentation.tests.ReferLandingTest"/>
+        </classes>
+    </test>
+    <test name="Refer-Interact" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.refer.presentation.tests.ReferInteractTest"/>
+        </classes>
+    </test>
+    <test name="Refer-Edge" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.refer.presentation.tests.ReferEdgeTest"/>
+        </classes>
+    </test>
+</suite>

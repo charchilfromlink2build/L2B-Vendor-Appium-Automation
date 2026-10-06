@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="L2B Vendor Team dump" verbose="1" parallel="none" thread-count="1" preserve-order="true">
+    <listeners>
+        <listener class-name="com.l2b.vendor.environment.TestListener"/>
+    </listeners>
+    <test name="Team-Dump" preserve-order="true">
+        <classes>
+            <class name="com.l2b.vendor.modules.team.presentation.tests.TeamDump">
+                <methods>
+                    <include name="dumpTeam0001"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

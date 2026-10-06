@@ -63,6 +63,18 @@ public abstract class QuickBookingBaseTest extends BaseTest {
     }
 
     protected OtpPage openOtp(String phone) {
+        // Cold session sometimes lands on launcher; bring app forward before Language wait.
+        try {
+            String pkg = Config.get("app.package");
+            Adb.grantPostNotifications(pkg);
+            ((AndroidDriver) DriverManager.get()).activateApp(pkg);
+        } catch (RuntimeException e) {
+            try {
+                Adb.run("shell", "am", "start", "-n",
+                        Config.get("app.package") + "/" + Config.get("app.activity"));
+            } catch (RuntimeException ignored) {
+            }
+        }
         LanguagePage language = new LanguagePage();
         language.waitUntilLoaded();
         language.tapGetStarted();
