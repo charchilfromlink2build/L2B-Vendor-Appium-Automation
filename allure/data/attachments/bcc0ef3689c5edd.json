@@ -1,0 +1,35 @@
+{
+    "locale": "hi",
+    "items": [
+        {
+            "key": "why-is-my-account-under-review",
+            "question": "मेरा खाता अभी भी समीक्षा में क्यों है?",
+            "answer": "आपका खाता चालू होने से पहले हमारी टीम हर KYC दस्तावेज़ जाँचती है। यदि कोई दस्तावेज़ अस्पष्ट या समय-समाप्त है तो हम उसे दोबारा अपलोड करने को कहते हैं — प्रोफ़ाइल में अस्वीकृति नोट देखें।",
+            "display_order": 0
+        },
+        {
+            "key": "how-do-i-get-paid",
+            "question": "पूरा हुए काम का भुगतान कब मिलेगा?",
+            "answer": "ग्राहक का भुगतान सेटल होते ही कमाई आपके वॉलेट में आ जाती है, और पेआउट हर सप्ताह आपके बैंक खाते में भेजा जाता है।",
+            "display_order": 1
+        },
+        {
+            "key": "how-do-i-start-a-task",
+            "question": "How do I start a booked job?",
+            "answer": "Open the booking from the Active tab and tap Start Task. You will be asked for the customer's OTP and a photo of the machine's odometer before the timer begins.",
+            "display_order": 2
+        },
+        {
+            "key": "what-if-the-customer-cancels",
+            "question": "What happens if a customer cancels?",
+            "answer": "A cancellation before the job starts costs you nothing. If the customer cancels after you have reached the site, raise a ticket from Help and our team reviews it for a compensation payout.",
+            "display_order": 3
+        },
+        {
+            "key": "how-do-i-contact-support",
+            "question": "मैं किसी व्यक्ति से कैसे बात करूँ?",
+            "answer": "मदद स्क्रीन पर 'सहायता से संपर्क करें' दबाकर टिकट खोलें। बुकिंग नंबर शामिल करें, हमारी टीम ऐप में ही जवाब देगी।",
+            "display_order": 4
+        }
+    ]
+}

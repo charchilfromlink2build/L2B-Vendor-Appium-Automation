@@ -1,0 +1,17 @@
+text=Kasim Pathan
+text=L2B-8FV7CE
+text= Company Id
+text=खाता
+text=केवाईसी
+text=आपकी मशीनें
+text=टीम मैनेज करें
+text=सहायता
+text=भाषा
+text=रेफर करें और कमाएं
+text=अक्सर पूछे जाने वाले प्रश्न
+text=नियम और शर्तें
+text=नीतियां
+text=सेटिंग्स
+text=Log Out
+desc=नेविगेशन मेन्यू बंद करें
+desc=प्रोफाइल

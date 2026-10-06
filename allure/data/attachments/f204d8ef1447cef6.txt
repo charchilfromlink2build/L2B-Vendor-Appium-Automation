@@ -1,0 +1,14 @@
+text=L2B wallet can be used for all your orders and operators salaries.
+text=Enter Amount
+text=Enter Amount (in ₹)
+text=₹500
+text=₹1000
+text=₹2000
+text=₹5000
+text=Note
+text=• Your wallet updates as soon as the transaction succeeds.
+text=• L2B does not charge any fee on wallet transactions.
+text=• Contact support if an amount is not reflected within 24 hours.
+text=Withdraw Money
+text=Help
+desc=Back

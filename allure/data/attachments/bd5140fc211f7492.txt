@@ -1,0 +1,17 @@
+text=Rahulkumar
+text=L2B-8FV7CE
+text= Company Id
+text=Account
+text=KYC
+text=Your machines
+text=Manage team
+text=Help
+text=Language
+text=Refer &amp; Earn
+text=FAQ
+text=Terms &amp; Services
+text=Policies
+text=Settings
+text=Log Out
+desc=Close navigation menu
+desc=Profile

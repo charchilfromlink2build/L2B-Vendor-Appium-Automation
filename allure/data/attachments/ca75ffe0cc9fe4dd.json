@@ -1,0 +1,20 @@
+{
+    "success": true,
+    "message": "OTP verified successfully",
+    "is_new_user": false,
+    "user_id": "57f6217c-4953-429d-8433-95b9c494b143",
+    "role": "vendor_owner",
+    "profile_category": "rental_vendor",
+    "onboarding_status": "approved",
+    "completed_steps": {
+        "basic_info": true,
+        "machine_listing": true,
+        "skills_listing": true,
+        "kyc": true
+    },
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTA4Njg5OTIsImlhdCI6MTc5MDg1MzM5Miwic3ViIjoiNTdmNjIxN2MtNDk1My00MjlkLTg0MzMtOTViOWM0OTRiMTQzIiwianRpIjoiNmRiMmVmNmYtZTkxOC00ZDQyLTk2NjAtN2Y4MzRiOTExODQ0IiwidHlwZSI6ImFjY2VzcyJ9.omSLuetPraUFIHjk1dNpADofHL9u0YmNxaux2WiMIwM",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTE0NTgxOTIsImlhdCI6MTc5MDg1MzM5Miwic3ViIjoiNTdmNjIxN2MtNDk1My00MjlkLTg0MzMtOTViOWM0OTRiMTQzIiwianRpIjoiZWJlZWZmOTYtMDJhNS00OTIyLTkxYmItMGJhNGJiNzhlYThiIiwidHlwZSI6InJlZnJlc2gifQ.wmRSgyKlqstT5j2iJ2f-8J6fWK6WIxizS0oeBGk-bkM",
+    "token_type": "bearer",
+    "expires_in": 15600,
+    "refresh_expires_in": 604800
+}

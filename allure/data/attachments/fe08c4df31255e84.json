@@ -1,0 +1,24 @@
+{
+    "success": true,
+    "data": {
+        "user_id": "57f6217c-4953-429d-8433-95b9c494b143",
+        "vendor_id": "729efc5f-b078-4818-ba19-7be1a4a231dc",
+        "vendor_type": "company",
+        "is_company": true,
+        "company_type": "pvt_ltd",
+        "vendor_code": "L2B-8FV7CE",
+        "name": "Kasim Pathan",
+        "company_name": "kasim",
+        "email": "kasimm@gmail.com",
+        "mobile_number": "9000000001",
+        "gstin": "string",
+        "authorized_person_name": "Kasim Pathan",
+        "profile_photo_url": "https://s3.ap-south-1.amazonaws.com/waardian-media/link2build/onboarding/profile_photos/57f6217c-4953-429d-8433-95b9c494b143_1e4bd2ee-10d7-4d16-bc02-68122acfe222.jpg",
+        "bank_details": {
+            "bank_name": "Yes Bank",
+            "branch": "UNDRI PUNE MAHARASHTRA",
+            "ifsc_code": "YESB0001446",
+            "upi_id": "wardian@yesb"
+        }
+    }
+}

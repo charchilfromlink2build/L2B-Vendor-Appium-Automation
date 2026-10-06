@@ -1,0 +1,9 @@
+text=All language
+text=English
+text=Default
+text=हिंदी
+text=తెలుగు
+text=ಕನ್ನಡ
+text=Choose the language
+text=Save
+desc=Back

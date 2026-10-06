@@ -1,0 +1,5 @@
+text=Submit a query
+text=Ticket Concern
+text=Raise Ticket
+text=Submit
+desc=Back

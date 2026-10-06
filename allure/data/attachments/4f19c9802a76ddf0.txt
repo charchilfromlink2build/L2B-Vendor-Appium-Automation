@@ -1,0 +1,6 @@
+text=Notification
+text=Unread
+text=All
+text=You're all caught up.
+text=View all notifications
+desc=Back

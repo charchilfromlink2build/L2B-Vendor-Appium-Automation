@@ -1,0 +1,18 @@
+Test class: LanguageReflectionE2ETest
+Account/persona: 9000000001 rental company vendor
+Session count: 1
+Language selected: Hindi (hi)
+Backend language: UNTESTED
+Persistence: UNTESTED
+Crash/ANR: UNTESTED
+
+Modules:
+  Login = PASS | Quick Booking closed; Home visible; one session
+
+PASS=1 FAIL=0 BLOCKED=0 UNTESTED=0
+
+Existing bugs re-tested:
+  #40–#46 NOT REPRODUCED this run
+
+New bugs:
+  none

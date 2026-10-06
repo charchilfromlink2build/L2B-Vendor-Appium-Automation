@@ -1,0 +1,16 @@
+text=Profile Info
+text=Cancel
+text=Kasim Pathan
+text=Full Name
+text=9000000001
+text=Mobile Number
+text=Company Info
+text=Update
+text=kasim
+text=Company Name
+text=kasimm@gmail.com
+text=Email Address
+text=Account
+text=Save Changes
+desc=Profile photo
+desc=Back

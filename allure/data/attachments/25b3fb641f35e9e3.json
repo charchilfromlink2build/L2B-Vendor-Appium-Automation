@@ -1,0 +1,48 @@
+{
+    "doc_type": "policies",
+    "version": "1.0",
+    "title": "Privacy Policy",
+    "locale": "hi",
+    "effective_from": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-09-03T09:10:30.933773Z",
+    "sections": [
+        {
+            "key": "what-we-collect",
+            "title": "हम कौन-सी जानकारी लेते हैं",
+            "paragraphs": [
+                "हम ऑनबोर्डिंग के दौरान आपके द्वारा दी गई जानकारी, KYC के लिए आपके द्वारा अपलोड किए गए दस्तावेज़ और आपके द्वारा किए गए कार्यों से जुड़ी गतिविधियों को एकत्र करते हैं।"
+            ],
+            "subsections": [
+                {
+                    "key": "location-data",
+                    "title": "Location",
+                    "bullets": [
+                        "Machine and vehicle location while a job is in progress",
+                        "The delivery and dump addresses attached to a booking"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "how-we-use-it",
+            "title": "How we use it",
+            "paragraphs": [
+                "We use your data to match you with jobs, to let customers track a delivery in progress, to settle payouts, and to meet our legal and tax obligations.",
+                "We do not sell your personal data."
+            ],
+            "subsections": [
+                
+            ]
+        },
+        {
+            "key": "your-rights",
+            "title": "Your rights",
+            "paragraphs": [
+                "You can ask us for a copy of your data, correct it from your profile, or ask us to close your account and delete data we are not legally required to keep."
+            ],
+            "subsections": [
+                
+            ]
+        }
+    ]
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Material Vendor App — Testing report</title>
+  <link rel="icon" href="assets/ic_launcher.png">
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#FFF6E5",
+        primaryTextColor: "#1A1A1A",
+        primaryBorderColor: "#FEB637",
+        lineColor: "#8A5A00",
+        secondaryColor: "#E8F5E9",
+        tertiaryColor: "#FFFEF9",
+        fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --brand: #FEB637;
+      --brand-dark: #E39A1C;
+      --card: rgba(255, 254, 249, 0.64);
+      --text: #1A1A1A;
+      --muted: #4F4F4F;
+      --line: rgba(255, 255, 255, 0.48);
+      --done: #145218;
+      --done-bg: #E8F5E9;
+      --progress: #7A5200;
+      --progress-bg: #FFF6E5;
+      --fail: #B71C1C;
+      --glass-blur: blur(14px) saturate(140%);
+      --glass-shadow: 0 8px 28px rgba(80, 50, 10, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.45;
+      background:
+        radial-gradient(900px 420px at 8% -8%, rgba(254, 182, 55, 0.28), transparent 55%),
+        radial-gradient(820px 400px at 100% 0%, rgba(20, 82, 24, 0.10), transparent 52%),
+        linear-gradient(180deg, #F7EFE3 0%, #F3E6D4 100%);
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 20px 72px; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 0 20px;
+      border-bottom: 1px solid rgba(80, 50, 10, 0.10);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .brand img { height: 72px; width: auto; max-width: 200px; object-fit: contain; }
+    .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .purpose { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; max-width: 46em; }
+    .header-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+    .back { font-size: 0.82rem; font-weight: 650; color: var(--progress); text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+    .role-banners { display: flex; gap: 10px; }
+    .role-banner {
+      display: flex; align-items: center; gap: 10px; width: 198px;
+      padding: 8px 12px 8px 8px; text-decoration: none; color: var(--text);
+      background: var(--card); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--glass-shadow);
+    }
+    .role-banner.current { border-color: var(--brand); }
+    .role-banner img { width: 52px; height: 52px; object-fit: cover; border-radius: 12px; flex-shrink: 0; background: #F3E6D4; }
+    .role-banner small { display: block; font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+    .role-banner strong { display: block; margin-top: 2px; font-size: 0.92rem; font-weight: 750; }
+    .pill {
+      display: inline-flex; padding: 8px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 650;
+      background: var(--progress-bg); color: var(--progress); border: 1px solid rgba(254, 182, 55, 0.45); white-space: nowrap;
+    }
+    .card, .note, .screen, table.wrap-table {
+      background: var(--card); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--glass-shadow);
+    }
+    .note { margin: 18px 0 0; padding: 12px 16px; font-size: 0.95rem; }
+    .note strong { color: var(--progress); }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0 8px; }
+    .stat { padding: 16px; }
+    .stat .num { font-size: 1.7rem; font-weight: 750; letter-spacing: -0.03em; color: var(--done); }
+    .stat .label { margin-top: 6px; color: var(--muted); font-size: 0.85rem; }
+    h2 { font-size: 1.08rem; margin: 36px 0 12px; }
+    h3 { font-size: 0.98rem; margin: 0 0 8px; }
+    .muted { color: var(--muted); }
+    .diagram { padding: 16px; overflow-x: auto; }
+    .screens { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .screen { margin: 0; padding: 10px 10px 12px; text-align: center; min-width: 0; }
+    .screen img {
+      width: 100%; height: auto; aspect-ratio: 9 / 19; object-fit: contain; object-position: top center;
+      display: block; border-radius: 16px; background: #111;
+    }
+    .screen .cap { margin: 10px 4px 2px; font-size: 0.82rem; font-weight: 650; }
+    .screen .sub { margin: 0 4px 2px; font-size: 0.74rem; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 10px 12px; vertical-align: top; border-bottom: 1px solid rgba(80, 50, 10, 0.08); }
+    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+    .mod { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .mod .card { padding: 14px 16px; }
+    .mod ul { margin: 0; padding-left: 18px; }
+    .mod li { margin: 4px 0; font-size: 0.9rem; }
+    .btn {
+      display: inline-block; text-decoration: none; font-weight: 700; padding: 12px 18px;
+      border-radius: 12px; border: 1px solid transparent; margin: 18px 8px 0 0;
+    }
+    .btn.primary { background: var(--brand); color: #1A1A1A; }
+    .btn.ghost { background: var(--card); color: var(--text); border-color: var(--line); }
+    footer { margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(80, 50, 10, 0.10); }
+    @media (max-width: 900px) { .screens { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 720px) {
+      .mod { grid-template-columns: 1fr; }
+      .brand img { height: 52px; }
+      header { flex-wrap: wrap; }
+      .header-side { align-items: flex-start; width: 100%; }
+      .role-banners { width: 100%; }
+      .role-banner { flex: 1; width: auto; }
+      .screens { grid-template-columns: 1fr; max-width: 360px; margin-left: auto; margin-right: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img src="assets/ic_splash_logo.png" alt="Link2Build">
+        <div>
+          <h1>Material Vendor — Testing report</h1>
+          <p class="purpose">Standalone material-vendor report for developers, managers, and testers. Cement / inventory surface. Not mixed with Rental Vendor results.</p>
+        </div>
+      </div>
+      <div class="header-side">
+        <a class="back" href="index.html">← Vendor dashboard</a>
+        <nav class="role-banners" aria-label="Vendor testing reports">
+          <a class="role-banner" href="rental-flow.html">
+            <img src="assets/banner-excavator.png" alt="Excavator">
+            <span>
+              <small>Testing report</small>
+              <strong>Rental Vendor</strong>
+            </span>
+          </a>
+          <a class="role-banner current" href="material-flow.html" aria-current="page">
+            <img src="assets/banner-cement.png" alt="Cement bags">
+            <span>
+              <small>Testing report</small>
+              <strong>Material Vendor</strong>
+            </span>
+          </a>
+        </nav>
+        <span class="pill">9000000017 · OTP 1234</span>
+      </div>
+    </header>
+
+    <div class="note">
+      Material vendor identity: <strong>Orders · Home · Earning · Inventory</strong> (not Calendar / Fleet).
+      Quick Booking on this account is one-step Accept (no Assign machine). Working directory:
+      <kbd>/Users/charchil/Documents/L2B-Vendor-Appium-Automation</kbd>.
+    </div>
+
+    <section class="stats" aria-label="Material coverage">
+      <div class="card stat">
+        <div class="num">14 / 14</div>
+        <div class="label">Quick Booking cases</div>
+      </div>
+      <div class="card stat">
+        <div class="num">32 / 32</div>
+        <div class="label">Home cases</div>
+      </div>
+      <div class="card stat">
+        <div class="num">Landing 6</div>
+        <div class="label">Accept 1 · Decline 1 · Edge 6</div>
+      </div>
+      <div class="card stat">
+        <div class="num">Done</div>
+        <div class="label">Material Home exhaustive</div>
+      </div>
+    </section>
+
+    <h2>Material chrome</h2>
+    <div class="card diagram">
+      <pre class="mermaid">
+flowchart TD
+  L[Login OTP 1234] --> Q{Pending material order?}
+  Q -->|Yes| QB[Quick Booking]
+  Q -->|No| H[Material Home]
+  QB -->|Close after empty or Close| H
+  H --> O[Orders]
+  H --> E[Earning]
+  H --> I[Inventory]
+  O --> H
+  E --> H
+  I --> H
+      </pre>
+    </div>
+
+    <div class="mod">
+      <div class="card">
+        <h3>Quick Booking (9000000017)</h3>
+        <ul>
+          <li>Pending material orders open the same Quick Booking page after OTP.</li>
+          <li>Material chrome: no timer / operator row.</li>
+          <li>Accept is one-step — toast <em>Accepted 1 item(s)</em>.</li>
+          <li>Decline: material reason list → Confirm Decline → Request Declined.</li>
+          <li>After both 0017 cards were consumed, post-OTP lands on Home.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Home (32 isolated cases)</h3>
+        <ul>
+          <li>Greeting + Current Earning identity.</li>
+          <li>Stats: Upcoming / Earning / Completed / Disputes orders.</li>
+          <li>H-I12: pull-to-refresh is not implemented.</li>
+          <li>Stat cards are display-only. Disputes UX flag is not a bug.</li>
+          <li>Do not tap Logout. New-user registration is deferred.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Live screens</h2>
+    <p class="muted">Material Home, Orders, Earning, and Inventory from the vendor screenshot pack.</p>
+    <div class="screens">
+      <figure class="screen">
+        <img src="assets/screens/home-material.jpg" alt="Material Home">
+        <figcaption class="cap">Home</figcaption>
+        <p class="sub">Orders · Home · Earning · Inventory</p>
+      </figure>
+      <figure class="screen">
+        <img src="assets/screens/upcoming-orders.jpg" alt="Upcoming Orders">
+        <figcaption class="cap">Orders</figcaption>
+        <p class="sub">Upcoming MAT orders</p>
+      </figure>
+      <figure class="screen">
+        <img src="assets/screens/earning-material.jpg" alt="Material Earning">
+        <figcaption class="cap">Earning</figcaption>
+        <p class="sub">Gross / deduction / tax</p>
+      </figure>
+      <figure class="screen">
+        <img src="assets/screens/inventory.jpg" alt="Inventory">
+        <figcaption class="cap">Inventory</figcaption>
+        <p class="sub">AAC Block · in stock / out of stock</p>
+      </figure>
+      <figure class="screen">
+        <img src="assets/screens/add-product.jpg" alt="Add Product">
+        <figcaption class="cap">Add Product</figcaption>
+        <p class="sub">Inventory form</p>
+      </figure>
+    </div>
+
+    <h2>Module status</h2>
+    <table class="wrap-table">
+      <thead><tr><th>Module</th><th>Status</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Quick Booking</td><td>Done 14/14</td><td>Landing, Accept, Decline, Edge. Close/Back skipped after empty queue.</td></tr>
+        <tr><td>Home</td><td>Done 32/32</td><td>Dump + Landing + Interact + Edge. Exhaustive for this account.</td></tr>
+        <tr><td>Orders / Bookings</td><td>Pending</td><td>After Rental Home review in the standing order.</td></tr>
+        <tr><td>Earning</td><td>Pending</td><td>Not started as an isolated suite.</td></tr>
+        <tr><td>Inventory</td><td>Pending</td><td>Not started as an isolated suite.</td></tr>
+      </tbody>
+    </table>
+
+    <footer>
+      <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open Allure report</a>
+      <a class="btn ghost" href="bugs.html">Bugs found</a>
+      <a class="btn ghost" href="index.html">Back to dashboard</a>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+L2B brand assets used on this dashboard
+=======================================
+
+Logo
+  File:   docs/assets/ic_splash_logo.png
+  Source: L2B Vendor QA APK (com.l2b.app.qa)
+          path on disk: apk/app-qa-release.apk (this repo)
+          Android resource: drawable/ic_splash_logo  (packaged as res/pk.png)
+  Also used as launcher foreground (drawable/ic_launcher_foreground insets this same PNG).
+
+Favicon
+  File:   docs/assets/ic_launcher.png
+  Source: same APK, mipmap/ic_launcher xxxhdpi (res/o-.png)
+
+Brand orange
+  Hex:    #FEB637
+  Source: Vendor language screen CTA “Get started”
+          sampled from reports/deep-regression-2026-09-11/screenshots/lang_english_before.png
+          (live app screenshot, not approximated).
+
+First-login evidence (Sep)
+  docs/assets/flow/sign-up-completed.jpg  — Sign Up Completed dialog after first login
+  docs/assets/flow/select-your-role.jpg   — Select your role, after Register Yourself
+  docs/assets/flow/help-and-support.jpg   — Contact us to Register → Help & Support
+  docs/assets/flow/select-category.jpg    — Vendor / Owner → Materials vs Rental
+  docs/assets/flow/tell-us-about-yourself.jpg — Operator / Driver → Tell us about yourself
+  docs/assets/flow/tell-us-materials.jpg  — Materials Vendor → warehouse Tell us
+  docs/assets/flow/tell-us-rental.jpg     — Rental Vendor → company + machinery Tell us
+  docs/assets/flow/material-vendor-registration.jpg — Material KYC → Profile Verification → Home
+  docs/assets/flow/rental-vendor-registration.jpg — Rental machines → Skip or KYC → Home
+  docs/assets/flow/operator-registration.jpg — Operator skills → Skip or KYC → Home
+  Copies also in APPscreenshots/
+
+Canonical unique screens (from APPscreenshots review)
+  Folder: docs/assets/screens/  — INDEX.md lists every unique Vendor screen kept.
+  Not used: APPscreenshots/_SAMPLE_LAYOUT_ONLY.jpg (Customer app poster, May 2025).
+
+Existing-user Quick Booking evidence (live QA Appium / Allure)
+  docs/assets/screens/quick-booking-rental.png
+    — 9000000001 pending rentals after OTP (QuickBookingLandingTest.appearsAfterLoginWhenPendingRentalsExist / landing-1-after-login)
+  docs/assets/screens/quick-booking-material.png
+    — 9000000017 pending material orders after OTP (MaterialQuickBookingLandingTest.pendingLandsOnQuickBooking / material-landing-1-after-login)

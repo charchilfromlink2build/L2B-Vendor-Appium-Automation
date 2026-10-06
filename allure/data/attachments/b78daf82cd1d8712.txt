@@ -1,0 +1,6 @@
+text=Submit a query
+text=Payment &amp; Billing Issues
+text=Order ID
+text=Raise Ticket
+text=Submit
+desc=Back
