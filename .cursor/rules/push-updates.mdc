@@ -1,0 +1,14 @@
+---
+description: After code updates in this repo, push GitHub main and the live dashboard
+alwaysApply: true
+---
+
+# Push updates
+
+When the user updates code in this project, push that same latest state. Do not wait to be asked again.
+
+- Commit the latest valid work on `main` and push to `origin` (`charchilfromlink2build/L2B-Vendor-Appium-Automation`).
+- Update the live GitHub Pages dashboard (index, bugs, coverage) so the public site matches the repo.
+- Keep the published Allure report. Do not delete Allure history. If a full `gh-pages` push fails because the report is too large, update only the changed dashboard files and leave Allure in place.
+- Do not restore older dashboard HTML or older commits over newer files.
+- Dashboard test-case total must stay aligned with the published Allure report total.
