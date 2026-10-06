@@ -774,24 +774,24 @@
       </nav>
     </header>
 
-    <p class="next">Next up: <strong>KYC (drawer) → registration path leftovers (Sign Up Completed / role / category / Tell us…) — blocked until QA API #52 fixed for warm 0001 login</strong> — module-by-module edge cases, in first-launch order.</p>
+    <p class="next">Next up: <strong>9000000013 Tell us is done — TPI upload then List skills / KYC form / Profile Verification</strong> (stay logged in). Published Allure total stays <strong>700</strong>.</p>
 
     <section class="stats" aria-label="Overall progress">
       <div class="stat">
-        <div class="num">24 <span>/ 72</span></div>
+        <div class="num">25 <span>/ 72</span></div>
         <div class="label">Screens automated</div>
       </div>
       <div class="stat">
-        <div class="num">33%</div>
+        <div class="num">35%</div>
         <div class="label">Coverage</div>
       </div>
       <div class="stat ok">
-        <div class="num">31</div>
+        <div class="num">700</div>
         <div class="label">Test cases in Allure</div>
       </div>
       <div class="stat fail">
-        <div class="num">9</div>
-        <div class="label">Failed or broken (0 skipped)</div>
+        <div class="num">21</div>
+        <div class="label">Failed or broken (14 skipped)</div>
       </div>
       <div class="stat bugs">
         <div class="num">55</div>
@@ -808,7 +808,7 @@
       of the bug list.</p>
       <p><a href="bugs.html#bug-16">Open #16</a></p>
     </section>
-    <p class="run-note">KYC dump 1/1 PASS. Landing 9/10 PASS (L6 panRow driver timeout). Interact 10/10 PASS. Edge 2/10 PASS (E1/E2); E3–E10 fail Warm Home Language after E2 force-stop (#55). Empty-dash Details filed #54. OTP still 404 (#52).</p>
+    <p class="run-note">Published Allure: 700 total (649 passed · 14 failed · 7 broken · 14 skipped · 16 unknown). Latest local (not yet in that Allure zip): KYC Details 21/21 PASS on 9000000001 stay-logged-in; Tell us 31/31 PASS on 9000000013. Force-stop on KYC still #55. QA send-otp 404 is #52.</p>
 
     <h2>Modules</h2>
     <div class="grid">
@@ -868,12 +868,13 @@
         </div>
         <p class="cases">Cases not counted yet</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
         <div class="card-top">
           <h3>Tell us (Operator)</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">31/31 cases</p>
+        <p class="card-note">6 Oct 9000000013 stay-logged-in dump+L+I+E. Continue grey without TPI. Next needs TPI upload.</p>
       </article>
       <article class="card status-pending">
         <div class="card-top">
@@ -909,7 +910,7 @@
           <span class="badge progress">In progress</span>
         </div>
         <p class="cases">21/30 cases</p>
-        <p class="card-note">Dump PASS 6 Oct /tmp/l2b-kyc-0001-20261006. L 9/10 PASS (L6 panRow infra timeout), I 10/10 PASS, E 2/10 PASS then cascade: KYC-E2 force-stop relaunch → Language (BUGS_FOUND #55) so E3–E10 Warm Home fail; OTP restore blocked by #52. Live Details is empty-dash chrome (BUGS_FOUND #54) — no PAN/bank values, no form/Continue. Never tapped Accept/Decline/Log Out Confirm/KYC Continue. E11–E18 not added. Form/upload/PV blocked until new account. Suites: kyc/kyc-*.xml.</p>
+        <p class="card-note">Retest 6 Oct stay-logged-in (no E2/Log Out): dump+L+I 21/21 PASS. Full chrome PAN/bank restored after OTP. E2 force-stop → Language is #55. Form/upload/PV still on 0013 after Tell us. Suites: kyc/kyc-*.xml.</p>
       </article>
       <article class="card status-pending">
         <div class="card-top">
@@ -1243,9 +1244,9 @@ flowchart TB
   tellUsMaterial -->|Continue| kyc
   kyc -->|submit KYC| profileVerification
   profileVerification -->|skip or after KYC| home
-  class splash,language,onboarding,signup,otp,quickBooking,home,bookings,fleet,calendar,earning,notifications,profileDrawer,account,team,refer,faq,terms,policies,settings,logout,help,languageSettings done
+  class splash,language,onboarding,signup,otp,quickBooking,home,bookings,fleet,calendar,earning,notifications,profileDrawer,account,team,refer,faq,terms,policies,settings,logout,help,languageSettings,tellUs done
   class signupCompleted,role,category,kyc progress
-  class tellUs,listSkills,tellUsMaterial,tellUsRental,listMachineries,profileVerification pending
+  class listSkills,tellUsMaterial,tellUsRental,listMachineries,profileVerification pending
   class referEarn pending
   class registered,activeBooking decision
   classDef done fill:#E8F5E9,stroke:#2E7D32,color:#145218,stroke-width:2px

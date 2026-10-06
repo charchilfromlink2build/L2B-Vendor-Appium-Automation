@@ -1,0 +1,11 @@
+{
+  "passed": 649,
+  "failed": 14,
+  "broken": 7,
+  "skipped": 14,
+  "unknown": 16,
+  "total": 700,
+  "when": "2026-10-06T17:25:00+05:30",
+  "source": "Published Allure https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/ widgets/summary.json",
+  "note": "Dashboard Allure total MUST stay 700 (published report). Do not overwrite this file with a single-module suite count (e.g. Tell us 31). Latest local extras: KYC Details 21/21, Tell us 31/31 — not merged into that Allure zip yet."
+}
