@@ -1,8 +1,11 @@
 {
-  "passed": 30,
-  "failed": 0,
-  "skipped": 0,
-  "when": "2026-10-05T11:07:32+05:30",
-  "source": "app-settings-all 30/30 (L10+I10+E10)",
-  "note": "Settings 30/30 PASS on 9000000001 (5 Oct). Live error empty state filed BUGS_FOUND #51. Policies #50 earlier today. Drawer content-load cluster #47–#51. Next: KYC (deferred) or registration leftovers."
+  "passed": 649,
+  "failed": 14,
+  "broken": 7,
+  "skipped": 14,
+  "unknown": 16,
+  "total": 700,
+  "when": "2026-10-06T12:44:00+05:30",
+  "source": "published Allure widgets/summary.json",
+  "note": "Published Allure report: 700 test cases \u2014 649 passed, 14 failed, 7 broken, 14 skipped, 16 unknown."
 }

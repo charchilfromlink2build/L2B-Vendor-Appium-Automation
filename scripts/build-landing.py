@@ -89,6 +89,9 @@ def parse_surefire(surefire_dir: Path) -> dict | None:
 
 
 def latest_run(coverage_run: dict) -> dict:
+    # Keep an explicitly published Allure widget total (dashboard must match the live report).
+    if str(coverage_run.get("source") or "").startswith("published Allure") and int(coverage_run.get("total") or 0) > 0:
+        return coverage_run
     allure = parse_allure_results(ROOT / "target" / "allure-results")
     if allure and (allure["passed"] + allure["failed"] + allure["skipped"]) > 0:
         (DOCS / "last-run.json").write_text(json.dumps(allure, indent=2) + "\n", encoding="utf-8")
@@ -810,8 +813,8 @@ def build() -> None:
         "{{AUTOMATED_SCREENS}}": str(automated),
         "{{TOTAL_SCREENS}}": str(total_screens),
         "{{COVERAGE_PCT}}": pct_label,
-        "{{PASSED}}": str(int(run.get("passed") or 0)),
-        "{{FAILED}}": str(int(run.get("failed") or 0)),
+        "{{PASSED}}": str(int(run.get("total") or run.get("passed") or 0)),
+        "{{FAILED}}": str(int(run.get("failed") or 0) + int(run.get("broken") or 0)),
         "{{SKIPPED}}": str(int(run.get("skipped") or 0)),
         "{{WHATS_NEXT}}": html.escape(whats_next(modules, coverage)),
         "{{RUN_NOTE}}": html.escape(str(run.get("note") or "")),
@@ -1661,11 +1664,11 @@ INDEX_HTML = r"""<!DOCTYPE html>
       </div>
       <div class="stat ok">
         <div class="num">{{PASSED}}</div>
-        <div class="label">Passed in latest run</div>
+        <div class="label">Test cases in Allure</div>
       </div>
       <div class="stat fail">
         <div class="num">{{FAILED}}</div>
-        <div class="label">Failed in latest run ({{SKIPPED}} skipped)</div>
+        <div class="label">Failed or broken ({{SKIPPED}} skipped)</div>
       </div>
       <div class="stat bugs">
         <div class="num">{{BUGS_OPEN}}</div>
