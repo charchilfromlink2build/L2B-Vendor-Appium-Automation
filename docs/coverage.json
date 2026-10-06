@@ -112,7 +112,7 @@
    "casesDone": 0,
    "casesTotal": 30,
    "screens": 1,
-   "note": "Suite scaffolded 5 Oct (L10+I10+E10 + dump). Waiting warm 0001 login — blocked by BUGS_FOUND #52 (qa.waardian.com/api/v1 OTP 404). Prior chrome evidence /tmp/l2b-lang-matrix-0001-20261001/d-kyc. Suites: kyc/kyc-*.xml."
+   "note": "Suite scaffolded 5 Oct (L10+I10+E10 + dump). Pre-automation edge catalog 6 Oct: docs/kyc-edge-cases.md (Details E1–E18 + form/upload/PV). Waiting warm 0001 login — blocked by BUGS_FOUND #52. Prior chrome /tmp/l2b-lang-matrix-0001-20261001/d-kyc + assets/screens/kyc-*. Suites: kyc/kyc-*.xml."
   },
   {
    "id": "profileVerification",

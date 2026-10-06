@@ -16,9 +16,19 @@ import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
 
 /**
- * KYC edge — offline, relaunch, rotation, rapid taps.
+ * KYC edge — offline, relaunch, rotation, rapid taps (drawer <b>KYC Details</b>).
  *
- * <p><b>Critical Edge (KYC-E1–E10)</b>
+ * <p>Full pre-automation catalog (form / upload / Profile Verification):
+ * {@code docs/kyc-edge-cases.md}.
+ *
+ * <p><b>Critical Edge implemented (KYC-E1–E10)</b> — device Back, force-stop, background,
+ * rapid Retry, offline, rotation, open twice, not launcher, masked mobile, no Accept.
+ *
+ * <p><b>Planned after live dump (KYC-E11–E18)</b> — rapid Back, Retry→Back, Hindi chrome,
+ * empty-dashes state, read-only row taps, multi-touch Back, cold-start recover, API 401/404.
+ *
+ * <p><b>Form / upload / PV edges (KYC-F-E*, KYC-U-E*, KYC-PV-E*)</b> — catalogued; not in this
+ * class until form dump on Update-this-step path.
  */
 @Epic("Vendor app")
 @Feature("KYC edge — rental 9000000001")
