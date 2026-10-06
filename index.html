@@ -414,27 +414,27 @@
 
     <section class="stats" aria-label="Overall progress">
       <div class="stat">
-        <div class="num">8 <span>/ 72</span></div>
+        <div class="num">24 <span>/ 72</span></div>
         <div class="label">Screens automated</div>
       </div>
       <div class="stat">
-        <div class="num">11%</div>
+        <div class="num">33%</div>
         <div class="label">Coverage</div>
       </div>
       <div class="stat ok">
-        <div class="num">273</div>
-        <div class="label">Passed in latest run</div>
+        <div class="num">700</div>
+        <div class="label">Test cases in Allure</div>
       </div>
       <div class="stat fail">
-        <div class="num">3</div>
-        <div class="label">Failed in latest run (12 skipped)</div>
+        <div class="num">21</div>
+        <div class="label">Failed or broken (14 skipped, 16 unknown)</div>
       </div>
       <div class="stat bugs">
-        <div class="num">28</div>
+        <div class="num">53</div>
         <div class="label">Open bugs found so far</div>
       </div>
     </section>
-    <p class="note bugs-open">Open bugs: 28 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
+    <p class="note bugs-open">Open bugs: 53 — logged for developers. <a href="bugs.html">View the list</a> or download the Word file.</p>
     <section class="blocker" aria-label="Functional blocker for developers">
       <p><strong>Dev blocker #16 (High):</strong>
       Assign machine Confirm stays disabled when operators are busy, so a vendor cannot complete
@@ -444,7 +444,7 @@
       of the bug list.</p>
       <p><a href="bugs.html#bug-16">Open #16</a></p>
     </section>
-    <p class="run-note">Unique latest status per test (retries collapsed). Known fail: QuickBookingAcceptTest.acceptOneRentalCard (BUGS_FOUND #16 busy-slot). Free-operator UI Accept→Confirm PASSES (FreeOperatorUiAcceptTest on F7D066, 23 Sep). OTP 23/24 are retargeted to 9000000003 so Home identity can pass without a 0001 queue intercept.</p>
+    <p class="run-note">Published Allure report: 700 test cases — 649 passed, 14 failed, 7 broken, 14 skipped, 16 unknown. Module cards below are the suite totals in coverage.json (836/866 cases across 33 modules).</p>
 
     <h2>Modules</h2>
     <div class="grid">
@@ -539,12 +539,12 @@
         </div>
         <p class="cases">Cases not counted yet</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-progress">
         <div class="card-top">
           <h3>KYC</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge progress">In progress</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">0/30 cases</p>
       </article>
       <article class="card status-pending">
         <div class="card-top">
@@ -567,54 +567,117 @@
         </div>
         <p class="cases">72/72 cases</p>
       </article>
-      <article class="card status-progress">
+      <article class="card status-done">
         <div class="card-top">
-          <h3>Rental Bookings </h3>
-          <span class="badge progress">In progress</span>
+          <h3>Rental Booking</h3>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">52/82 cases</p>
+        <p class="cases">82/82 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
         <div class="card-top">
           <h3>Fleet</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">39/39 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
         <div class="card-top">
           <h3>Calendar</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">38/38 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
         <div class="card-top">
           <h3>Earning</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">36/36 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Notifications</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">38/38 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Profile drawer</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">40/40 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Account</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">40/40 cases</p>
+      </article>
+      <article class="card status-done">
         <div class="card-top">
           <h3>Team</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">34/34 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Refer &amp; Earn</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">30/30 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>FAQ</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">30/30 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Terms &amp; Services</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">30/30 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Policies</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">30/30 cases</p>
+      </article>
+      <article class="card status-done">
         <div class="card-top">
           <h3>Profile / Settings</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">30/30 cases</p>
       </article>
-      <article class="card status-pending">
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Log Out</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">38/38 cases</p>
+      </article>
+      <article class="card status-done">
         <div class="card-top">
           <h3>Help &amp; Support</h3>
-          <span class="badge pending">Pending</span>
+          <span class="badge done">Done</span>
         </div>
-        <p class="cases">Cases not counted yet</p>
+        <p class="cases">59/59 cases</p>
+      </article>
+      <article class="card status-done">
+        <div class="card-top">
+          <h3>Language (in-app)</h3>
+          <span class="badge done">Done</span>
+        </div>
+        <p class="cases">38/38 cases</p>
       </article>
     </div>
 
@@ -793,7 +856,7 @@ flowchart TB
 
     <footer>
       <a class="btn primary" href="https://charchilfromlink2build.github.io/L2B-Vendor-Appium-Automation/allure/">Open full Allure report</a>
-      <a class="btn bugs" href="bugs.html">Bugs found (28 open)</a>
+      <a class="btn bugs" href="bugs.html">Bugs found (53 open)</a>
       <a class="btn ghost" href="BUGS_FOUND.docx">Download BUGS_FOUND.docx</a>
     </footer>
   </div>
