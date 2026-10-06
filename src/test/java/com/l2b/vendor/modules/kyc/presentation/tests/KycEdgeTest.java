@@ -57,6 +57,9 @@ public class KycEdgeTest extends KycBaseTest {
             Adb.run("shell", "am", "start", "-n", pkg + "/" + Config.get("app.activity"));
         }
         sleepQuiet(2500);
+        Allure.parameter("afterForceStop", classifyRentalNow());
+        Allure.parameter("bug55Language", String.valueOf(
+                hasText("Welcome to L2B") || hasText("Choose your language")));
         assertThat(vendorPackage()).contains("l2b");
     }
 

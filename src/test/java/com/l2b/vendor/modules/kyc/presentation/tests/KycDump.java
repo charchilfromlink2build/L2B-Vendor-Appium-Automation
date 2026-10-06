@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 @Feature("KYC dump — rental 9000000001")
 public class KycDump extends KycBaseTest {
 
-    private static final Path DUMP_DIR = Path.of("/tmp/l2b-kyc-0001-20261005");
+    private static final Path DUMP_DIR = Path.of("/tmp/l2b-kyc-0001-20261006");
     private static final Pattern TEXT = Pattern.compile("text=\"([^\"]{1,200})\"");
     private static final Pattern DESC = Pattern.compile("content-desc=\"([^\"]{1,160})\"");
 
@@ -54,6 +54,8 @@ public class KycDump extends KycBaseTest {
         Allure.parameter("fullChrome", String.valueOf(page.isFullChromeVisible()));
         Allure.parameter("docs", String.valueOf(page.isDocumentDetailsVisible()));
         Allure.parameter("bank", String.valueOf(page.isBankDetailsVisible()));
+        Allure.parameter("emptyDash", String.valueOf(page.isEmptyDashStateVisible()));
+        Allure.parameter("panValue", String.valueOf(page.isPresentPanValue()));
 
         if (page.isRetryVisible() && page.isErrorVisible()) {
             page.tapRetry();

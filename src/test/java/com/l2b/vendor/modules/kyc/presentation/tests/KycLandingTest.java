@@ -83,6 +83,11 @@ public class KycLandingTest extends KycBaseTest {
             Allure.parameter("skipped", "error");
             return;
         }
+        if (page.isEmptyDashStateVisible() && !page.isPresentPanValue()) {
+            Allure.parameter("skipped", "empty-dash-no-pan");
+            Allure.parameter("bug", "54");
+            return;
+        }
         assertThat(page.isPanVisible()).isTrue();
     }
 

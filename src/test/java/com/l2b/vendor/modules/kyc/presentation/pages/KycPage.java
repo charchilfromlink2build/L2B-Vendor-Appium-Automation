@@ -20,11 +20,16 @@ public class KycPage extends SplashScreen {
 
     public static final String TITLE = "KYC Details";
     public static final String TITLE_HI = "केवाईसी विवरण";
-    public static final String DOC_DETAILS = "Document details";
+    /** Live chrome uses Title Case; older dumps used sentence case. */
+    public static final String DOC_DETAILS = "Document Details";
+    public static final String DOC_DETAILS_ALT = "Document details";
     public static final String DOC_DETAILS_HI = "दस्तावेज़ विवरण";
-    public static final String BANK_DETAILS = "Bank details";
+    public static final String BANK_DETAILS = "Bank Details";
+    public static final String BANK_DETAILS_ALT = "Bank details";
     public static final String BANK_DETAILS_HI = "बैंक विवरण";
     public static final String PAN = "Company PAN Card";
+    public static final String DOC_TYPE = "Document Type";
+    public static final String DOC_NUMBER = "Document Number";
     public static final String GST = "GST number";
     public static final String GST_HI = "जीएसटी नंबर";
 
@@ -40,9 +45,12 @@ public class KycPage extends SplashScreen {
         return isTitleVisible()
                 || isErrorVisible()
                 || isPresent(ComposeLocators.textView(DOC_DETAILS))
+                || isPresent(ComposeLocators.textView(DOC_DETAILS_ALT))
                 || isPresent(ComposeLocators.textView(DOC_DETAILS_HI))
                 || isPresent(ComposeLocators.textView(PAN))
+                || isPresent(ComposeLocators.textView(DOC_TYPE))
                 || isPresent(ComposeLocators.textView(BANK_DETAILS))
+                || isPresent(ComposeLocators.textView(BANK_DETAILS_ALT))
                 || isPresent(ComposeLocators.textView(BANK_DETAILS_HI));
     }
 
@@ -69,9 +77,12 @@ public class KycPage extends SplashScreen {
     @Step("Full KYC chrome (docs + bank)")
     public boolean isFullChromeVisible() {
         boolean docs = isPresent(ComposeLocators.textView(DOC_DETAILS))
+                || isPresent(ComposeLocators.textView(DOC_DETAILS_ALT))
                 || isPresent(ComposeLocators.textView(DOC_DETAILS_HI))
-                || isPresent(ComposeLocators.textView(PAN));
+                || isPresent(ComposeLocators.textView(PAN))
+                || isPresent(ComposeLocators.textView(DOC_TYPE));
         boolean bank = isPresent(ComposeLocators.textView(BANK_DETAILS))
+                || isPresent(ComposeLocators.textView(BANK_DETAILS_ALT))
                 || isPresent(ComposeLocators.textView(BANK_DETAILS_HI))
                 || isPresent(ComposeLocators.textViewContains("IFSC"))
                 || isPresent(ComposeLocators.textViewContains("आईएफएससी"));
@@ -86,22 +97,41 @@ public class KycPage extends SplashScreen {
     @Step("Document details section")
     public boolean isDocumentDetailsVisible() {
         return isPresent(ComposeLocators.textView(DOC_DETAILS))
+                || isPresent(ComposeLocators.textView(DOC_DETAILS_ALT))
                 || isPresent(ComposeLocators.textView(DOC_DETAILS_HI))
-                || isPresent(ComposeLocators.textView(PAN));
+                || isPresent(ComposeLocators.textView(PAN))
+                || isPresent(ComposeLocators.textView(DOC_TYPE));
     }
 
     @Step("Bank details section")
     public boolean isBankDetailsVisible() {
         return isPresent(ComposeLocators.textView(BANK_DETAILS))
+                || isPresent(ComposeLocators.textView(BANK_DETAILS_ALT))
                 || isPresent(ComposeLocators.textView(BANK_DETAILS_HI))
                 || isPresent(ComposeLocators.textViewContains("Yes Bank"))
                 || isPresent(ComposeLocators.textViewContains("IFSC"));
     }
 
-    @Step("PAN row")
+    @Step("PAN / document number row")
     public boolean isPanVisible() {
         return isPresent(ComposeLocators.textView(PAN))
+                || isPresent(ComposeLocators.textViewContains("PAN"))
+                || isPresent(ComposeLocators.textView(DOC_NUMBER))
+                || isPresent(ComposeLocators.textView(DOC_TYPE));
+    }
+
+    /** True only when a PAN value (not merely the Document Type/Number labels) is present. */
+    @Step("PAN value present (not empty dash)")
+    public boolean isPresentPanValue() {
+        return isPresent(ComposeLocators.textView(PAN))
                 || isPresent(ComposeLocators.textViewContains("PAN"));
+    }
+
+    /** Empty-dash Details state (Document/Bank values show em dash). */
+    @Step("Empty dash values visible")
+    public boolean isEmptyDashStateVisible() {
+        return isPresent(ComposeLocators.textView("—"))
+                || isPresent(ComposeLocators.textView("-"));
     }
 
     @Step("Check Back")

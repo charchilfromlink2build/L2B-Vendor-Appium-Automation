@@ -109,10 +109,10 @@
    "id": "kyc",
    "name": "KYC",
    "status": "in-progress",
-   "casesDone": 0,
+   "casesDone": 21,
    "casesTotal": 30,
    "screens": 1,
-   "note": "Suite scaffolded 5 Oct (L10+I10+E10 + dump). Pre-automation edge catalog 6 Oct: docs/kyc-edge-cases.md (Details E1–E18 + form/upload/PV). Waiting warm 0001 login — blocked by BUGS_FOUND #52. Prior chrome /tmp/l2b-lang-matrix-0001-20261001/d-kyc + assets/screens/kyc-*. Suites: kyc/kyc-*.xml."
+   "note": "Dump PASS 6 Oct /tmp/l2b-kyc-0001-20261006. L 9/10 PASS (L6 panRow infra timeout), I 10/10 PASS, E 2/10 PASS then cascade: KYC-E2 force-stop relaunch → Language (BUGS_FOUND #55) so E3–E10 Warm Home fail; OTP restore blocked by #52. Live Details is empty-dash chrome (BUGS_FOUND #54) — no PAN/bank values, no form/Continue. Never tapped Accept/Decline/Log Out Confirm/KYC Continue. E11–E18 not added. Form/upload/PV blocked until new account. Suites: kyc/kyc-*.xml."
   },
   {
    "id": "profileVerification",
